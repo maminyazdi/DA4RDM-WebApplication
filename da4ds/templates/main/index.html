@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h2>Select Project</h2>
+{% endblock %}
+
+{% block content %}
+    <form method="GET" action="/view_project">
+        <div class="row d-flex justify-content-center">
+            <select name=projects>
+                {% for project in projects %}
+                    <option value="{{ project }}" >{{ project }}</option>"
+                {% endfor %}
+            </select>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <input type="submit" class="btn btn-primary btn-lower" value="View Project">
+        </div>
+    </form>
+
+    {% block view_project %}
+    {% endblock %}
+
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}
