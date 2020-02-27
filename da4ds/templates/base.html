@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+    <head>
+        <title>DA4DS</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/bootstrap.min.css') }}">
+        <script src="{{ url_for('static', filename='bootstrap/bootstrap.js') }}"></script>
+        <script src="{{ url_for('static', filename='axios/axios.min.js') }}"></script>
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    </head>
+    <body>
+        <section class="content">
+            <div class="container text-center" style="text-align: center; max-width: 100%;">
+                <div class="row">
+                    <div class="col-1 side-margin"></div>
+                    <div class="col-10">
+                        <div class="row top-bar">
+                            <div class="col-12">
+                                <div class="row black-bar">
+                                    <div class="col-1">
+                                        <!--empty space-->
+                                    </div>
+                                    <div class="col-9">
+                                        <img src="{{url_for('static', filename='images/rwth-itc.png')}}" />
+                                    </div>
+                                    <div class="col-2">
+                                        <!--can add additional general info like language settings or user name here-->
+                                    </div>
+                                </div>
+                                <div class="row light-bar">
+                                    <div class="col-12">
+                                        <div class="row">
+                                            <div class="col-1">
+                                            </div>
+                                            <div class="col-9">
+                                            </div>
+                                            <div class="col-2">
+                                                <h1>DA4DS</h1>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-1">
+                                            </div>
+                                            <div class="col-9">
+                                                {% block header %}{% endblock %}
+                                            </div>
+                                            <div class="col-2">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row body-content">
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-1">
+                                        <!--blank space-->
+                                    </div>
+                                    <div class="col-10">
+                                        {% block content %}{% endblock %}
+                                    </div>
+                                    <div class="col-1">
+                                        <!--blank space-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row footer">
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-1">
+                                        <!-- adapt width if footer should get segregated-->
+                                    </div>
+                                    <div class="col-10">
+                                        By David Schimmel, IT Center RWTH Aachen 2019
+                                    </div>
+                                    <div class="col-1">
+                                        <!-- adapt width if footer should get segregated-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-1 side-margin">
+                    </div>
+                {% block scripts %}{% endblock %}
+            </div>
+        </section>
+    </body>
+</html>
