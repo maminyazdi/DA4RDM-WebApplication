@@ -53,3 +53,40 @@ def run_project_persistent_connection(data):
     response = project.run(project_config)
     emit('json', response)
     return #response
+
+@socketio.on('requestProcessDiscovery', namespace='/api/run_process_discovery')
+def run_process_discovery():
+    emit('json', {"message": "Hello World!"})
+
+    #####
+    import pandas as pd
+    import os
+    from pm4py.objects.log.adapters.pandas import csv_import_adapter
+    from pm4py.objects.conversion.log import factory as conversion_factory
+    dataframe = csv_import_adapter.import_dataframe_from_path(os.path.join("C:/Users/qb268076/seminar/datasources/prepared4pm4py", "xesReadyFormatLog.csv"), sep=",")
+
+    dataframe = dataframe.replace(to_replace="'time\:timestamp'\:Timestamp\(", value="", regex=True)
+    dataframe = dataframe.replace(to_replace="\)", value="", regex=True)
+    dataframe = dataframe.replace(to_replace="-[0-9]+-", value="/", regex=True)
+    dataframe = dataframe.replace(to_replace="/[0-9]+ ", value=" ", regex=True)
+    dataframe["time:timestamp"] = pd.to_datetime(dataframe["time:timestamp"], utc=True)
+
+    from pm4py.algo.filtering.pandas.timestamp import timestamp_filter
+    df_timest_events = timestamp_filter.apply_events(dataframe, "2020-01-01 00:00:00", "2020-02-02 23:59:59")
+    log = conversion_factory.apply(dataframe)
+
+
+
+    from pm4py.algo.discovery.dfg import factory as dfg_factory
+    dfg = dfg_factory.apply(log)
+
+    from pm4py.visualization.dfg import factory as dfg_vis_factory
+    gviz = dfg_vis_factory.apply(dfg, log=log, variant="frequency")
+    #dfg_vis_factory.view(gviz)
+
+
+
+    emit('gviz', dfg_vis_factory.view(gviz))
+    #####
+
+    return gviz

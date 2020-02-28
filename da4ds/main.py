@@ -28,3 +28,7 @@ def index():
 def view_project():
     project_name = request.args['projects']
     return render_template('main/view_project.html', project_name = project_name)
+
+@bp.route('/process_discovery')
+def process_discovery():
+    return render_template('main/process_discovery.html')
