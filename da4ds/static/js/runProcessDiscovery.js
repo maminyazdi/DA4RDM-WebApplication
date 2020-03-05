@@ -5,14 +5,12 @@ function runProcessDiscovery(hostUrl, projectUrl){
     spinner.style.display="block"
     socket.emit('requestProcessDiscovery');
     socket.on('progressLog', function(data) {
-        let hook = document.getElementById('data_target');
         hook.textContent = data.message;
     });
     socket.on('gviz', function(response) {
-        let hook = document.getElementById('data_target');
         let img = document.createElement("img");
         spinner.style.display="none";
-        img.src = response;
+        img.src = response.replace(/\\/g, "/");
         hook.appendChild(img);
     })
 
