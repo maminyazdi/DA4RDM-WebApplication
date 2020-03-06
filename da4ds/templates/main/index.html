@@ -5,6 +5,18 @@
 {% endblock %}
 
 {% block content %}
+    <div class="card">
+        {% block dataSource %}
+        <div class="card-body">
+            <h5 class="card-title">Data Source</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Select a pre-defined data source or save a new one</h6>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <a href="{{ url_for('blueprints/main.data_source_select') }}" class="btn btn-secondary">Select data source</a>
+            <a href="{{ url_for('blueprints/main.new_data_source') }}" class="btn btn-secondary">Save new Data Source</a>
+        </div>
+        {% endblock %}
+    </div>
+
     <form method="GET" action="/view_project">
         <div class="row d-flex justify-content-center">
             <select name=projects>

@@ -75,3 +75,12 @@ class ReshapedBackEndLogs(db.Model):
     ServiceScope  = db.Column(db.String(255))
     Call          = db.Column(db.String(444))
     Rid           = db.Column(db.String(444))
+
+class DataSource(db.Model):
+    __tablename__  = 'data_source'
+    Id             = db.Column(db.Integer, primary_key=True)
+    Name           = db.Column(db.String(255))
+    Type           = db.Column(db.String(255))
+    StoredOnServer = db.Column(db.Boolean)
+    LastModified   = db.Column(db.DateTime)
+    Parameters     = db.Column(db.String(1000))

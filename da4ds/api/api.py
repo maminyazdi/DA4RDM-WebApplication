@@ -3,7 +3,7 @@ import re
 import csv
 import sqlalchemy
 import importlib
-
+import datetime
 from flask_socketio import emit
 from da4ds import socketio
 
@@ -15,9 +15,39 @@ from werkzeug.exceptions import abort
 from werkzeug.utils import secure_filename
 
 from da4ds import db
-from da4ds.models import ( InflexibleDataSourceConnection, DataBaseDialect, DialectParameters )
+from da4ds.models import ( InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource )
 
 api_bp = Blueprint('blueprints/api', __name__, template_folder='templates', static_folder='static')
+
+@api_bp.route('/get_all_data_sources')
+def get_all_data_sources():
+    #TODO veryfy user permissons to access the data sources
+    data_sources = db.session.query(DataSource).all()
+    return data_sources
+
+@api_bp.route('/new_data_source', methods=['POST'])
+def safe_new_data_source():
+    # TODO add form validation & escaping
+    # generate a new data source entry in the app database
+    data_source = DataSource()
+    data_source.Name = request.form['dataSourceName']
+    data_source.Parameters = request.form['dataSourceParameters']
+    data_source.Type = "csv"
+    data_source.LastModified = datetime.datetime.now()
+    data_source.StoredOnServer = True
+    db.session.add(data_source)
+    db.session.commit()
+
+    return render_template('main/index.html')
+
+@api_bp.route('/read_data_from_source', methods=['POST'])
+def read_data_from_source():
+    data_sources = get_all_data_sources()
+    selected_source = data_sources[int(request.values['selectedDataSourceId'])]
+
+    dataframe = handle_source(selected_source)
+
+    return dataframe
 
 @api_bp.route('/run_project', methods=['GET'])
 def run_project():

@@ -10,7 +10,7 @@ from werkzeug.exceptions import abort
 from werkzeug.utils import secure_filename
 
 from da4ds import db
-
+import da4ds.api.api as api
 bp = Blueprint('blueprints/main', __name__)
 
 @bp.route('/')
@@ -32,3 +32,12 @@ def view_project():
 @bp.route('/process_discovery')
 def process_discovery():
     return render_template('main/process_discovery.html')
+
+@bp.route('/data_source_new')
+def new_data_source():
+    return render_template('main/data_source_new.html')
+
+@bp.route('/data_source_select')
+def data_source_select():
+    data_sources = api.get_all_data_sources()
+    return render_template('main/data_source_select.html', data_sources=data_sources)
