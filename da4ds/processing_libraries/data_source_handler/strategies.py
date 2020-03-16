@@ -1,5 +1,6 @@
 def getReadingStrategy(data_source_type, is_stored_on_server):
-    if data_source_type is "CSV":
+    """Selects the proper module for generating a dataframe from a variety of datasources."""
+    if data_source_type == "csv" and is_stored_on_server: # data source from a csv file on the server
         from . import csv_reader
         return csv_reader
     else:

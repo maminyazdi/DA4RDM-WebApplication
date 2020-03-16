@@ -16,6 +16,7 @@ from werkzeug.utils import secure_filename
 
 from da4ds import db
 from da4ds.models import ( InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource )
+from da4ds.processing_libraries.data_source_handler import data_source_handler
 
 api_bp = Blueprint('blueprints/api', __name__, template_folder='templates', static_folder='static')
 
@@ -43,11 +44,12 @@ def safe_new_data_source():
 @api_bp.route('/read_data_from_source', methods=['POST'])
 def read_data_from_source():
     data_sources = get_all_data_sources()
-    selected_source = data_sources[int(request.values['selectedDataSourceId'])]
+    selected_source = data_sources[int(request.values['selectedDataSourceId']) - 1] # -1 for zero based indexing of data_sources
 
-    dataframe = handle_source(selected_source)
+    dataframe = data_source_handler.read_from_source(selected_source)
+    dataframe.to_csv("C:/Temp/da4ds_temp1.csv") #TODO find a better way to store temporary data i.e. localstorage + uuids TODO make the temporary storage location configurable
 
-    return dataframe
+    return dataframe.to_json()
 
 @api_bp.route('/run_project', methods=['GET'])
 def run_project():
@@ -82,7 +84,12 @@ def run_project_persistent_connection(data):
     project_config = project.init(db)
     response = project.run(project_config)
     emit('json', response)
-    return #response
+    return "Pipeline ran successfully."
+
+def get_process_discovery_filters():
+    #TODO filters options need to be updated in accord with previously selected filters.
+
+    return """Not yet implemented!"""
 
 @socketio.on('requestProcessDiscovery', namespace='/api/run_process_discovery')
 def run_process_discovery():

@@ -17,21 +17,30 @@
         {% endblock %}
     </div>
 
-    <form method="GET" action="/view_project">
-        <div class="row d-flex justify-content-center">
-            <select name=projects>
-                {% for project in projects %}
-                    <option value="{{ project }}" >{{ project }}</option>"
-                {% endfor %}
-            </select>
+    <div class="card">
+        {% block processing_pipeline %}
+            <form method="GET" action="/view_project">
+                <div class="row d-flex justify-content-center">
+                    <select name=projects>
+                        {% for project in projects %}
+                            <option value="{{ project }}" >{{ project }}</option>"
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="row d-flex justify-content-center">
+                    <input type="submit" class="btn btn-primary btn-lower" value="View Project">
+                </div>
+            </form>
         </div>
-        <div class="row d-flex justify-content-center">
-            <input type="submit" class="btn btn-primary btn-lower" value="View Project">
-        </div>
-    </form>
+        {% endblock %}
+    </div>
 
-    <br />
-    <a href="{{ url_for('blueprints/main.process_discovery') }}" class="btn btn-primary btn-lower">Process Discovery</a>
+    <div class="card">
+        {% block process_discovery %}
+            <a href="{{ url_for('blueprints/main.process_discovery') }}" class="btn btn-primary btn-lower">Process Discovery</a>
+        {% endblock %}
+    </div>
+
 
     {% block view_project %}
     {% endblock %}

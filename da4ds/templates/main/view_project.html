@@ -4,7 +4,7 @@
     <h2>View Project "{{ project_name }}"</h2>
 {% endblock %}
 
-{% block content %}
+{% block processing_pipeline %}
     <div class="row d-flex justify-content-center">
         <a href="javascript:runProject('{{ request.host_url }}', '{{ url_for('blueprints/api.run_project') }}', '{{ project_name }}')" class="btn btn-primary">Run Project</a>
     </div>
