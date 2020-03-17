@@ -84,3 +84,10 @@ class DataSource(db.Model):
     StoredOnServer = db.Column(db.Boolean)
     LastModified   = db.Column(db.DateTime)
     Parameters     = db.Column(db.String(1000))
+
+class SessionInformation(db.Model):
+    __tablename__       = 'session_information'
+    Id                  = db.Column(db.String(64), primary_key=True)
+    WorkingDataLocation = db.Column(db.String(255))
+    OutputDataLocation  = db.Column(db.String(255))
+    PMFilters           = db.Column(db.String(1000))

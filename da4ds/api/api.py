@@ -17,18 +17,27 @@ from werkzeug.utils import secure_filename
 from da4ds import db
 from da4ds.models import ( InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource )
 from da4ds.processing_libraries.data_source_handler import data_source_handler
+from . import user_session
 
 api_bp = Blueprint('blueprints/api', __name__, template_folder='templates', static_folder='static')
 
-@api_bp.route('/get_all_data_sources')
+"""API methods handle incoming requests and also take care of sesison and authentication related tasks at the highest level."""
+
+@socketio.on('create_new_session', namespace='/api/create_new_session')
+def create_new_session():
+    session_id = user_session.create_new_session()
+    emit('session', session_id) # TODO maybe use simple http request instead of socket or find a way to wait for the response
+    return session_id
+
+@api_bp.route('/api/get_all_data_sources')
 def get_all_data_sources():
     #TODO veryfy user permissons to access the data sources
     data_sources = db.session.query(DataSource).all()
     return data_sources
 
-@api_bp.route('/new_data_source', methods=['POST'])
+@api_bp.route('/api/new_data_source', methods=['POST'])
 def safe_new_data_source():
-    # TODO add form validation & escaping
+    # TODO #FIXME IMPORTANT add form validation & escaping
     # generate a new data source entry in the app database
     data_source = DataSource()
     data_source.Name = request.form['dataSourceName']
@@ -42,12 +51,13 @@ def safe_new_data_source():
     return render_template('main/index.html')
 
 @api_bp.route('/read_data_from_source', methods=['POST'])
-def read_data_from_source():
+def read_data_from_source(session_id):
+    current_session = user_session.get_session_information(session_id)
     data_sources = get_all_data_sources()
     selected_source = data_sources[int(request.values['selectedDataSourceId']) - 1] # -1 for zero based indexing of data_sources
 
     dataframe = data_source_handler.read_from_source(selected_source)
-    dataframe.to_csv("C:/Temp/da4ds_temp1.csv") #TODO find a better way to store temporary data i.e. localstorage + uuids TODO make the temporary storage location configurable
+    dataframe.to_csv(current_session.WorkingDataLocation) #TODO find a better way to store temporary data i.e. localstorage + uuids TODO make the temporary storage location configurable
 
     return dataframe.to_json()
 

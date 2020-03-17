@@ -3,12 +3,12 @@
 {% block dataSource %}
     <div class="card-body">
         <h5 class="card-title">Data Source</h5>
-        <h6 class="card-subtitle mb-2 text-muted">Save a new one</h6>
+        <h6 class="card-subtitle mb-2 text-muted">Select one of the stored data sources.</h6>
         <form action="api/read_data_from_source" method="POST">
             <div class="input-group">
                 <select name="selectedDataSourceId" required class="custom-select" id="dataSourceSelector" aria-label="Select a data source">
-                    {% for _ in data_sources %}
-                        <option id="data_source_{{ _.Id }}" value="{{ _.Id }}" >{{_.Name}}</option>
+                    {% for dataSource in data_sources %}
+                        <option id="data_source_{{ dataSource.Id }}" value="{{ dataSource.Id }}" >{{dataSource.Name}}</option>
                     {% endfor %}
                 </select>
                 <div class="input-group-append">

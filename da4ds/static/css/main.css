@@ -56,6 +56,12 @@
 /* index page */
 
 /* general */
-.btn-lower{
+.btn-lower {
     margin-top: 1em;
+}
+
+#data_target {
+    max-width: 900px;
+    max-height: 500px;
+    overflow: scroll;
 }

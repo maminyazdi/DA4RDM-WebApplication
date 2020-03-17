@@ -26,3 +26,8 @@ class Config(object):
     ### output directories ###
     ##########################
     CSV_STORAGE_DIRECTORY = os.environ.get('OUTPUT_DIR') or 'C:/Temp'
+
+    ###################################
+    ### temporary storage directory ###
+    ###################################
+    TEMP_STORAGE_DIRECTORY = os.environ.get('TEMP_STORAGE_DIR') or './da4ds/temporary_results/'
