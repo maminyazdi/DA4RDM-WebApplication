@@ -1,5 +1,6 @@
 #project specific
 */temporary_results/*
+*/static/process_mining_output/*
 
 #IDE
 .vscode

@@ -1,9 +1,11 @@
 function runProcessDiscovery(hostUrl, projectUrl){
     var socket = io.connect('http://' + document.domain + ':' + location.port + '/api/run_process_discovery');
+    let session_id = getCurrentSession();
     let hook = document.getElementById('data_target');
     let spinner = document.getElementById('pipeline-running-spinner');
+
     spinner.style.display="block"
-    socket.emit('requestProcessDiscovery');
+    socket.emit('requestProcessDiscovery', session_id);
     socket.on('progressLog', function(data) {
         hook.textContent = data.message;
     });

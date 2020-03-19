@@ -18,6 +18,10 @@ from . import main
 app.register_blueprint(main.bp)
 app.add_url_rule('/', endpoint='index')
 
+from . import preprocessing
+app.register_blueprint(preprocessing.bp)
+app.add_url_rule('/', enpoint='preprocessing')
+
 from .api import api
 app.register_blueprint(api.api_bp, url_prefix='/api')
 

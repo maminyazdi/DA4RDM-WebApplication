@@ -25,9 +25,9 @@
 {% endblock %}
 
 {% block scripts %}
+    {{ super() }}
+
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> <!-- TODO  this has really weird terms of service and should probably be replaced at some point. For instance, you are not allowed to downjoad this and use it offline. -->
 
     <script src="{{url_for('static', filename='js/runProcessDiscovery.js')}}"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
 {% endblock %}

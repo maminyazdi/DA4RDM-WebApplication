@@ -4,19 +4,31 @@
     <div class="card-body">
         <h5 class="card-title">Data Source</h5>
         <h6 class="card-subtitle mb-2 text-muted">Select one of the stored data sources.</h6>
-        <form action="api/read_data_from_source" method="POST">
+        <form id="dataSourceSelectForm" action="api/read_data_from_source" method="POST">
             <div class="input-group">
                 <select name="selectedDataSourceId" required class="custom-select" id="dataSourceSelector" aria-label="Select a data source">
                     {% for dataSource in data_sources %}
                         <option id="data_source_{{ dataSource.Id }}" value="{{ dataSource.Id }}" >{{dataSource.Name}}</option>
                     {% endfor %}
                 </select>
-                <div class="input-group-append">
+                <!-- <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button">Button</button>
-                </div>
+                </div> -->
             </div>
             <button type="submit" class="btn btn-primary">Select</button>
         </form>
+        <script src="{{url_for('static', filename='js/session.js')}}"></script>
+
         <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lower">Back</a>
     </div>
+{% endblock %}
+
+{% block scripts %}
+
+{{ super() }}
+
+<!-- This script adds the session id taken from local storage to the request -->
+<script>
+    addSessionIdToFormAction("dataSourceSelectForm")
+</script>
 {% endblock %}

@@ -6,6 +6,38 @@
 
 
 {% block content %}
+    <div class="row">
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">Data Initialization</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Process Mining</a>
+            </li>
+        </ul>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Data Initialization</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Process Mining</a>
+                </li>
+            </ul>
+            <!-- <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form> -->
+        </div>
+    </nav>
+
+    {% block content_body %}
+
+    {% endblock %}
+
     <div class="row d-flex justify-content-center">
         <a href="javascript:createSession('{{ request.host_url }}', '{{ url_for('blueprints/main.process_discovery') }}')" class="btn btn-secondary">New Session</a>
     </div>
@@ -55,4 +87,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
 
 <script src="{{url_for('static', filename='js/session.js')}}"></script>
+{% endblock %}
+
+{% block scripts_lvl_2 %}
 {% endblock %}

@@ -2,7 +2,9 @@ function runProject(hostUrl, projectUrl, projectName) {
     var socket = io.connect('http://' + document.domain + ':' + location.port + '/api/run_project');
     let spinner = document.getElementById('pipeline-running-spinner');
     spinner.style.display="block"
-    socket.emit('requestProjectRun', {'projectName': projectName});
+
+    let session_id = getCurrentSession();
+    socket.emit('requestProjectRun', session_id, {'projectName': projectName});
     socket.on('progressLog', function(data) {
         let hook = document.getElementById('data_target');
         hook.textContent = data.message;

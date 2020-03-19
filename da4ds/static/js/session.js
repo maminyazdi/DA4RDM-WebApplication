@@ -7,3 +7,20 @@ function createSession() {
         window.localStorage.setItem('sessionId', data)
     });
 }
+
+function addSessionIdToFormAction(formId) {
+    let form = document.getElementById(formId);
+    let hasQueryParameters = form.action.split('?').length > 1
+    form.action = form.action +  (hasQueryParameters ? "&session_id=" : "?session_id=") + getCurrentSession()
+}
+
+function addSessioIdToReuqestUrl(elementId) {
+    let element = document.getElementById(elementId);
+    let hasQueryParameters = element.action.split('?').length > 1
+    element.href = element.href + (hasQueryParameters ? "&session_id=" : "?session_id=") + getCurrentSession()
+}
+
+function getCurrentSession() {
+    let session = window.localStorage.getItem("sessionId")
+    return session
+}

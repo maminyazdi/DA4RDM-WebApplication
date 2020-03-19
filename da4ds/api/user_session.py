@@ -11,7 +11,8 @@ def create_new_session():
     new_session = SessionInformation()
     new_session.Id = session_id
     new_session.WorkingDataLocation = f'{app.config["TEMP_STORAGE_DIRECTORY"]}{new_session.Id}.csv'
-    new_session.OutputDataLocation = new_session.WorkingDataLocation
+    new_session.OutputDataLocation = f'./da4ds/static/process_mining_output/{new_session.Id}'
+    new_session.PMFilter = ""
     db.session.add(new_session)
     db.session.commit()
     return session_id
@@ -23,11 +24,9 @@ def get_session_information(session_id):
 
     session_information = {}
     raw_session_information = SessionInformation.query.filter_by(Id=session_id).first()
-    session_information.data_location = raw_session_information.WorkingDataLocation
-    session_information.output_location = raw_session_information.OutputDataLocation
-    session_information.pm_filters = parse_pm_filters(raw_session_information.PMFilters)
-
-    parse_pm_filters()
+    session_information['data_location'] = raw_session_information.WorkingDataLocation
+    session_information['output_location'] = raw_session_information.OutputDataLocation
+    session_information['pm_filters'] = parse_pm_filters(raw_session_information.PMFilters)
 
     return session_information
 
@@ -58,6 +57,9 @@ def clear_session(session_id):
 
 def parse_pm_filters(raw_filters):
     """Extract dictionary of the process mining filter as coming from the session data base object."""
+
+    if raw_filters == None:
+        return ""
 
     filters = {}
     parsed_filters = dict((key.strip(), value.strip()) for key, value in (param.split('=') for param in raw_filters.split(';')))

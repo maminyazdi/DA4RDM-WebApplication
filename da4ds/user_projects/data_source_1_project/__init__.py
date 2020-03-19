@@ -8,13 +8,14 @@ if __name__ == "__main__":
 else:
     pass
 
-def init(database):
+def init(session_information, database):
     """Set required values coming from the server."""
     from .config import Config
     config = Config()
     config._local_database = database
+    config.current_session = session_information
 
-    config.data = pd.read_csv("C:/Temp/da4ds_temp1.csv")
+    #config.data = pd.read_csv("C:/Temp/da4ds_temp1.csv")
     return config
 
 
