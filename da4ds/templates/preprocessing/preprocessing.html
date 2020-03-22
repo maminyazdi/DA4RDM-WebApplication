@@ -1,0 +1,49 @@
+{% extends 'main/index.html' %}
+
+{% block content_body %}
+    <div class="row">
+        <div class="card">
+            <div class="card-body">
+                {% block dataSource %}
+                    <h5 class="card-title">Data Source</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Select a pre-defined data source or save a new one.</h6>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a href="{{ url_for('blueprints/preprocessing.data_source_select') }}" class="btn btn-secondary">Select data source</a>
+                    <a href="{{ url_for('blueprints/preprocessing.new_data_source') }}" class="btn btn-secondary">Save new Data Source</a>
+                    <a href="javascript:downloadWorkingData()" class="btn btn-secondary">Download Data</a>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="card">
+            <div class="card-body">
+                {% block preprocessing_pipeline %}
+                    <h5 class="card-title">Data Preprocessing Pipeline</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Select a pre-defined data preprocessing pipeline.</h6>
+                    <form method="GET" action="/preprocessing/view_project">
+                        <div class="row d-flex justify-content-center">
+                            <select name=project_name>
+                                {% for pipeline in pipelines %}
+                                    <option value="{{ pipeline }}" >{{ pipeline }}</option>"
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="row d-flex justify-content-center">
+                            <input type="submit" class="btn btn-primary btn-lower" value="View Project">
+                        </div>
+                    </form>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
+
+    <script src="{{url_for('static', filename='js/session.js')}}"></script>
+
+    <script src="{{url_for('static', filename='js/preprocessing.js')}}"></script>
+{% endblock %}

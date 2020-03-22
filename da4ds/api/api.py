@@ -9,7 +9,7 @@ from da4ds import socketio
 
 
 from flask import (
-    Blueprint, flash, redirect, render_template, request, url_for, jsonify, current_app as app
+    Blueprint, flash, redirect, render_template, request, url_for, jsonify, current_app as app, send_from_directory, send_file
 )
 from werkzeug.exceptions import abort
 from werkzeug.utils import secure_filename
@@ -49,7 +49,7 @@ def new_data_source():
     db.session.add(data_source)
     db.session.commit()
 
-    return render_template('main/index.html')
+    return render_template('preprocessing/preprocessing.html')
 
 @api_bp.route('/read_data_from_source', methods=['POST'])
 def read_data_from_source():
@@ -61,7 +61,16 @@ def read_data_from_source():
     dataframe = data_source_handler.read_from_source(selected_source)
     dataframe.to_csv(current_session['data_location']) #TODO find a better way to store temporary data i.e. localstorage + uuids TODO make the temporary storage location configurable
 
-    return render_template('main/index.html')
+    return render_template('preprocessing/preprocessing.html')
+
+@api_bp.route('/get_all_pipeline_names')
+def get_all_pipeline_names():
+    projects_path = app.config['USER_PROJECT_DIRECTORY']
+    if projects_path[-1] != '/':
+        projects_path += '/'
+    dirs = os.listdir(projects_path)
+    projects_directories = [str(x) for x in dirs if (os.path.isdir(projects_path + x) and x != '__pycache__')]
+    return projects_directories
 
 @api_bp.route('/run_project', methods=['GET'])
 def run_project():
@@ -119,43 +128,15 @@ def run_process_discovery(session_id):
 
     return
 
-# @socketio.on('requestProcessDiscovery', namespace='/api/run_process_discovery')
-# def run_process_discovery():
-#     emit('json', {"message": "Hello World!"})
+@api_bp.route('/download_temporary_data', methods=['GET'])
+def download_temporary_data():
+    session_id = request.args["session_id"]
+    current_session = user_session.get_session_information(session_id)
+    working_data_path = current_session["data_location"].replace('./da4ds/','').replace('/','\\')
+    #path_list = working_data_path.split('/')
+    #directory_name = '\\\\'.join(path_list[:-1]) + '\\\\'
+    #filename = path_list[-1]
+    return send_file(working_data_path, as_attachment=True)
+    #return send_from_directory(directory_name, filename, as_attachment=True)
+    #send_file(working_data_path) #send_from_directory
 
-#     #####
-#     import pandas as pd
-#     import os
-#     import re
-#     from pm4py.objects.log.adapters.pandas import csv_import_adapter
-#     from pm4py.objects.conversion.log import factory as conversion_factory
-#     dataframe = csv_import_adapter.import_dataframe_from_path(os.path.join("C:/Users/qb268076/seminar/datasources/prepared4pm4py", "xesReadyFormatLog.csv"), sep=",")
-
-#     dataframe = dataframe.replace(to_replace="'time\:timestamp'\:Timestamp\(", value="", regex=True)
-#     dataframe = dataframe.replace(to_replace="\)", value="", regex=True)
-#     dataframe = dataframe.replace(to_replace="-[0-9]+-", value="/", regex=True)
-#     dataframe = dataframe.replace(to_replace="/[0-9]+ ", value=" ", regex=True)
-#     dataframe["time:timestamp"] = pd.to_datetime(dataframe["time:timestamp"], utc=True)
-
-#     from pm4py.algo.filtering.pandas.timestamp import timestamp_filter
-#     df_timest_events = timestamp_filter.apply_events(dataframe, "2020-01-01 00:00:00", "2020-02-02 23:59:59")
-#     log = conversion_factory.apply(dataframe)
-
-#     from pm4py.algo.discovery.dfg import factory as dfg_factory
-#     dfg = dfg_factory.apply(log)
-
-#     from pm4py.visualization.dfg import factory as dfg_vis_factory
-#     gviz = dfg_vis_factory.apply(dfg, log=log, variant="frequency")
-
-#     api_file_path = os.path.abspath(os.path.dirname(__file__))
-#     #pattern = re.compile(r"api[/\\\\]+$")
-#     #path = pattern.sub("static\\images\\est.gv.png", api_file_path)
-#     path = api_file_path.replace("api", "static\\images\\test.gv.png") # TODO replace static file path
-#     dfg_vis_factory.save(gviz, path)
-#     emit('gviz', "../static/images/test.gv.png") # TODO replace static file path
-#     #dfg_vis_factory.view(gviz)
-
-#     #emit('gviz', dfg_vis_factory.view(gviz))
-#     #####
-
-#     return gviz

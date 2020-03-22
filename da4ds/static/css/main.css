@@ -65,3 +65,8 @@
     max-height: 500px;
     overflow: scroll;
 }
+
+.card {
+    width: 100%;
+    margin-bottom: 8px;
+}

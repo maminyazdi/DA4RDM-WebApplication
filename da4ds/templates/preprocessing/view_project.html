@@ -1,15 +1,11 @@
-{% extends 'main/index.html' %}
+{% extends 'preprocessing/preprocessing.html' %}
 
-{% block header %}
-    <h2>View Project "{{ project_name }}"</h2>
-{% endblock %}
-
-{% block processing_pipeline %}
+{% block preprocessing_pipeline %}
     <div class="row d-flex justify-content-center">
         <a href="javascript:runProject('{{ request.host_url }}', '{{ url_for('blueprints/api.run_project') }}', '{{ project_name }}')" class="btn btn-primary">Run Project</a>
     </div>
     <div class="row d-flex justify-content-center">
-        <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lower">Back</a>
+        <a href="{{ url_for('blueprints/preprocessing.preprocessing') }}" class="btn btn-secondary btn-lower">Back</a>
     </div>
     <div id="pipeline-running-spinner" class="row spinner" style="text-align: center;">
         <div class="spinner-border" role="status">

@@ -1,4 +1,4 @@
-function runProject(hostUrl, projectUrl, projectName) {
+function runProject(projectName) {
     var socket = io.connect('http://' + document.domain + ':' + location.port + '/api/run_project');
     let spinner = document.getElementById('pipeline-running-spinner');
     spinner.style.display="block"

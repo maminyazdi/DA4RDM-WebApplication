@@ -1,10 +1,10 @@
-{% extends 'main/index.html' %}
+{% extends 'preprocessing/preprocessing.html' %}
 
 {% block dataSource %}
     <div class="card-body">
         <h5 class="card-title">Data Source</h5>
         <h6 class="card-subtitle mb-2 text-muted">Save a new one</h6>
-        <form action="api/new_data_source" method="POST">
+        <form action="{{ url_for('blueprints/api.new_data_source') }}" method="POST">
             <div class="form-group">
                 <label for="dataSourceName">Datasource name</label>
                 <input name="dataSourceName" required type="text" class="form-control" id="dataSourceName" aria-describedby="dataSourceTitleHelp">
@@ -17,6 +17,6 @@
             </div>
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
-        <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lower">Back</a>
+        <a href="{{ url_for('blueprints/preprocessing.preprocessing') }}" class="btn btn-secondary btn-lower">Back</a>
     </div>
 {% endblock %}

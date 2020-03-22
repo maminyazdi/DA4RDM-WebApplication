@@ -19,14 +19,13 @@ app.register_blueprint(main.bp)
 app.add_url_rule('/', endpoint='index')
 
 from . import preprocessing
-app.register_blueprint(preprocessing.bp)
-app.add_url_rule('/', enpoint='preprocessing')
+app.register_blueprint(preprocessing.preprocessing_bp, url_prefix="/preprocessing")
+
+from . import processMining
+app.register_blueprint(processMining.process_mining_bp, url_prefix="/process_mining")
 
 from .api import api
 app.register_blueprint(api.api_bp, url_prefix='/api')
-
-
-
 
 socketio.run(app) # if using socketio I cannot make use of the app factory, so app will stay in the global name space. I need to make sure that the unit testing will be working correctly anyway
 

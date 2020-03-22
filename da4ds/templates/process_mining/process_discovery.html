@@ -1,15 +1,11 @@
-{% extends 'main/index.html' %}
+{% extends 'process_mining/process_mining.html' %}
 
-{% block header %}
-    <h2>Process Discovery</h2>
-{% endblock %}
-
-{% block content %}
+{% block content_body %}
     <div class="row d-flex justify-content-center">
-        <a href="javascript:runProcessDiscovery('{{ request.host_url }}', '{{ url_for('blueprints/main.process_discovery') }}')" class="btn btn-primary">Start Process Discovery</a>
+        <a href="javascript:runProcessDiscovery('{{ request.host_url }}', '{{ url_for('blueprints/process_mining.process_discovery') }}')" class="btn btn-primary">Start Process Discovery</a>
     </div>
     <div class="row d-flex justify-content-center">
-        <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lower">Back</a>
+        <a href="{{ url_for('blueprints/process_mining.process_mining') }}" class="btn btn-secondary btn-lower">Back</a>
     </div>
     <div id="pipeline-running-spinner" class="row spinner" style="text-align: center;">
         <div class="spinner-border" role="status">
@@ -26,8 +22,6 @@
 
 {% block scripts %}
     {{ super() }}
-
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> <!-- TODO  this has really weird terms of service and should probably be replaced at some point. For instance, you are not allowed to downjoad this and use it offline. -->
 
     <script src="{{url_for('static', filename='js/runProcessDiscovery.js')}}"></script>
 {% endblock %}

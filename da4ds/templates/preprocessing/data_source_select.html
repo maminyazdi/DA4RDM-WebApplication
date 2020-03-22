@@ -1,10 +1,10 @@
-{% extends 'main/index.html' %}
+{% extends 'preprocessing/preprocessing.html' %}
 
 {% block dataSource %}
     <div class="card-body">
         <h5 class="card-title">Data Source</h5>
         <h6 class="card-subtitle mb-2 text-muted">Select one of the stored data sources.</h6>
-        <form id="dataSourceSelectForm" action="api/read_data_from_source" method="POST">
+        <form id="dataSourceSelectForm" action="{{ url_for('blueprints/api.read_data_from_source') }}" method="POST">
             <div class="input-group">
                 <select name="selectedDataSourceId" required class="custom-select" id="dataSourceSelector" aria-label="Select a data source">
                     {% for dataSource in data_sources %}
@@ -19,16 +19,15 @@
         </form>
         <script src="{{url_for('static', filename='js/session.js')}}"></script>
 
-        <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lower">Back</a>
+        <a href="{{ url_for('blueprints/preprocessing.preprocessing') }}" class="btn btn-secondary btn-lower">Back</a>
     </div>
 {% endblock %}
 
 {% block scripts %}
+    {{ super() }}
 
-{{ super() }}
-
-<!-- This script adds the session id taken from local storage to the request -->
-<script>
-    addSessionIdToFormAction("dataSourceSelectForm")
-</script>
+    <!-- This script adds the session id taken from local storage to the request -->
+    <script>
+        addSessionIdToFormAction("dataSourceSelectForm")
+    </script>
 {% endblock %}
