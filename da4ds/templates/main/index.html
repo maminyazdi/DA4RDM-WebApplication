@@ -8,28 +8,36 @@
 {% block content %}
     <div class="row">
         <div class="col-12">
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <nav class="navbar navbar-expand-sm navbar-light bg-light ">
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="{{ url_for('blueprints/preprocessing.preprocessing')}}">Data Initialization</span></a>
+                    <ul class="nav nav-tabs nav-fill" >
+                        <li class="nav-item">
+                            <a id="preprocessing" class="nav-link main-nav-item" href="{{ url_for('blueprints/preprocessing.preprocessing') }}" active >Data Initialization</span></a>
                         </li>
-                        <li class="nav-item active">
-                            <a class="nav-link" href="{{ url_for('blueprints/process_mining.process_discovery')}}">Process Mining</a>
+                        <li class="nav-item">
+                            <a id="process_mining" class="nav-link main-nav-item" href="{{ url_for('blueprints/process_mining.process_discovery') }}">Process Mining</a>
                         </li>
                     </ul>
-                    <!-- <form class="form-inline my-2 my-lg-0">
-                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                    </form> -->
                 </div>
             </nav>
         </div>
     </div>
 
-    <div class="row d-flex justify-content-center">
-        <a href="javascript:createSession()" class="btn btn-secondary">New Session</a>
+    <div class="row">
+        <div class="col-10">
+            <span>Current Session:</span>
+            <span>Selected Data Source:</span>
+            <span>None</span>
+            <span>Selected Proprocessing Pipeline:</span>
+            <span>None</span>
+        </div>
+        <div class="col-2">
+            <div class="row d-flex justify-content-center">
+                <a href="javascript:createSession()" class="btn btn-secondary">New Session</a>
+            </div>
+        </div>
     </div>
+
 
     <div class="row">
         <div class="col-12">

@@ -2,7 +2,7 @@
 
 {% block preprocessing_pipeline %}
     <div class="row d-flex justify-content-center">
-        <a href="javascript:runProject('{{ request.host_url }}', '{{ url_for('blueprints/api.run_project') }}', '{{ project_name }}')" class="btn btn-primary">Run Project</a>
+        <a href="javascript:runProject('{{ project_name }}')" class="btn btn-primary">Run Project</a>
     </div>
     <div class="row d-flex justify-content-center">
         <a href="{{ url_for('blueprints/preprocessing.preprocessing') }}" class="btn btn-secondary btn-lower">Back</a>
@@ -15,6 +15,8 @@
     <div class="row d-flex justify-content-center" >
         <div id="data_target" style="width: 900px; height: 500px;"></div>
     </div>
+
+    <h1>{{project_name}}</h1>
 {% endblock %}
 
 {% block scripts %}

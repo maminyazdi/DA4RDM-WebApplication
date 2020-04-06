@@ -1,22 +1,97 @@
 {% extends 'process_mining/process_mining.html' %}
 
 {% block content_body %}
-    <div class="row d-flex justify-content-center">
-        <a href="javascript:runProcessDiscovery('{{ request.host_url }}', '{{ url_for('blueprints/process_mining.process_discovery') }}')" class="btn btn-primary">Start Process Discovery</a>
-    </div>
-    <div class="row d-flex justify-content-center">
-        <a href="{{ url_for('blueprints/process_mining.process_mining') }}" class="btn btn-secondary btn-lower">Back</a>
-    </div>
-    <div id="pipeline-running-spinner" class="row spinner" style="text-align: center;">
-        <div class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
+
+
+    <div class="row">
+        <div class="col-2">
+            <h1>Filters</h1>
+            <form>
+                <div class="form-group">
+                    <label>Start Time</label>
+                    <input type="date" name="bday" max="3000-12-31" min="1000-01-01" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>End Time</label>
+                    <input type="date" name="bday" min="1000-01-01" max="3000-12-31" class="form-control">
+                </div>
+                <div class="form-row align-items-center">
+                    <div class="col-auto my-1 filter-select">
+                        <label class="mr-sm-2" for="start-activity-select">Start Activity</label>
+                        <select class="custom-select mr-sm-2" id="start-activity-select">
+                            <option selected>Choose...</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row align-items-center">
+                    <div class="col-auto my-1 filter-select">
+                        <label class="mr-sm-2" for="end-activity-select">End Activity</label>
+                        <select class="custom-select mr-sm-2" id="end-activity-select">
+                            <option selected>Choose...</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-10">
+            <div class="row">
+                <div class="col-5">
+                    <h1>Other Options</h1>
+                    <div class="row d-flex justify-content-center">
+                        <a href="javascript:runProcessDiscovery('{{ request.host_url }}', '{{ url_for('blueprints/process_mining.process_discovery') }}')" class="btn btn-primary">Start Process Discovery</a>
+                    </div>
+                    <div class="row d-flex justify-content-center">
+                        <a href="javascript:downloadWorkingData()" class="btn btn-secondary">Download Data</a>
+                    </div>
+                    <form>
+                        <div class="form-row align-items-center">
+                            <div class="col-auto my-1 filter-select">
+                                <label class="mr-sm-2" for="discovery-algorithm">Discovery Algorithm</label>
+                                <select class="custom-select mr-sm-2" id="discovery-algorithm">
+                                    <option selected>Choose...</option>
+                                    <option value="1">Directly Follows Graph (DFG)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row align-items-center">
+                            <div class="col-auto my-1 filter-select">
+                                <label class="mr-sm-2" for="model-represenations">Model Represenations</label>
+                                <select class="custom-select mr-sm-2" id="model-represenations">
+                                    <option selected>Choose...</option>
+                                    <option value="1">Petri Net</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-7">
+                    <h1>Stats</h1>
+                    <p>Compliance</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h1>Results</h1>
+                    <div id="pipeline-running-spinner" class="row spinner" style="text-align: center;">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="row d-flex justify-content-center" >
+                        <div id="data_target" style="width: 100%; height: 800px;"></div>
+                    </div>
+
+                    <img src="{{url_for('static', filename='images/tmpz8cm2gak.gv.png')}}" style="display:none;" />
+                </div>
+            </div>
         </div>
     </div>
-    <div class="row d-flex justify-content-center" >
-        <div id="data_target" style="width: 900px; height: 500px;"></div>
-    </div>
-
-    <img src="{{url_for('static', filename='images/tmpz8cm2gak.gv.png')}}" style="display:none;" />
 
 {% endblock %}
 
