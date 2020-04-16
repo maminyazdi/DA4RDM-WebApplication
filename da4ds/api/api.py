@@ -59,7 +59,7 @@ def read_data_from_source():
     selected_source = data_sources[int(request.values['selectedDataSourceId']) - 1] # -1 for zero based indexing of data_sources compared to 1 based indexing in db
 
     dataframe = data_source_handler.read_from_source(selected_source)
-    dataframe.to_csv(current_session['data_location']) #TODO find a better way to store temporary data i.e. localstorage + uuids TODO make the temporary storage location configurable
+    dataframe.to_csv(current_session['data_location'], sep=";") #TODO find a better way to store temporary data i.e. localstorage + uuids TODO make the temporary storage location configurable
 
     return render_template('preprocessing/preprocessing.html')
 

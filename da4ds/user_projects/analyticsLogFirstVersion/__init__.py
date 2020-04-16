@@ -1,4 +1,4 @@
-from . import xes_vconversion_first_try
+from . import analyticsLogFirstVersion
 import pandas as pd
 
 _local_database = None
@@ -27,4 +27,4 @@ def run(config):
         return
     else:
         print(f"Starting pipepline")
-        return xes_vconversion_first_try.run(config)
+        return analyticsLogFirstVersion.run(config)

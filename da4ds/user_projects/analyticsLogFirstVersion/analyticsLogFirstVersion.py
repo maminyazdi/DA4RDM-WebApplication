@@ -11,28 +11,30 @@ def run(config):
 
     print(dataframe.head())
 
-    dataframe = prepare_timestamp_column(dataframe, 1)
-    dataframe = prepare_case_colum(dataframe, 2)
-    dataframe = prepare_resource_column(dataframe, 3)
-    dataframe = prepare_activitiy_column(dataframe, 4)
+    dataframe = parse_message(dataframe)
 
-    print(dataframe.head(20))
+    # dataframe = prepare_timestamp_column(dataframe, 1)
+    # dataframe = prepare_case_colum(dataframe, 2)
+    # dataframe = prepare_resource_column(dataframe, 3)
+    # dataframe = prepare_activitiy_column(dataframe, 4)
 
-    #### this are the known modifications that were down after the data was 'xes ready'
-    #dataframe = config.data
-    dataframe = dataframe.replace(to_replace="'time\:timestamp'\:Timestamp\(", value="", regex=True)
-    dataframe = dataframe.replace(to_replace="\)", value="", regex=True)
-    dataframe = dataframe.replace(to_replace="-[0-9]+-", value="/", regex=True)
-    dataframe = dataframe.replace(to_replace="/[0-9]+ ", value=" ", regex=True)
-    dataframe["time:timestamp"] = pd.to_datetime(dataframe["time:timestamp"], utc=True)
+    # print(dataframe.head(20))
 
-    ###TESTCODE
-    print(dataframe.head(20))
+    # #### this are the known modifications that were down after the data was 'xes ready'
+    # #dataframe = config.data
+    # dataframe = dataframe.replace(to_replace="'time\:timestamp'\:Timestamp\(", value="", regex=True)
+    # dataframe = dataframe.replace(to_replace="\)", value="", regex=True)
+    # dataframe = dataframe.replace(to_replace="-[0-9]+-", value="/", regex=True)
+    # dataframe = dataframe.replace(to_replace="/[0-9]+ ", value=" ", regex=True)
+    # dataframe["time:timestamp"] = pd.to_datetime(dataframe["time:timestamp"], utc=True)
 
-    #dataframe.to_csv("C:/Temp/da4ds_temp1.csv")
-    dataframe.to_csv(config.current_session["data_location"])
+    # ###TESTCODE
+    # print(dataframe.head(20))
 
-    return render_template('main/index.html')
+    # #dataframe.to_csv("C:/Temp/da4ds_temp1.csv")
+    # dataframe.to_csv(config.current_session["data_location"])
+
+    # return render_template('main/index.html')
 
 
 def prepare_timestamp_column(dataframe, column_index):
@@ -101,3 +103,9 @@ def prepare_activitiy_column(dataframe, column_index):
         dataframe.columns = column_head
 
         return dataframe
+
+def parse_message(dataframe):
+
+    message_contents = dataframe.message
+
+    return dataframe
