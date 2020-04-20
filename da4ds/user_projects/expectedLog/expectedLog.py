@@ -9,7 +9,11 @@ from flask import (
 def run(config):
     dataframe = pd.read_csv(config.current_session["data_location"], sep=";")
 
-    print(dataframe.head())
+    print(dataframe.tail())
+
+    dataframe = dataframe.dropna()
+
+    print(dataframe.tail())
 
     dataframe = parse_message(dataframe)
 
@@ -108,7 +112,57 @@ def prepare_activitiy_column(dataframe, column_index):
 
 def parse_message(dataframe):
 
-    message_contents = dataframe.Message.str.split(pat=";")
+    message_contents = dataframe.Message.str.split(pat=",")
+
+    print(message_contents)
+    #message_contents_frame = np.concatenate(message_contents)
+
+    message_contents_frame = np.array(message_contents)
+    #message_contents_frame = np.array([np.array(xi) for xi in message_contents])
+    print(np.shape(message_contents_frame))
+    print(np.shape(message_contents_frame[0]))
+
+    for ele in message_contents_frame:
+
+        print(np.shape(ele))
+
+        # print(ele)
+        # print(ele.split(":")[0])
+
+        # row = message_contents_frame[:,0]
+        # col = message_contents_frame[0, :]
+
+        # print(row, "******", col)
+
+
+        # k, v = ele.split(":")
+        # dataframe[k] = message_contents_frame[0,:]
+
+    print(dataframe)
+
+    # pdf = pd.DataFrame(data=message_contents_frame[1:,1:],    # values
+    # index=message_contents_frame[1:,0],    # 1st column as index
+    # columns=message_contents_frame[0,1:])  # 1st row as the column names
+
+    # print(pdf.head(20))
+
+    print(type(message_contents[0]))
+    print(message_contents[0][1])
+    print(type(message_contents[0][1]))
+    print(message_contents[0][0]["Type"])
+    print(type(message_contents[0][0]["Type"]))
+
+
+
+    print(message_contents[0]["Type"])
+
+    key, value = zip(*(element.split(":") for element in message_contents))
+
+    print(key, value)
+
+    dicti = dict(key, value)
+
+    print(dicti)
 
     message_contents_dict = {key:value for key, value in message_contents.split(":")}
 
