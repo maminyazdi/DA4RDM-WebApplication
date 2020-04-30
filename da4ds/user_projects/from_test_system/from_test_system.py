@@ -7,19 +7,36 @@ from flask import (
 )
 
 def run(config):
-    dataframe = pd.read_csv(config.current_session["data_location"], sep=";")
+    import sqlalchemy
 
-    print(dataframe.tail())
+    engine = sqlalchemy.create_engine(config.SOURCE_CONNECTION_STRING)
 
-    dataframe = dataframe.dropna()
+    with engine.connect() as connection:
+        dataframe = pd.read_sql(config.QUERY_SRTING, con=engine, index_col="Id")
 
-    print(dataframe.tail())
+        print(dataframe.head(20))
+
+#    dataframe = pd.read_csv(config.current_session["data_location"], sep=";")
+
+#    dataframe = dataframe.dropna()
+
 
     dataframe = parse_message(dataframe)
+
+    dataframe.dropna()
+
+    print(dataframe.head(20))
 
     # TODO treat inconsistencies and missing values
 
     # TODO prepare for pm4py
+
+    dataframe = prepare_timestamp_column(dataframe, 2)
+    dataframe = prepare_case_colum(dataframe, 3)
+    dataframe = prepare_activity_column(dataframe, 1)
+    dataframe = prepare_resource_column(dataframe, 6)
+
+    dataframe.to_csv(config.current_session["data_location"])
 
     return render_template('main/index.html')
 
@@ -68,9 +85,6 @@ def prepare_timestamp_column(dataframe, column_index):
     dataframe[column_name] = np.where((not str(dataframe[column_name]).startswith("'time:timestamp':Timestamp('")),"'time:timestamp':Timestamp('" + dataframe[column_name] + "')",dataframe[column_name])
     #dataframe[column_name] = dataframe.applymap(lambda element: element if str(element).startswith("'time:timestamp':Timestamp('") else ("'time:timestamp':Timestamp('" + dataframe[column_name] + "')")) #TODO fing more efficient way
 
-    print("-------")
-    print(dataframe.head(20))
-
     print(dataframe.shape)
 
     return dataframe
@@ -86,6 +100,20 @@ def prepare_case_colum(dataframe, column_index):
     column_name = column_head[column_index]
 
     dataframe[column_name] = np.where((not str(dataframe[column_name]).startswith("'case:concept:name'")),"'case:concept:name': '" + dataframe[column_name] + "'",dataframe[column_name])
+
+    return dataframe
+
+def prepare_activity_column(dataframe, column_index):
+    #prepare_head
+    column_head = dataframe.columns.values
+    if not column_head[column_index].startswith("concept:name"):
+        column_head[column_index] = "concept:name"# + column_head[column_index]
+        dataframe.columns = column_head
+    #prepare_values
+
+    column_name = column_head[column_index]
+
+    dataframe[column_name] = np.where((not str(dataframe[column_name]).startswith("'Activity'")),"'Activity': '" + dataframe[column_name] + "'",dataframe[column_name])
 
     return dataframe
 
@@ -115,22 +143,24 @@ def prepare_activitiy_column(dataframe, column_index):
         return dataframe
 
 def parse_message(dataframe):
+    """parses the "message" column from the Log dataframe and returns a dataframe with the columns parsed from the json contents of Message."""
+
     import json
-    ndf = pd.io.json.json_normalize(dataframe.Message.apply(json.loads))
 
-    print(ndf.head(25))
-    print(ndf.shape)
+    print(dataframe.Message.head(20))
+    print(dataframe.columns)
 
-    resdf = pd.concat([dataframe, ndf.reindex(dataframe.index)], axis=1)
+    print(dataframe.iloc[1:4, 1:4])
 
-    print(resdf.head(25))
-    print(resdf.shape)
+    print(dataframe.iloc[1:4, 1:4].head(20))
 
-    resdf.drop("Message", axis=1, inplace=True)
+    message_dataframe = pd.io.json.json_normalize(dataframe.Message.apply(json.loads))
 
-    resdf.to_csv("C:/Temp/aaaaexpectedparsedtest.csv")
+    print(message_dataframe.head(20))
 
-    return dataframe
+    message_dataframe.to_csv("C:/Temp/aaaaexpectedparsedtest.csv")
+
+    return message_dataframe
 
 """
     message_contents = dataframe.Message.str.split(pat=",")
