@@ -3,5 +3,8 @@ def getReadingStrategy(data_source_type, is_stored_on_server):
     if data_source_type == "csv" and is_stored_on_server: # data source from a csv file on the server
         from . import csv_reader
         return csv_reader
+    elif data_source_type == "database" and is_stored_on_server:
+        from . import database_reader
+        return database_reader
     else:
         raise ImportError("The type of the requested data source could not be handled.")

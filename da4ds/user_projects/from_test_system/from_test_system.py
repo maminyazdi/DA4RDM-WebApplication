@@ -5,6 +5,7 @@ from da4ds import socketio
 from flask import (
     render_template, jsonify, current_app as app
 )
+from da4ds.processing_libraries.da4ds import xes_formatter
 
 def run(config):
     import sqlalchemy
@@ -22,198 +23,76 @@ def run(config):
 
 
     dataframe = parse_message(dataframe)
+    dataframe['Timestamp'] = pd.to_datetime(dataframe['Timestamp'])
 
+    print(dataframe.info())
+
+    dataframe = dataframe.sort_values(by="Timestamp")
     dataframe.dropna()
 
     print(dataframe.head(20))
 
-    # TODO treat inconsistencies and missing values
+    dataframe = create_session_ids(dataframe, 60)
 
     # TODO prepare for pm4py
 
-    dataframe = prepare_timestamp_column(dataframe, 2)
-    dataframe = prepare_case_colum(dataframe, 3)
-    dataframe = prepare_activity_column(dataframe, 1)
-    dataframe = prepare_resource_column(dataframe, 6)
+    dataframe = xes_formatter.prepare_xes_columns(dataframe, 3, 1, 2, 6)
+
+    # TODO treat inconsistencies and missing values
+
+    print(dataframe.head(20))
+
+    # dataframe = prepare_timestamp_column(dataframe, 2)
+    # dataframe = prepare_case_colum(dataframe, 3)
+    # dataframe = prepare_activity_column(dataframe, 1)
+    # dataframe = prepare_resource_column(dataframe, 6)
 
     dataframe.to_csv(config.current_session["data_location"])
 
     return render_template('main/index.html')
-
-    # dataframe = prepare_timestamp_column(dataframe, 1)
-    # dataframe = prepare_case_colum(dataframe, 2)
-    # dataframe = prepare_resource_column(dataframe, 3)
-    # dataframe = prepare_activitiy_column(dataframe, 4)
-
-    # print(dataframe.head(20))
-
-    # #### this are the known modifications that were down after the data was 'xes ready'
-    # #dataframe = config.data
-    # dataframe = dataframe.replace(to_replace="'time\:timestamp'\:Timestamp\(", value="", regex=True)
-    # dataframe = dataframe.replace(to_replace="\)", value="", regex=True)
-    # dataframe = dataframe.replace(to_replace="-[0-9]+-", value="/", regex=True)
-    # dataframe = dataframe.replace(to_replace="/[0-9]+ ", value=" ", regex=True)
-    # dataframe["time:timestamp"] = pd.to_datetime(dataframe["time:timestamp"], utc=True)
-
-    # ###TESTCODE
-    # print(dataframe.head(20))
-
-    # #dataframe.to_csv("C:/Temp/da4ds_temp1.csv")
-    # dataframe.to_csv(config.current_session["data_location"])
-
-    # return render_template('main/index.html')
-
-
-def prepare_timestamp_column(dataframe, column_index):
-    #prepare_head
-    column_head = dataframe.columns.values
-
-    if not column_head[column_index].startswith("time:timestamp"):
-        column_head[column_index] = "time:timestamp" + column_head[column_index]
-        dataframe.columns = column_head
-        #new_column_name = "time:timestamp" + column_head[column_index]
-        #column_head = column_head.insert(column_index, new_column_name)
-        #print(column_head)
-
-    print(dataframe.head(20))
-
-    #prepare_values
-    #column = dataframe.iloc[:, column_index]
-
-    column_name = column_head[column_index]
-
-    dataframe[column_name] = np.where((not str(dataframe[column_name]).startswith("'time:timestamp':Timestamp('")),"'time:timestamp':Timestamp('" + dataframe[column_name] + "')",dataframe[column_name])
-    #dataframe[column_name] = dataframe.applymap(lambda element: element if str(element).startswith("'time:timestamp':Timestamp('") else ("'time:timestamp':Timestamp('" + dataframe[column_name] + "')")) #TODO fing more efficient way
-
-    print(dataframe.shape)
-
-    return dataframe
-
-def prepare_case_colum(dataframe, column_index):
-    #prepare_head
-    column_head = dataframe.columns.values
-    if not column_head[column_index].startswith("case:concept:name"):
-        column_head[column_index] = "case:concept:name"# + column_head[column_index]
-        dataframe.columns = column_head
-    #prepare_values
-
-    column_name = column_head[column_index]
-
-    dataframe[column_name] = np.where((not str(dataframe[column_name]).startswith("'case:concept:name'")),"'case:concept:name': '" + dataframe[column_name] + "'",dataframe[column_name])
-
-    return dataframe
-
-def prepare_activity_column(dataframe, column_index):
-    #prepare_head
-    column_head = dataframe.columns.values
-    if not column_head[column_index].startswith("concept:name"):
-        column_head[column_index] = "concept:name"# + column_head[column_index]
-        dataframe.columns = column_head
-    #prepare_values
-
-    column_name = column_head[column_index]
-
-    dataframe[column_name] = np.where((not str(dataframe[column_name]).startswith("'Activity'")),"'Activity': '" + dataframe[column_name] + "'",dataframe[column_name])
-
-    return dataframe
-
-def prepare_resource_column(dataframe, column_index):
-    #prepare_head
-    column_head = dataframe.columns.values
-    if not column_head[column_index].startswith("org:resource"):
-        column_head[column_index] = "org:resource" + column_head[column_index]
-        dataframe.columns = column_head
-    #prepare_values
-
-    column_name = column_head[column_index]
-
-    dataframe[column_name] = np.where((not str(dataframe[column_name]).startswith("'org:resource'")),"'org:resource': '" + dataframe[column_name] + "'",dataframe[column_name])
-
-    print(dataframe.head(20))
-
-    return dataframe
-
-def prepare_activitiy_column(dataframe, column_index):
-
-    column_head = dataframe.columns.values
-    if not column_head[column_index].startswith("concept:name"):
-        column_head[column_index] = "concept:name"# + column_head[column_index]
-        dataframe.columns = column_head
-
-        return dataframe
 
 def parse_message(dataframe):
     """parses the "message" column from the Log dataframe and returns a dataframe with the columns parsed from the json contents of Message."""
 
     import json
 
-    print(dataframe.Message.head(20))
-    print(dataframe.columns)
-
-    print(dataframe.iloc[1:4, 1:4])
-
-    print(dataframe.iloc[1:4, 1:4].head(20))
-
     message_dataframe = pd.io.json.json_normalize(dataframe.Message.apply(json.loads))
-
-    print(message_dataframe.head(20))
 
     message_dataframe.to_csv("C:/Temp/aaaaexpectedparsedtest.csv")
 
     return message_dataframe
 
-"""
-    message_contents = dataframe.Message.str.split(pat=",")
+def create_session_ids(dataframe, threshold):
+    """Creates session ids """
 
-    print(message_contents)
-    #message_contents_frame = np.concatenate(message_contents)
+    user_ids = dataframe.UserId.unique()
 
-    message_contents_frame = np.array(message_contents)
-    #message_contents_frame = np.array([np.array(xi) for xi in message_contents])
-    print(np.shape(message_contents_frame))
-    print(np.shape(message_contents_frame[0]))
+    #generate dataframes containing all rows of one user id for each user id
 
-    for ele in message_contents_frame:
+    for user_id in user_ids:
+        user_dataframe = dataframe.query(f"UserId == '{user_id}'")
 
-        print(np.shape(ele))
+        #user_dataframe.sessionId = pd.Timedelta(user_dataframe.UserId - user_dataframe.UserId.shift()).seconds / 60.0
 
-        # print(ele)
-        # print(ele.split(":")[0])
+        time_diff_series = user_dataframe.Timestamp - user_dataframe.Timestamp.shift()
+        threashold_check_series = time_diff_series > pd.Timedelta(value=30, unit='m')
 
-        # row = message_contents_frame[:,0]
-        # col = message_contents_frame[0, :]
+        c = (user_dataframe.UserId[threashold_check_series] + user_dataframe.Timestamp[threashold_check_series])
 
-        # print(row, "******", col)
+        print(c)
 
+        user_dataframe.to_csv(f"C:/Temp/aaaaagarbo/{user_id}")
 
-        # k, v = ele.split(":")
-        # dataframe[k] = message_contents_frame[0,:]
+        print(user_dataframe.head(50), user_dataframe.tail(50))
 
-    print(dataframe)
-
-    # pdf = pd.DataFrame(data=message_contents_frame[1:,1:],    # values
-    # index=message_contents_frame[1:,0],    # 1st column as index
-    # columns=message_contents_frame[0,1:])  # 1st row as the column names
-
-    # print(pdf.head(20))
-
-    print(type(message_contents[0]))
-    print(message_contents[0][1])
-    print(type(message_contents[0][1]))
-    print(message_contents[0][0]["Type"])
-    print(type(message_contents[0][0]["Type"]))
+    #assign session ids cia user id and timestamp with in accordance with the threshold for timestamp difference in consecutive rows
 
 
 
-    print(message_contents[0]["Type"])
+    #merge all the dataframes together
 
-    key, value = zip(*(element.split(":") for element in message_contents))
 
-    print(key, value)
 
-    dicti = dict(key, value)
+    #maybe sort the resultring dataframe again
 
-    print(dicti)
-
-    message_contents_dict = {key:value for key, value in message_contents.split(":")}
-"""
+    return dataframe
