@@ -15,37 +15,28 @@ def run(config):
     with engine.connect() as connection:
         dataframe = pd.read_sql(config.QUERY_SRTING, con=engine, index_col="Id")
 
-        print(dataframe.head(20))
-
 #    dataframe = pd.read_csv(config.current_session["data_location"], sep=";")
 
 #    dataframe = dataframe.dropna()
 
-
     dataframe = parse_message(dataframe)
-    dataframe['Timestamp'] = pd.to_datetime(dataframe['Timestamp'])
 
-    print(dataframe.info())
+    dataframe['Timestamp'] = pd.to_datetime(dataframe['Timestamp'], utc=True)
 
     dataframe = dataframe.sort_values(by="Timestamp")
     dataframe.dropna()
 
-    print(dataframe.head(20))
+    dataframe = create_session_ids(dataframe, 30)
 
-    dataframe = create_session_ids(dataframe, 60)
+    dataframe.Timestamp = dataframe.Timestamp.dt.strftime("%YYYY-%MM-%DD %hh:%mm:%ss.%3")
+    dataframe.Timestamp = dataframe.Timestamp.str.slice(0, 23)
 
-    # TODO prepare for pm4py
+    print(dataframe.head(50))
 
+    dataframe.to_csv("C:\Temp\da4dsuserframes\combined_time_string.csv")
     dataframe = xes_formatter.prepare_xes_columns(dataframe, 3, 1, 2, 6)
 
     # TODO treat inconsistencies and missing values
-
-    print(dataframe.head(20))
-
-    # dataframe = prepare_timestamp_column(dataframe, 2)
-    # dataframe = prepare_case_colum(dataframe, 3)
-    # dataframe = prepare_activity_column(dataframe, 1)
-    # dataframe = prepare_resource_column(dataframe, 6)
 
     dataframe.to_csv(config.current_session["data_location"])
 
@@ -56,43 +47,47 @@ def parse_message(dataframe):
 
     import json
 
-    message_dataframe = pd.io.json.json_normalize(dataframe.Message.apply(json.loads))
+    dataframe.to_csv("C:\Temp\\abc.csv")
+    #some flawed log entries contain an error message instead of the desired log message and should be cleaned (here: removed)
+    dataframe = dataframe[~dataframe.Message.str.contains("Executed action method")]
+    dataframe.to_csv("C:\Temp\def")
 
-    message_dataframe.to_csv("C:/Temp/aaaaexpectedparsedtest.csv")
+    message_dataframe = pd.io.json.json_normalize(dataframe.Message.apply(json.loads))
 
     return message_dataframe
 
 def create_session_ids(dataframe, threshold):
-    """Creates session ids """
+    """Creates session ids by first grouping rows by userId, then detects rows belonging to distinct session by checking if any two consecutive rows are further apart from each other than threshold minutes"""
 
     user_ids = dataframe.UserId.unique()
+    new_column_index = len(dataframe.columns)
+    return_dataframe = pd.DataFrame()
 
+    print(return_dataframe)
+    print(return_dataframe.info())
     #generate dataframes containing all rows of one user id for each user id
 
     for user_id in user_ids:
         user_dataframe = dataframe.query(f"UserId == '{user_id}'")
 
-        #user_dataframe.sessionId = pd.Timedelta(user_dataframe.UserId - user_dataframe.UserId.shift()).seconds / 60.0
-
         time_diff_series = user_dataframe.Timestamp - user_dataframe.Timestamp.shift()
-        threashold_check_series = time_diff_series > pd.Timedelta(value=30, unit='m')
+        threashold_check_series = time_diff_series > pd.Timedelta(value=threshold, unit='m')
 
-        c = (user_dataframe.UserId[threashold_check_series] + user_dataframe.Timestamp[threashold_check_series])
+        session_id_column = (user_dataframe.UserId[threashold_check_series] + user_dataframe.Timestamp[threashold_check_series].dt.strftime("%d-%m-%Y %H:%M:%S"))
 
-        print(c)
+        user_dataframe["SessionIdCalculated"] = session_id_column
 
-        user_dataframe.to_csv(f"C:/Temp/aaaaagarbo/{user_id}")
+        user_dataframe.iloc[0, new_column_index] = user_dataframe.iloc[0, 3] + user_dataframe.iloc[0, 2].strftime("%d-%m-%Y %H:%M:%S")
+
+        user_dataframe.SessionIdCalculated = user_dataframe.SessionIdCalculated.ffill()
+
+        return_dataframe = pd.concat([return_dataframe, user_dataframe], axis=0, join='outer', ignore_index=True, keys=None,
+          levels=None, names=None, verify_integrity=False, copy=True)
 
         print(user_dataframe.head(50), user_dataframe.tail(50))
 
-    #assign session ids cia user id and timestamp with in accordance with the threshold for timestamp difference in consecutive rows
-
-
-
-    #merge all the dataframes together
-
-
-
     #maybe sort the resultring dataframe again
 
-    return dataframe
+    return_dataframe.to_csv("C:\Temp\da4dsuserframes\combined.csv")
+
+    return return_dataframe
