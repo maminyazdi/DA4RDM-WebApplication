@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import json
 from flask_socketio import emit
 from da4ds import socketio
 from flask import (
@@ -20,7 +21,7 @@ def run(config):
 #    dataframe = dataframe.dropna()
 
     dataframe = parse_message(dataframe)
-
+    dataframe.to_csv("C:\Temp\csv2after_message_parsed.csv")
     dataframe['Timestamp'] = pd.to_datetime(dataframe['Timestamp'], utc=True)
 
     dataframe = dataframe.sort_values(by="Timestamp")
@@ -31,27 +32,19 @@ def run(config):
     dataframe.Timestamp = dataframe.Timestamp.dt.strftime("%YYYY-%MM-%DD %hh:%mm:%ss.%3")
     dataframe.Timestamp = dataframe.Timestamp.str.slice(0, 23)
 
-    print(dataframe.head(50))
-
     dataframe.to_csv("C:\Temp\da4dsuserframes\combined_time_string.csv")
     dataframe = xes_formatter.prepare_xes_columns(dataframe, 3, 1, 2, 6)
 
     # TODO treat inconsistencies and missing values
-
+    dataframe.to_csv("C:\Temp\csv3xes_and_cleaning")
     dataframe.to_csv(config.current_session["data_location"])
 
     return render_template('main/index.html')
 
 def parse_message(dataframe):
     """parses the "message" column from the Log dataframe and returns a dataframe with the columns parsed from the json contents of Message."""
-
-    import json
-
-    dataframe.to_csv("C:\Temp\\abc.csv")
     #some flawed log entries contain an error message instead of the desired log message and should be cleaned (here: removed)
     dataframe = dataframe[~dataframe.Message.str.contains("Executed action method")]
-    dataframe.to_csv("C:\Temp\def")
-
     message_dataframe = pd.io.json.json_normalize(dataframe.Message.apply(json.loads))
 
     return message_dataframe
@@ -63,10 +56,7 @@ def create_session_ids(dataframe, threshold):
     new_column_index = len(dataframe.columns)
     return_dataframe = pd.DataFrame()
 
-    print(return_dataframe)
-    print(return_dataframe.info())
     #generate dataframes containing all rows of one user id for each user id
-
     for user_id in user_ids:
         user_dataframe = dataframe.query(f"UserId == '{user_id}'")
 
@@ -83,8 +73,6 @@ def create_session_ids(dataframe, threshold):
 
         return_dataframe = pd.concat([return_dataframe, user_dataframe], axis=0, join='outer', ignore_index=True, keys=None,
           levels=None, names=None, verify_integrity=False, copy=True)
-
-        print(user_dataframe.head(50), user_dataframe.tail(50))
 
     #maybe sort the resultring dataframe again
 

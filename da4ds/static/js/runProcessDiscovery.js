@@ -18,3 +18,27 @@ function runProcessDiscovery(hostUrl, projectUrl){
 
     return;
 }
+
+function updateEverything() {
+    return;
+}
+
+function updateFilters() {
+    return;
+}
+
+function sendFilters() {
+    return;
+}
+
+function sendMetaDecisions() {
+    return;
+}
+
+function sendKeyKolumnChoice() {
+    return;
+}
+
+function getColumnNames() {
+
+}

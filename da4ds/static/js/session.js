@@ -5,6 +5,7 @@ function createSession() {
     socket.emit('create_new_session');
     socket.on('session', function(data) {
         window.localStorage.setItem('sessionId', data)
+        document.getElementById("sessionCreatedCheckmark").style.display = "inline";
     });
 }
 
