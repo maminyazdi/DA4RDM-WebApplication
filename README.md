@@ -67,3 +67,6 @@ Modules should adhere to the following interface: func(dataframe, options{args*}
 ### Output formats
 You can store dataframes as CSV-File by including the corresponding module. The output-path for these files can be specified in the config.py of your project.
 The final result of the pipeline can be shown on the application front end. This expects a json response object that can also be created by the corresponding module. The frontend at the moments can display only text. The parameter you give to that modules should thus for now only have the value "text". In the future it is planned to support displaying graphs for data. In this case, the parameter should have the value "table".
+
+## Process Discovery
+...

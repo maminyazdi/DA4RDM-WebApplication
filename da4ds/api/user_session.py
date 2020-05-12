@@ -10,8 +10,10 @@ def create_new_session():
     session_id = str(uuid.uuid4())
     new_session = SessionInformation()
     new_session.Id = session_id
-    new_session.WorkingDataLocation = f'{app.config["TEMP_STORAGE_DIRECTORY"]}{new_session.Id}.csv'
-    new_session.OutputDataLocation = f'./da4ds/static/process_mining_output/{new_session.Id}'
+    new_session.WorkingDataLocation = f'{app.config["TEMP_STORAGE_DIRECTORY"]}/{new_session.Id}/data_cleaning_working_data.csv'
+    new_session.PDDataLocation      = f'{app.config["TEMP_STORAGE_DIRECTORY"]}/{new_session.Id}/process_discovery_working_data.csv'
+    new_session.OutputDataLocation  = f'./da4ds/static/process_mining_output/{new_session.Id}'
+    new_session.PMXesAttributes = ""
     new_session.PMFilter = ""
     db.session.add(new_session)
     db.session.commit()
@@ -25,8 +27,10 @@ def get_session_information(session_id):
     session_information = {}
     raw_session_information = SessionInformation.query.filter_by(Id=session_id).first()
     session_information['data_location'] = raw_session_information.WorkingDataLocation
+    session_information['process_mining_data_location'] = raw_session_information.PDDataLocation
     session_information['output_location'] = raw_session_information.OutputDataLocation
-    session_information['pm_filters'] = parse_pm_filters(raw_session_information.PMFilters)
+    session_information['pm_xes_attributes'] = parse_parameter_list(raw_session_information.PMXesAttributes)
+    session_information['pm_filters'] = parse_parameter_list(raw_session_information.PMFilters)
 
     return session_information
 
@@ -38,8 +42,11 @@ def update_session(session_id, attribute, value):
         print(attribute) # TODO remove debug code
     if attribute in session_information.__table__.columns:
         if attribute == session_information.PMFilters:
-            updated_filters = update_filters(session_information, value)
+            updated_filters = update_parameter_list(session_information, value)
             session_information.PMFilters = updated_filters
+        elif attribute == session_information.PMXesAttributes:
+            updated_filters = update_parameter_list(session_information, value)
+            session_information.PMXesAttributes = updated_filters
         else:
             session.__table__columns[attribute] = value
     db.session.commit()
@@ -49,34 +56,36 @@ def update_session(session_id, attribute, value):
 def clear_session(session_id):
     """Deletes the queried user session from the data base."""
 
+    # TODO maybe release the disc space by deleting all the tepmorary data from the session
+
     session_information = SessionInformation.query.filter_by(Id=session_id).first()
     db.session.delete(session_information)
     db.commit()
 
     return None
 
-def parse_pm_filters(raw_filters):
+def parse_parameter_list(raw_parameter_list):
     """Extract dictionary of the process mining filter as coming from the session data base object."""
 
-    if raw_filters == None:
+    if raw_parameter_list == None:
         return ""
 
-    filters = {}
-    parsed_filters = dict((key.strip(), value.strip()) for key, value in (param.split('=') for param in raw_filters.split(';')))
-    for key in parsed_filters:
+    parameters = {}
+    parsed_arguments = dict((key.strip(), value.strip()) for key, value in (param.split('=') for param in raw_parameter_list.split(';')))
+    for key in parsed_arguments:
         if key in ProcessMiningFilters.__dict__:
-            filters[key] = parsed_filters[key]
+            parameters[key] = parsed_arguments[key]
 
-    return filters
+    return parameters
 
-def update_filters(session_information, new_filters):
-    """f a set of fitler attributes are given,
-    they will eb treated as though they are in the same format as the filters stored in the user session table,
-    then existing fitler are overwritten while new filters are appended."""
+def update_parameter_list(session_information, new_filters):
+    """If a set of filter attributes are given,
+    they will be treated as though they are in the same format as the filters stored in the user session table,
+    then existing filter are overwritten while new filters are appended."""
 
-    filters_to_update = parse_pm_filters(session_information.PMFilters)
-    new_filters = parse_pm_filters(new_filters)
-    for filter in new_filters:
-        filters_to_update[filter] = new_filters[filter]
+    arguments_to_update = parse_parameter_list(session_information.PMFilters)
+    new_arguments = parse_parameter_list(new_arguments)
+    for parameter in new_arguments:
+        arguments_to_update[parameter] = new_arguments[parameter]
 
-    return filters_to_update
+    return arguments_to_update

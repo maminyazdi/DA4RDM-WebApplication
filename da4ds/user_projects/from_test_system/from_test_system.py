@@ -50,7 +50,8 @@ def parse_message(dataframe):
     return message_dataframe
 
 def create_session_ids(dataframe, threshold):
-    """Creates session ids by first grouping rows by userId, then detects rows belonging to distinct session by checking if any two consecutive rows are further apart from each other than threshold minutes"""
+    """Creates session ids by first grouping rows by userId, then detects rows belonging to distinct session by checking
+    if any two consecutive rows are further apart from each other than threshold minutes"""
 
     user_ids = dataframe.UserId.unique()
     new_column_index = len(dataframe.columns)

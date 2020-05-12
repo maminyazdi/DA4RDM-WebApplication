@@ -7,7 +7,6 @@ import datetime
 from flask_socketio import emit
 from da4ds import socketio
 
-
 from flask import (
     Blueprint, flash, redirect, render_template, request, url_for, jsonify, current_app as app, send_from_directory, send_file
 )
@@ -17,7 +16,7 @@ from werkzeug.utils import secure_filename
 from da4ds import db
 from da4ds.models import ( InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource )
 from da4ds.processing_libraries.data_source_handler import data_source_handler
-from da4ds.process_mining import process_mining_controller
+from da4ds.process_mining import process_mining_controller, support_functions as process_mining_support
 from . import user_session
 
 api_bp = Blueprint('blueprints/api', __name__, template_folder='templates', static_folder='static')
@@ -108,6 +107,21 @@ def run_project_persistent_connection(session_id, data):
     emit('json', response)
     return "Pipeline ran successfully."
 
+@socketio.on('requestEventLogPreparation', namespace='/api/run_process_discovery')
+def get_process_discovery_filters(session_id):
+    current_session = user_session.get_session_information(session_id)
+
+    # we want to return dataframeinfo/stats
+
+    # xes attribute columns + remaining unlabelled columns
+
+    # set filters and filter options
+
+    # create some coherent response object/JSON
+
+    return """Not yet implemented!""" # TODO return to the process mining overview page
+
+### these two functions might be superfluous
 @socketio.on('requestProcessMiningFilters', namespace='/api/request_pm_filters')
 def get_process_discovery_filters(session_id):
     #TODO filters options need to be updated in accord with previously selected filters.
@@ -117,6 +131,22 @@ def get_process_discovery_filters(session_id):
     emit('json', {"pm_filters": filter_json})
 
     return """Not yet implemented!""" # TODO return to the process mining overview page
+
+@socketio.on('requestColumnNames', namespace='/api/run_process_discovery')
+def get_column_names(session_id):
+    current_session = user_session.get_session_information(session_id)
+    column_names = process_mining_support.get_column_names(current_session)
+
+    return
+###
+
+@socketio.on('requestColumnNames', namespace='/api/run_process_discovery')
+def get_column_names(session_id):
+    current_session = user_session.get_session_information(session_id)
+    descriptive_stats = process_mining_support.get_descriptive_statistics(current_session)
+
+    emit('json')
+    return
 
 @socketio.on('requestProcessDiscovery', namespace='/api/run_process_discovery')
 def run_process_discovery(session_id):
