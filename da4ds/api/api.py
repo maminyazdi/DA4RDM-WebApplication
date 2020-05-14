@@ -4,6 +4,7 @@ import csv
 import sqlalchemy
 import importlib
 import datetime
+import pandas as pd
 from flask_socketio import emit
 from da4ds import socketio
 
@@ -108,8 +109,25 @@ def run_project_persistent_connection(session_id, data):
     return "Pipeline ran successfully."
 
 @socketio.on('requestEventLogPreparation', namespace='/api/run_process_discovery')
-def get_process_discovery_filters(session_id):
+def get_process_discovery_filters(session_id, xes_attribute_columns = None, filters = None):
     current_session = user_session.get_session_information(session_id)
+
+    dataframe = pd.read_csv(current_session["data_location"], index_col=0)
+
+    if xes_attribute_columns == None and current_session['pm_xes_attributes'] == '' or current_session['pm_xes_attributes'] == None:
+        column_names = process_mining_support.get_column_names(dataframe)
+        emit("updateColumnNames", column_names)
+        return
+
+    user_session.update_session(session_id, "PMXesAttributes", xes_attribute_columns)
+    user_session.update_session(session_id, "PMFilters", filters)
+
+    #process_mining_support.update_xes_attribute_columns(xes_attribute_columns, session_id) DELETE THOSE FUNCTIONS IN THE HELPER CLASS (UNLESS YOU WANT TO USE THEM TO HANDLE SPECIAL CASES)
+    #process_mining_support.update_filters(filters, session_id)
+
+    from da4ds.process_mining import event_log_generator
+
+    event_log_generator.prepare_event_log_dataframe(current_session)
 
     # we want to return dataframeinfo/stats
 
@@ -138,7 +156,6 @@ def get_column_names(session_id):
     column_names = process_mining_support.get_column_names(current_session)
 
     return
-###
 
 @socketio.on('requestColumnNames', namespace='/api/run_process_discovery')
 def get_column_names(session_id):
@@ -147,6 +164,7 @@ def get_column_names(session_id):
 
     emit('json')
     return
+###
 
 @socketio.on('requestProcessDiscovery', namespace='/api/run_process_discovery')
 def run_process_discovery(session_id):

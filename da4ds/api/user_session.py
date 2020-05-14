@@ -38,15 +38,13 @@ def update_session(session_id, attribute, value):
     """Tries to parse the given attribute and, if successful, updates the queried user session in the database."""
 
     session_information = SessionInformation.query.filter_by(Id=session_id).first()
-    for att in session_information.__table__.columns:
-        print(attribute) # TODO remove debug code
     if attribute in session_information.__table__.columns:
         if attribute == session_information.PMFilters:
-            updated_filters = update_parameter_list(session_information, value)
+            updated_filters = update_parameter_list(session_information, parse_parameter_list(session_information.PMFilters), value)
             session_information.PMFilters = updated_filters
         elif attribute == session_information.PMXesAttributes:
-            updated_filters = update_parameter_list(session_information, value)
-            session_information.PMXesAttributes = updated_filters
+            updated_xes_attributes = update_parameter_list(session_information, parse_parameter_list(session_information.PMXesAttributes), value)
+            session_information.PMXesAttributes = updated_xes_attributes
         else:
             session.__table__columns[attribute] = value
     db.session.commit()
@@ -78,7 +76,7 @@ def parse_parameter_list(raw_parameter_list):
 
     return parameters
 
-def update_parameter_list(session_information, new_filters):
+def update_parameter_list(session_information, arguments_to_update, new_arguments):
     """If a set of filter attributes are given,
     they will be treated as though they are in the same format as the filters stored in the user session table,
     then existing filter are overwritten while new filters are appended."""
