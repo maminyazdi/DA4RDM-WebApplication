@@ -6,6 +6,11 @@ socket.on('updateColumnNames', function(response) {
     updateColumnNames(response);
 });
 
+socket.on('ProcessDiscoveryUpdateEverything', function(response) {
+    clearEverything();
+    updateEverything(response);
+})
+
 socket.emit('requestEventLogPreparation', session_id);
 
 
@@ -32,7 +37,12 @@ function runProcessDiscovery(hostUrl, projectUrl){
     return;
 }
 
-function updateEverything() {
+function updateEverything(allDiscoveryInformation) {
+
+    updateColumnNames(allDiscoveryInformation["all_column_names"], allDiscoveryInformation["pm_xes_attributes"]);
+    //update filters
+    //update other options
+    updateKeyMetrics(allDiscoveryInformation["pm_dataframe_key_metrics"])
     return;
 }
 
@@ -83,18 +93,11 @@ function sendXesAttributeColumns() {
         selectedColumns[current_select_input.id] = current_select_input.value;
     }
 
-    socket.emit("update_xes_attributes", selectedColumns);
+    socket.emit("requestEventLogPreparation", session_id, selectedColumns);
     return;
 }
 
-function updateColumnNames(allColumnNames) {
-    // let selectinputTimestamp    = document.getElementById("timestamp_column");
-    // let selectInputCaseId       = document.getElementById("caseId_column");
-    // let selectInputActivity     = document.getElementById("activity_column");
-    // let selectInputResource     = document.getElementById("resource_column");
-    // let selectInputCost         = document.getElementById("cost_column");
-
-
+function updateColumnNames(allColumnNames, selectedColumns) {
     let select_inputs = [document.getElementById("timestamp_column"),
                         document.getElementById("caseId_column"),
                         document.getElementById("activity_column"),
@@ -108,27 +111,24 @@ function updateColumnNames(allColumnNames) {
             opt.innerHTML = columnName;
             current_select_input.appendChild(opt);
         }
-    }
+        var opt = document.createElement('option');
+        opt.value = "None";
+        opt.innerHTML = "None";
+        current_select_input.appendChild(opt);
 
-    // for (let columnName of allColumnNames){
-    //     var opt = document.createElement('option');
-    //     opt.value = columnName;
-    //     opt.innerHTML = columnName;
-    //     selectinputTimestamp.appendChild(opt);
-    //     selectInputCaseId.appendChild(opt);
-    //     selectInputActivity.appendChild(opt);
-    //     selectInputResource.appendChild(opt);
-    //     selectInputCost.appendChild(opt);
-    // }
+        if (typeof(selectedColumns[current_select_input.id]) !== "undefined") {
+            current_select_input.value = selectedColumns[current_select_input.id];
+        }
+    }
+}
+
+function updateKeyMetrics(metrics) {
+    document.getElementById('metrics_number_of_cases').innerHTML      = metrics["number_of_events"];
+    document.getElementById('metrics_number_of_events').innerHTML     = metrics["number_of_cases"];
+    document.getElementById('metrics_number_of_activities').innerHTML = metrics["number_of_activities"];
+    document.getElementById('metrics_number_of_variants').innerHTML   = metrics["number_of_variants"];
 }
 
 function getColumnNames() {
     socket.emit('requestColumnNames', session_id);
-}
-
-function updateDescriptiveStatistics(numberOfCases, numberOfEvents, numberOfActivities, numberOfVariants) {
-    document.getElementById('description_number_of_cases').innerHTML        = numberOfCases;
-    document.getElementById('description_number_of_events').innerHTML       = numberOfEvents;
-    document.getElementById('description_number_of_activities').innerHTML   = numberOfActivities;
-    document.getElementById('description_number_of_variants').innerHTML     = numberOfVariants;
 }

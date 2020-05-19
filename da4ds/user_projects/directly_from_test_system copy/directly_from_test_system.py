@@ -9,33 +9,19 @@ from flask import (
 from da4ds.processing_libraries.da4ds import xes_formatter
 
 def run(config):
-    import sqlalchemy
-
-    engine = sqlalchemy.create_engine(config.SOURCE_CONNECTION_STRING)
-
-    with engine.connect() as connection:
-        dataframe = pd.read_sql(config.QUERY_SRTING, con=engine, index_col="Id")
-
-#    dataframe = pd.read_csv(config.current_session["data_location"], sep=";")
-
-#    dataframe = dataframe.dropna()
+    dataframe = pd.read_csv(config.current_session["data_location"], index_col=0, sep=";")
 
     dataframe = parse_message(dataframe)
-    dataframe.to_csv("C:\Temp\csv2after_message_parsed.csv")
     dataframe['Timestamp'] = pd.to_datetime(dataframe['Timestamp'], utc=True)
-
     dataframe = dataframe.sort_values(by="Timestamp")
     dataframe.dropna()
-
     dataframe = create_session_ids(dataframe, 30)
 
     dataframe.Timestamp = dataframe.Timestamp.dt.strftime("%YYYY-%MM-%DD %hh:%mm:%ss.%3")
     dataframe.Timestamp = dataframe.Timestamp.str.slice(0, 23)
 
-    dataframe = xes_formatter.prepare_xes_columns(dataframe, 3, 1, 2, 6)
-
     # TODO treat inconsistencies and missing values
-    dataframe.to_csv(config.current_session["data_location"])
+    dataframe.to_csv(config.current_session["data_location"], sep=";")
 
     return render_template('main/index.html')
 

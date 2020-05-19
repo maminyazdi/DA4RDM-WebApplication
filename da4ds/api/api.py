@@ -18,6 +18,7 @@ from da4ds import db
 from da4ds.models import ( InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource )
 from da4ds.processing_libraries.data_source_handler import data_source_handler
 from da4ds.process_mining import process_mining_controller, support_functions as process_mining_support
+from da4ds.process_mining import event_log_generator
 from . import user_session
 
 api_bp = Blueprint('blueprints/api', __name__, template_folder='templates', static_folder='static')
@@ -92,17 +93,22 @@ def run_project():
 @socketio.on('requestProjectRun', namespace='/api/run_project')
 def run_project_persistent_connection(session_id, data):
     session_information = user_session.get_session_information(session_id)
-    project_name = data['projectName'] # programmatically get the package and module names to import from the given project name
+
+    # programmatically get the package and module names to import from the given project name
+    project_name = data['projectName']
     emit('progressLog', {'message': f"Starting pipeline for project { project_name }"})
     module_name = "." + project_name
     project_path = app.config['USER_PROJECT_DIRECTORY']
     if project_path[-1] == "/":
         project_path = project_path[0:-1]
     package_name = project_path.replace("/", ".")
-    package_name = re.sub(r"^\.*", "", package_name) #replace leading and traling dots
+
+    #replace leading and traling dots
+    package_name = re.sub(r"^\.*", "", package_name)
     package_name = re.sub(r"\.*$", "", package_name)
 
-    project = importlib.import_module(module_name, package_name) # import module at runtime
+    # import module at runtime
+    project = importlib.import_module(module_name, package_name)
     project_config = project.init(session_information, db)
     response = project.run(project_config)
     emit('json', response)
@@ -112,24 +118,36 @@ def run_project_persistent_connection(session_id, data):
 def get_process_discovery_filters(session_id, xes_attribute_columns = None, filters = None):
     current_session = user_session.get_session_information(session_id)
 
-    dataframe = pd.read_csv(current_session["data_location"], index_col=0)
+    dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
+    column_names = process_mining_support.get_column_names(dataframe)
 
-    if xes_attribute_columns == None and current_session['pm_xes_attributes'] == '' or current_session['pm_xes_attributes'] == None:
-        column_names = process_mining_support.get_column_names(dataframe)
+    if xes_attribute_columns == None and (bool(current_session['pm_xes_attributes']) == False or current_session['pm_xes_attributes'] == None):
         emit("updateColumnNames", column_names)
         return
 
-    user_session.update_session(session_id, "PMXesAttributes", xes_attribute_columns)
-    user_session.update_session(session_id, "PMFilters", filters)
+    if not xes_attribute_columns == None:
+        user_session.update_session(session_id, "PMXesAttributes", xes_attribute_columns)
 
-    #process_mining_support.update_xes_attribute_columns(xes_attribute_columns, session_id) DELETE THOSE FUNCTIONS IN THE HELPER CLASS (UNLESS YOU WANT TO USE THEM TO HANDLE SPECIAL CASES)
+    if not filters == None:
+        user_session.update_session(session_id, "PMFilters", filters)
+
+    #process_mining_support.update_xes_attribute_columns(xes_attribute_columns, session_id) # TODO DELETE THOSE FUNCTIONS IN THE HELPER CLASS (UNLESS YOU WANT TO USE THEM TO HANDLE SPECIAL CASES)
     #process_mining_support.update_filters(filters, session_id)
 
-    from da4ds.process_mining import event_log_generator
+    dataframe = event_log_generator.prepare_event_log_dataframe(dataframe, current_session['pm_xes_attributes'])
 
-    event_log_generator.prepare_event_log_dataframe(current_session)
+    dataframe.to_csv("C:/Temp/aTest.csv", sep=";")
 
-    # we want to return dataframeinfo/stats
+    #get key metrics for the process discovery source data frame
+    dataframe_key_metrics = process_mining_controller.get_dataframe_key_metrics(dataframe, current_session['pm_xes_attributes'])
+
+    dataframe.to_csv(current_session["process_mining_data_location"], sep=";")
+
+    emit("ProcessDiscoveryUpdateEverything", {"all_column_names": column_names, # all column names of the data frame
+                                              "pm_xes_attributes": current_session['pm_xes_attributes'], # selected xes attribute columns
+                                              "pm_filters": current_session['pm_filters'], # selected filters
+                                              "pm_dataframe_key_metrics": dataframe_key_metrics}) # key metrics such as number of cases and events #update filters, columns and statistics, other options
+
 
     # xes attribute columns + remaining unlabelled columns
 
