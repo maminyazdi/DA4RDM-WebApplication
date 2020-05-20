@@ -47,7 +47,7 @@ def prepare_timestamp_column(dataframe, column_index):
     column_head = dataframe.columns.values
 
     if not column_head[column_index].startswith("time:timestamp"):
-        column_head[column_index] = "time:timestamp" + column_head[column_index]
+        column_head[column_index] = "time:timestamp" #+ column_head[column_index]
         dataframe.columns = column_head
         #new_column_name = "time:timestamp" + column_head[column_index]
         #column_head = column_head.insert(column_index, new_column_name)

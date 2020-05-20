@@ -14,13 +14,19 @@ def run(session_information):
     from pm4py.algo.discovery.dfg import factory as dfg_factory
     dfg = dfg_factory.apply(event_log)
 
-    from pm4py.visualization.dfg import factory as dfg_vis_factory
-    gviz = dfg_vis_factory.apply(dfg, log=event_log, variant="frequency")
+    # this way of vizualizing is outdated?
+    #from pm4py.visualization.dfg import factory as dfg_vis_factory
+    #gviz = dfg_vis_factory.apply(dfg, log=event_log, variant="frequency")
+    from pm4py.visualization.dfg import visualizer as dfg_visualization
+    parameters = {dfg_visualization.Variants.PERFORMANCE.value.Parameters.FORMAT: "svg"}
+    gviz = dfg_visualization.apply(dfg, log=event_log, variant=dfg_visualization.Variants.PERFORMANCE, parameters=parameters)
+    output_path = session_information["output_location"] + ".png"
+    dfg_visualization.save(gviz, output_path)
 
     # TODO # FIXME IMPORTANT the output files are currently not secured in the static folder and can in theory be accessed by anyone connecting to the server!!!
     #session_information["output_location"] = "./da4ds/static/process_mining_output/abc"
-    output_path = session_information["output_location"] + ".png"
-    dfg_vis_factory.save(gviz, output_path)
+    #output_path = session_information["output_location"] + ".png"
+    #dfg_vis_factory.save(gviz, output_path)
     output_path_relative = re.sub(r"da4ds/", "", output_path)
     return ['gviz', output_path_relative]
 
