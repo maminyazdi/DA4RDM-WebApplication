@@ -26,19 +26,42 @@ def prepare_xes_columns(dataframe, case_column, activity_column, timestamp_colum
         new dataframe with the updated values
     """
 
-    # get indeces if only target column names are known
     column_names = dataframe.columns.values.tolist()
-    case_column_index      = (case_column)      if (case_column      != 'None' and type(case_column)      == 'int') else (column_names.index(case_column))
-    activity_column_index  = (activity_column)  if (activity_column  != 'None' and type(activity_column)  == 'int') else (column_names.index(activity_column))
-    timestamp_column_index = (timestamp_column) if (timestamp_column != 'None' and type(timestamp_column) == 'int') else (column_names.index(timestamp_column))
-    resource_column_index  = (resource_column)  if (resource_column  != 'None' and type(resource_column)  == 'int') else (column_names.index(resource_column))
-    cost_column_index      = (cost_column)      if (cost_column      != 'None' and type(cost_column)      == 'int') else (column_names.index(cost_column))
 
-    dataframe = prepare_case_colum(dataframe, case_column_index)
-    dataframe = prepare_activity_column(dataframe, activity_column_index)
-    dataframe = prepare_timestamp_column(dataframe, timestamp_column_index)
-    dataframe = prepare_resource_column(dataframe, resource_column_index)
-    # TODO add cost column conversion, check if all the other work as intended
+    if case_column != 'None':
+        if type(case_column) == 'int':
+            case_column_index = case_column
+        else:
+            case_column_index = column_names.index(case_column)
+        dataframe = prepare_case_colum(dataframe, case_column_index)
+
+    if activity_column != 'None':
+        if type(activity_column) == 'int':
+            activity_column_index = activity_column
+        else:
+            activity_column_index = column_names.index(activity_column)
+        dataframe = prepare_activity_column(dataframe, activity_column_index)
+
+    if timestamp_column != 'None':
+        if type(timestamp_column) == 'int':
+            timestamp_column_index = timestamp_column
+        else:
+            timestamp_column_index = column_names.index(timestamp_column)
+        dataframe = prepare_timestamp_column(dataframe, timestamp_column_index)
+
+    if resource_column != 'None':
+        if type(resource_column) == 'int':
+            resource_column_index = resource_column
+        else:
+            resource_column_index = column_names.index(resource_column)
+        dataframe = prepare_resource_column(dataframe, resource_column_index)
+
+    if cost_column != 'None':
+        if type(cost_column) == 'int':
+            cost_column_index = cost_column
+        else:
+            cost_column_index = column_names.index(cost_column)
+        # TODO add cost column handler
 
     return dataframe
 
