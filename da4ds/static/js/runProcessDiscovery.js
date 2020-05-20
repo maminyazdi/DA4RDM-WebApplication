@@ -116,7 +116,7 @@ function updateColumnNames(allColumnNames, selectedColumns) {
         opt.innerHTML = "None";
         current_select_input.appendChild(opt);
 
-        if (selectedColumns !== "undefined" && typeof(selectedColumns[current_select_input.id]) !== "undefined") {
+        if (selectedColumns !== undefined && typeof(selectedColumns[current_select_input.id]) !== undefined) {
             current_select_input.value = selectedColumns[current_select_input.id];
         } else {
             current_select_input.value = "None";

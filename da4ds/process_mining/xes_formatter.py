@@ -28,11 +28,11 @@ def prepare_xes_columns(dataframe, case_column, activity_column, timestamp_colum
 
     # get indeces if only target column names are known
     column_names = dataframe.columns.values.tolist()
-    case_column_index      = (case_column)      if (type(case_column)      == 'int') else (column_names.index(case_column))
-    activity_column_index  = (activity_column)  if (type(activity_column)  == 'int') else (column_names.index(activity_column))
-    timestamp_column_index = (timestamp_column) if (type(timestamp_column) == 'int') else (column_names.index(timestamp_column))
-    resource_column_index  = (resource_column)  if (type(resource_column)  == 'int') else (column_names.index(resource_column))
-    cost_column_index      = (cost_column)      if (type(cost_column)      == 'int') else (column_names.index(cost_column))
+    case_column_index      = (case_column)      if (case_column      != None and type(case_column)      == 'int') else (column_names.index(case_column))
+    activity_column_index  = (activity_column)  if (activity_column  != None and type(activity_column)  == 'int') else (column_names.index(activity_column))
+    timestamp_column_index = (timestamp_column) if (timestamp_column != None and type(timestamp_column) == 'int') else (column_names.index(timestamp_column))
+    resource_column_index  = (resource_column)  if (resource_column  != None and type(resource_column)  == 'int') else (column_names.index(resource_column))
+    cost_column_index      = (cost_column)      if (cost_column      != None and type(cost_column)      == 'int') else (column_names.index(cost_column))
 
     dataframe = prepare_case_colum(dataframe, case_column_index)
     dataframe = prepare_activity_column(dataframe, activity_column_index)
