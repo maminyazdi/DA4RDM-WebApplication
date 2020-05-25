@@ -13,6 +13,10 @@ in anaconda prompt. Do the same for flask_migrate and flask_socketio:
 
 > conda install -c conda-forge flask-socketio
 
+It may happen that you need to manually install pip dependencies, which at the time of writing were only [pm4py](https://pypi.org/project/pm4py/) and [graphviz](https://pypi.org/project/graphviz-python/).
+
+Additionally, if you get error frmo graphviz, you may need to install the [graphviz executables](https://graphviz.gitlab.io/download/)  manually to your machine and add the path to them to your path environment variable.
+
 
 ### To run the local development server, set environment variables:
 
@@ -53,6 +57,9 @@ check if the changes are detected, then run
 
 ## Setting up custom projects
 
+### Adding and selecting data sources
+On the corresponding page, you can add data sources.
+
 ### Adding a project
 You can add custom projects to the application which can be seelected from the main view.
 By default, custom projects are being placed in the user_projects directory inside of the da4ds directory. This path can be changed in the configuration.
@@ -69,4 +76,4 @@ You can store dataframes as CSV-File by including the corresponding module. The 
 The final result of the pipeline can be shown on the application front end. This expects a json response object that can also be created by the corresponding module. The frontend at the moments can display only text. The parameter you give to that modules should thus for now only have the value "text". In the future it is planned to support displaying graphs for data. In this case, the parameter should have the value "table".
 
 ## Process Discovery
-...
+Parameters/Options

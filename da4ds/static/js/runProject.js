@@ -1,10 +1,10 @@
-function runProject(projectName) {
+function runProject(projectName, pipelineParameters) {
     var socket = io.connect('http://' + document.domain + ':' + location.port + '/api/run_project');
     let spinner = document.getElementById('pipeline-running-spinner');
     spinner.style.display="block"
 
     let session_id = getCurrentSession();
-    socket.emit('requestProjectRun', session_id, {'projectName': projectName});
+    socket.emit('requestProjectRun', session_id, {'projectName': projectName, 'pipelineParameters': pipelineParameters});
     socket.on('progressLog', function(data) {
         let hook = document.getElementById('data_target');
         hook.textContent = data.message;

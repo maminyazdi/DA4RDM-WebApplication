@@ -2,7 +2,10 @@
 
 {% block preprocessing_pipeline %}
     <div class="row d-flex justify-content-center">
-        <a href="javascript:runProject('{{ project_name }}')" class="btn btn-primary">Run Project</a>
+        <p> Parameters: {{ pipeline_parameters if pipeline_parameters else "None given"}}</p>
+    </div>
+    <div class="row d-flex justify-content-center">
+        <a href="javascript:runProject('{{ project_name }}', '{{ pipeline_parameters }}')" class="btn btn-primary">Run Project</a>
     </div>
     <div class="row d-flex justify-content-center">
         <a href="{{ url_for('blueprints/preprocessing.preprocessing') }}" class="btn btn-secondary btn-lower">Back</a>

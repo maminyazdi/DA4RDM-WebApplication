@@ -18,7 +18,8 @@ def preprocessing():
 @preprocessing_bp.route('/view_project')
 def view_project():
     project_name = request.args['project_name']
-    return render_template('preprocessing/view_project.html', project_name = project_name)
+    pipeline_parameters = request.args['pipelineParameters']
+    return render_template('preprocessing/view_project.html', project_name = project_name, pipeline_parameters = pipeline_parameters)
 
 @preprocessing_bp.route('/data_source_new')
 def new_data_source():

@@ -19,7 +19,7 @@ from da4ds.models import ( InflexibleDataSourceConnection, DataBaseDialect, Dial
 from da4ds.processing_libraries.data_source_handler import data_source_handler
 from da4ds.process_mining import process_mining_controller, support_functions as process_mining_support
 from da4ds.process_mining import event_log_generator
-from . import user_session
+from . import ( user_session, input_parser )
 
 api_bp = Blueprint('blueprints/api', __name__, template_folder='templates', static_folder='static')
 
@@ -96,6 +96,7 @@ def run_project_persistent_connection(session_id, data):
 
     # programmatically get the package and module names to import from the given project name
     project_name = data['projectName']
+    pipeline_parameters = input_parser.parse_parameter_list(data['pipelineParameters'], ';', '=')
     emit('progressLog', {'message': f"Starting pipeline for project { project_name }"})
     module_name = "." + project_name
     project_path = app.config['USER_PROJECT_DIRECTORY']
@@ -109,7 +110,7 @@ def run_project_persistent_connection(session_id, data):
 
     # import module at runtime
     project = importlib.import_module(module_name, package_name)
-    project_config = project.init(session_information, db)
+    project_config = project.init(session_information, db, pipeline_parameters)
     response = project.run(project_config)
     emit('json', response)
     return "Pipeline ran successfully."

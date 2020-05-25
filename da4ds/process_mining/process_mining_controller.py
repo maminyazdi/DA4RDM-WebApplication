@@ -19,8 +19,9 @@ def run(session_information):
     #gviz = dfg_vis_factory.apply(dfg, log=event_log, variant="frequency")
     from pm4py.visualization.dfg import visualizer as dfg_visualization
     parameters = {dfg_visualization.Variants.PERFORMANCE.value.Parameters.FORMAT: "svg"}
-    gviz = dfg_visualization.apply(dfg, log=event_log, variant=dfg_visualization.Variants.PERFORMANCE, parameters=parameters)
-    output_path = session_information["output_location"] + ".png"
+    gviz = dfg_visualization.apply(dfg, log=event_log, variant=dfg_visualization.Variants.FREQUENCY, parameters=parameters)
+    #gviz = dfg_visualization.apply(dfg, log=event_log, variant=dfg_visualization.Variants.PERFORMANCE, parameters=parameters)
+    output_path = session_information["output_location"] + ".svg"
     dfg_visualization.save(gviz, output_path)
 
     # TODO # FIXME IMPORTANT the output files are currently not secured in the static folder and can in theory be accessed by anyone connecting to the server!!!

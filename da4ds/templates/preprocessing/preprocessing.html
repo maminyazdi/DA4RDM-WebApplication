@@ -28,6 +28,8 @@
                                     <option value="{{ pipeline }}" >{{ pipeline }}</option>"
                                 {% endfor %}
                             </select>
+                            <input name="pipelineParameters" type="text" class="form-control" id="pipelineParameters" aria-describedby="pipelineParametersHelp">
+                            <small id="pipelineParametersHelp" class="form-text text-muted">Use this field to provide all parameters you want to provide to the pipeline, i.e. connection details for a data base connection or a file path for a local csv or xes file. Seperate parameters with semicolon (;). Separate parameter name and value with a definition sign (:=) sign. Ommit empty white spaces.</small>
                         </div>
                         <div class="row d-flex justify-content-center">
                             <input type="submit" class="btn btn-primary btn-lower" value="View Project">

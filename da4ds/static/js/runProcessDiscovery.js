@@ -99,10 +99,10 @@ function sendXesAttributeColumns() {
 
 function updateColumnNames(allColumnNames, selectedColumns) {
     let select_inputs = [document.getElementById("timestamp_column"),
-                        document.getElementById("caseId_column"),
-                        document.getElementById("activity_column"),
-                        document.getElementById("resource_column"),
-                        document.getElementById("cost_column")];
+                         document.getElementById("caseId_column"),
+                         document.getElementById("activity_column"),
+                         document.getElementById("resource_column"),
+                         document.getElementById("cost_column")];
 
     for (let current_select_input of select_inputs) {
         for (let columnName of allColumnNames) {
