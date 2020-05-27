@@ -55,6 +55,18 @@ Updating the Database via new migrations can be done by simply adding the new cl
 check if the changes are detected, then run
 > flask db upgrade
 
+## How to Use
+
+main work flow
+
+specifics for data sources
+
+adding custom projects
+
+
+
+---
+
 ## Setting up custom projects
 
 ### Adding and selecting data sources

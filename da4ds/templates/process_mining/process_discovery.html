@@ -48,36 +48,36 @@
             </div>
             <div class="row">
                 <h1>Filters</h1>
-                <form>
+                <div>
                     <div class="form-group">
                         <label>Start Time</label>
-                        <input type="date" name="bday" max="3000-12-31" min="1000-01-01" class="form-control">
+                        <input id="process_discovery_start_date_select" type="date" name="bday" min="1000-01-01" max="3000-12-31" class="form-control">
                     </div>
                     <div class="form-group">
                         <label>End Time</label>
-                        <input type="date" name="bday" min="1000-01-01" max="3000-12-31" class="form-control">
+                        <input id="process_discovery_end_date_select" type="date" name="bday" min="1000-01-01" max="3000-12-31" class="form-control">
                     </div>
                     <div class="form-row align-items-center">
                         <div class="col-auto my-1 filter-select">
-                            <label class="mr-sm-2" for="start-activity-select">Start Activity</label>
-                            <select class="custom-select mr-sm-2" id="start-activity-select">
-                                <option selected>Choose...</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
+                            <label class="mr-sm-2" for="process_discovery_start_activity">Start Activity</label>
+                            <select multiple id="process_discovery_start_activity" class="custom-select mr-sm-2">
                             </select>
                         </div>
                     </div>
                     <div class="form-row align-items-center">
                         <div class="col-auto my-1 filter-select">
-                            <label class="mr-sm-2" for="end-activity-select">End Activity</label>
-                            <select class="custom-select mr-sm-2" id="end-activity-select">
-                                <option selected>Choose...</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
+                            <label class="mr-sm-2" for="process_discovery_end_activity">End Activity</label>
+                            <select multiple id="process_discovery_end_activity" class="custom-select mr-sm-2">
                             </select>
                         </div>
+                    </div>
+                    <div class="form-row align-items-center">
+                        <label for="process_discovery_min_performance">Parameters</label>
+                        <input id="process_discovery_min_performance" name="beginActivity" required type="text" class="form-control" aria-describedby="begin activity">
+                    </div>
+                    <div class="form-row align-items-center">
+                        <label for="process_discovery_max_performance">Parameters</label>
+                        <input id="process_discovery_max_performance" name="endActivity" required type="text" class="form-control" aria-describedby="end activity">
                     </div>
                 </form>
             </div>
@@ -91,6 +91,9 @@
                     </div>
                     <div class="row d-flex justify-content-center">
                         <a href="javascript:downloadWorkingData()" class="btn btn-secondary">Download Data</a>
+                    </div>
+                    <div class="row d-flex justify-content-center">
+                        <a href="javascript:resetAllPMOptions()" class="btn btn-secondary">Reset Project</a>
                     </div>
                     <form>
                         <div class="form-row align-items-center">

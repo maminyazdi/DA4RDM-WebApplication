@@ -15,6 +15,12 @@
                 <input name="dataSourceParameters" required type="text" class="form-control" id="dataSourceParameters" aria-describedby="dataSourceParametersHelp">
                 <small id="dataSourceParametersHelp" class="form-text text-muted">Use this field to provide all parameters required to access the data source, i.e. connection details for a data base connection or a file path for a local csv or xes file. Seperate parameters with semicolon (;). Separate parameter name and value with a definition sign (:=) sign. Ommit empty white spaces.</small>
             </div>
+            <div class="input-group">
+                <select name="datasource_kind" required class="custom-select" id="datasource_kind" aria-label="Select the type of data source">
+                    <option id="csv" value="csv" >CSV</option>
+                    <option id="database" value="database" >Database</option>
+                </select>
+            </div>
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
         <a href="{{ url_for('blueprints/preprocessing.preprocessing') }}" class="btn btn-secondary btn-lower">Back</a>

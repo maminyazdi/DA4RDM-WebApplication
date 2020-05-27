@@ -17,8 +17,7 @@ from werkzeug.utils import secure_filename
 from da4ds import db
 from da4ds.models import ( InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource )
 from da4ds.processing_libraries.data_source_handler import data_source_handler
-from da4ds.process_mining import process_mining_controller, support_functions as process_mining_support
-from da4ds.process_mining import event_log_generator
+from da4ds.process_mining import ( process_mining_controller, event_log_generator, filter_handler, support_functions as process_mining_support )
 from . import ( user_session, input_parser )
 
 api_bp = Blueprint('blueprints/api', __name__, template_folder='templates', static_folder='static')
@@ -44,7 +43,7 @@ def new_data_source():
     data_source = DataSource()
     data_source.Name = request.form['dataSourceName']
     data_source.Parameters = request.form['dataSourceParameters']
-    data_source.Type = "csv"
+    data_source.Type = request.form['datasource_kind']
     data_source.LastModified = datetime.datetime.now()
     data_source.StoredOnServer = True
     db.session.add(data_source)
@@ -116,13 +115,14 @@ def run_project_persistent_connection(session_id, data):
     return "Pipeline ran successfully."
 
 @socketio.on('requestEventLogPreparation', namespace='/api/run_process_discovery')
-def get_process_discovery_filters(session_id, xes_attribute_columns = None, filters = None):
+def get_process_discovery_filters(session_id, xes_attribute_columns = None, filters = None, options = None):
     current_session = user_session.get_session_information(session_id)
 
     dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
-    column_names = process_mining_support.get_column_names(dataframe)
+    dataframe_key_metrics = {}
 
     if xes_attribute_columns == None and (bool(current_session['pm_xes_attributes']) == False or current_session['pm_xes_attributes'] == None):
+        column_names = process_mining_support.get_column_names(dataframe)
         emit("updateColumnNames", column_names)
         return
 
@@ -137,22 +137,58 @@ def get_process_discovery_filters(session_id, xes_attribute_columns = None, filt
 
     dataframe = event_log_generator.prepare_event_log_dataframe(dataframe, current_session['pm_xes_attributes'])
 
-    dataframe.to_csv("C:/Temp/aTest.csv", sep=";")
+    dataframe.to_csv(current_session["process_mining_data_location"], sep=';') # TODO might be better do directly convert the dataframe to evenglog rather than saving to disk!
 
-    #get key metrics for the process discovery source data frame
-    dataframe_key_metrics = process_mining_controller.get_dataframe_key_metrics(dataframe, current_session['pm_xes_attributes'])
-
-    dataframe.to_csv(current_session["process_mining_data_location"], sep=";")
-
-    emit("ProcessDiscoveryUpdateEverything", {"all_column_names": column_names, # all column names of the data frame
-                                              "pm_xes_attributes": current_session['pm_xes_attributes'], # selected xes attribute columns
-                                              "pm_filters": current_session['pm_filters'], # selected filters
-                                              "pm_dataframe_key_metrics": dataframe_key_metrics}) # key metrics such as number of cases and events #update filters, columns and statistics, other options
 
 
     # xes attribute columns + remaining unlabelled columns
 
-    # set filters and filter options
+
+    ######################################################
+    ######################################################
+    ## strucutally, apply all filters that are already in the sesions, then apply the filters given as paraters, then calculate (columns??) and filters (min, max date, activities) and then also return current selected columns and filters and metrics
+    ######################################################
+    ######################################################
+    event_log = event_log_generator.generate_xes_log(current_session["process_mining_data_location"], separator=';')
+
+    if current_session["pm_filters"]:
+
+        # set filters and filter options
+
+        event_log = filter_handler.apply_all_filters(event_log, current_session["pm_filters"])
+
+        from pm4py.objects.conversion.log import converter as log_converter
+        dataframe = log_converter.apply(event_log, variant = log_converter.Variants.TO_DATA_FRAME)
+        #df.to_csv("C:/Temp/aTest.csv", sep=";")
+
+    ###### Extract funciton for getting all the possible values for the pm filters #####
+    pm_filter_options = {}
+    act_col_ser = dataframe["concept:name"]
+    activity_options = act_col_ser.unique()
+    pm_filter_options["activity_options"] = activity_options.tolist()
+    tim_col_ser = dataframe["time:timestamp"]
+    timestamp_options = {}
+    timestamp_options["min"] = tim_col_ser.min()
+    timestamp_options["max"] = tim_col_ser.max()
+    pm_filter_options["timestamp_options"] = timestamp_options
+    # maybe add min and max cost as well
+    ###### #####
+
+    column_names = process_mining_support.get_column_names(dataframe)
+    dataframe_key_metrics = process_mining_controller.get_dataframe_key_metrics(dataframe, event_log, current_session['pm_xes_attributes'])
+
+    dataframe.to_csv(current_session["process_mining_data_location"], sep=";")
+
+
+    emit("ProcessDiscoveryUpdateEverything", {"all_column_names": column_names, # all column names of the data frame
+                                              "pm_xes_attributes": current_session['pm_xes_attributes'], # selected xes attribute columns
+                                              "pm_filter_options": pm_filter_options, # get all possible values for the process mining filters
+                                              "pm_filters": current_session['pm_filters'], # selected filters
+                                              "pm_dataframe_key_metrics": dataframe_key_metrics}) # key metrics such as number of cases and events #update filters, columns and statistics, other options
+
+    ######################################################
+    ######################################################
+    ######################################################
 
     # create some coherent response object/JSON
 
