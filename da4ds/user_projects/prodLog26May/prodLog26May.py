@@ -11,9 +11,9 @@ from da4ds.processing_libraries.da4ds import xes_formatter
 def run(config):
     parameters = config.parameters
 
-    #dataframe = pd.read_csv(config.current_session["data_location"], index_col=0, sep=";")
+    dataframe = pd.read_csv(config.current_session["data_location"], index_col=0, sep=";")
 
-    dataframe = pd.read_csv("C:/Temp/prodLogMai.txt", sep="\t")
+    #dataframe = pd.read_csv("C:/Temp/prodLogMai.txt", sep="\t")
 
     dataframe = parse_message(dataframe)
 
@@ -32,7 +32,7 @@ def run(config):
     # TODO treat inconsistencies and missing values
     dataframe.to_csv(config.current_session["data_location"], sep=";")
 
-    return render_template('main/index.html')
+    return dataframe
 
 def parse_message(dataframe):
     """parses the "message" column from the Log dataframe and returns a dataframe with the columns parsed from the json contents of Message."""

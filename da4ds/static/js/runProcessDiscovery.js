@@ -4,11 +4,13 @@ let socket = io.connect('http://' + document.domain + ':' + location.port + '/ap
 socket.on('updateColumnNames', function(response) {
     resetAllPMOptions();
     updateColumnNames(response);
+    hideSpinner();
 });
 
 socket.on('ProcessDiscoveryUpdateEverything', function(response) {
     resetAllPMOptions();
     updateEverything(response);
+    hideSpinner();
 })
 
 socket.emit('requestEventLogPreparation', session_id);
@@ -16,16 +18,16 @@ socket.emit('requestEventLogPreparation', session_id);
 
 function runProcessDiscovery(hostUrl, projectUrl){
     let hook = document.getElementById('data_target');
-    let spinner = document.getElementById('pipeline-running-spinner');
+    showSpinner();
 
-    spinner.style.display="block"
+    hook.innerHTML = "";
     socket.emit('requestProcessDiscovery', session_id);
     socket.on('progressLog', function(data) {
         hook.textContent = data.message;
     });
     socket.on('gviz', function(response) {
         let img = document.createElement("img");
-        spinner.style.display="none";
+        hideSpinner();
         img.src = response.replace(/\\/g, "/");
         hook.appendChild(img);
     })
@@ -39,6 +41,7 @@ function runProcessDiscovery(hostUrl, projectUrl){
 
 function updateEverything(allDiscoveryInformation) {
 
+    showSpinner();
     updateColumnNames(allDiscoveryInformation["all_column_names"], allDiscoveryInformation["pm_xes_attributes"]);
     updatePMFilters(allDiscoveryInformation["pm_filter_options"], allDiscoveryInformation["pm_filters"]);
     //update other options
@@ -47,11 +50,17 @@ function updateEverything(allDiscoveryInformation) {
 }
 
 function resetAllPMOptions() {
+    document.getElementById('data_target').innerHTML = "";
+    showSpinner();
+
     remove_all_options_from_select("timestamp_column");
     remove_all_options_from_select("caseId_column");
     remove_all_options_from_select("activity_column");
     remove_all_options_from_select("resource_column");
     remove_all_options_from_select("cost_column");
+
+    remove_all_options_from_select("process_discovery_start_activity")
+    remove_all_options_from_select("process_discovery_end_activity")
 
     return;
 }
@@ -65,34 +74,12 @@ function remove_all_options_from_select(elementId) {
 }
 
 function sendXesAttributeColumns() {
-    let select_inputs = [document.getElementById("timestamp_column"),
-                        document.getElementById("caseId_column"),
-                        document.getElementById("activity_column"),
-                        document.getElementById("resource_column"),
-                        document.getElementById("cost_column")];
-
-    let selectedColumns = {};
-
-    for (let current_select_input of select_inputs) {
-        selectedColumns[current_select_input.id] = current_select_input.value;
-    }
-
-    socket.emit("requestEventLogPreparation", session_id, selectedColumns);
+    let selectedXesAttributeColumns = getXesAttributeColumns();
+    socket.emit("requestEventLogPreparation", session_id, selectedXesAttributeColumns);
     return;
 }
 
 function sendPMOptions() {
-    /*let select_inputs = [document.getElementById("timestamp_column"),
-                        document.getElementById("caseId_column"),
-                        document.getElementById("activity_column"),
-                        document.getElementById("resource_column"),
-                        document.getElementById("cost_column")];
-
-    let selectedColumns = {};
-
-    for (let current_select_input of select_inputs) {
-        selectedColumns[current_select_input.id] = current_select_input.value;
-    }*/
     let selectedXesAttributeColumns = getXesAttributeColumns();
     let selectedPMFilters = getPMFilters();
     let selectedOptions = getDiscoveryOptions();
@@ -133,8 +120,8 @@ function updateColumnNames(allColumnNames, selectedColumns) {
 }
 
 function updatePMFilters(filterOptions, selectedFilters) {
-    startDateSelect = document.getElementById('process_discovery_start_date_select');
-    endDateSelect = document.getElementById('process_discovery_end_date_select');
+    startDateSelect = document.getElementById('process_discovery_start_date');
+    endDateSelect = document.getElementById('process_discovery_end_date');
     startActivitySelect = document.getElementById('process_discovery_start_activity');
     endActivitySelect = document.getElementById('process_discovery_end_activity');
     activitySelects = [startActivitySelect, endActivitySelect]
@@ -178,8 +165,8 @@ function updatePMFilters(filterOptions, selectedFilters) {
 }
 
 function updateKeyMetrics(metrics) {
-    document.getElementById('metrics_number_of_cases').innerHTML      = metrics["number_of_events"];
-    document.getElementById('metrics_number_of_events').innerHTML     = metrics["number_of_cases"];
+    document.getElementById('metrics_number_of_cases').innerHTML      = metrics["number_of_cases"];
+    document.getElementById('metrics_number_of_events').innerHTML     = metrics["number_of_events"];
     document.getElementById('metrics_number_of_activities').innerHTML = metrics["number_of_activities"];
     document.getElementById('metrics_number_of_variants').innerHTML   = metrics["number_of_variants"];
 }
@@ -211,7 +198,11 @@ function getPMFilters() {
     let selectedFilters = {};
 
     for (let current_select_input of select_inputs) {
-        selectedFilters[current_select_input.id] = current_select_input.value;
+        if (current_select_input.tagName === 'SELECT') {
+            selectedFilters[current_select_input.id] = getAllValuesFromMultiSelect(current_select_input)
+        } else {
+            selectedFilters[current_select_input.id] = current_select_input.value;
+        }
     }
 
     return selectedFilters;
@@ -229,4 +220,26 @@ function resetAllPMOptions() {
     //reset all ui inputs
     //AND
     //all server side session information on these options!!
+}
+
+function getAllValuesFromMultiSelect(selectElement) {
+    var selectedValues = [];
+    var options = selectElement && selectElement.options;
+
+    for (let opt of options) {
+        if (opt.selected) {
+            selectedValues.push(opt.value);
+        }
+    }
+    return selectedValues;
+}
+
+function showSpinner() {
+    let spinner = document.getElementById('discovery-spinner');
+    spinner.style.display="block"
+}
+
+function hideSpinner() {
+    let spinner = document.getElementById('discovery-spinner');
+    spinner.style.display="none"
 }

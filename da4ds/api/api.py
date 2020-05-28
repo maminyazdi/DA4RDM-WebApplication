@@ -110,8 +110,17 @@ def run_project_persistent_connection(session_id, data):
     # import module at runtime
     project = importlib.import_module(module_name, package_name)
     project_config = project.init(session_information, db, pipeline_parameters)
-    response = project.run(project_config)
-    emit('json', response)
+
+    # this is legacy code that makes old user pipelines create a response
+    # TODO find a way to wrap the response from pipelines under consideration of the response kind from the pipeline into a proper reponse object, store the result dataframe (if applicable) in the right data location
+    #response = project.run(project_config)
+    # emit('json', response)
+
+    result_dataframe = project.run(project_config)
+    result_dataframe.to_csv(session_information["data_location"], sep=";")
+
+    emit('progressLog', {'message': "Pipeline finished successfully"})
+
     return "Pipeline ran successfully."
 
 @socketio.on('requestEventLogPreparation', namespace='/api/run_process_discovery')
@@ -121,76 +130,69 @@ def get_process_discovery_filters(session_id, xes_attribute_columns = None, filt
     dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
     dataframe_key_metrics = {}
 
+    column_names = process_mining_support.get_column_names(dataframe)
+
+    # if no xes columns have ever been selected, just return all of the column names and nothing else
     if xes_attribute_columns == None and (bool(current_session['pm_xes_attributes']) == False or current_session['pm_xes_attributes'] == None):
-        column_names = process_mining_support.get_column_names(dataframe)
         emit("updateColumnNames", column_names)
         return
 
+    # if xes_attributes are given, update session info with the selected column names
     if not xes_attribute_columns == None:
         user_session.update_session(session_id, "PMXesAttributes", xes_attribute_columns)
 
+    # if filters are given, update session info with filters
     if not filters == None:
         user_session.update_session(session_id, "PMFilters", filters)
 
-    #process_mining_support.update_xes_attribute_columns(xes_attribute_columns, session_id) # TODO DELETE THOSE FUNCTIONS IN THE HELPER CLASS (UNLESS YOU WANT TO USE THEM TO HANDLE SPECIAL CASES)
-    #process_mining_support.update_filters(filters, session_id)
+    current_session = user_session.get_session_information(session_id)
 
+    # prepare dataframe by applying xes column names to selected colunns
     dataframe = event_log_generator.prepare_event_log_dataframe(dataframe, current_session['pm_xes_attributes'])
 
+    #generate event log dataframe (might be more reasonable to use the direct dataframe -> eventlog conversion without storing to file first)
     dataframe.to_csv(current_session["process_mining_data_location"], sep=';') # TODO might be better do directly convert the dataframe to evenglog rather than saving to disk!
-
-
-
-    # xes attribute columns + remaining unlabelled columns
-
-
-    ######################################################
-    ######################################################
-    ## strucutally, apply all filters that are already in the sesions, then apply the filters given as paraters, then calculate (columns??) and filters (min, max date, activities) and then also return current selected columns and filters and metrics
-    ######################################################
-    ######################################################
     event_log = event_log_generator.generate_xes_log(current_session["process_mining_data_location"], separator=';')
 
+    #apply filters and update dataframe if there are filters selected
     if current_session["pm_filters"]:
 
         # set filters and filter options
-
         event_log = filter_handler.apply_all_filters(event_log, current_session["pm_filters"])
 
         from pm4py.objects.conversion.log import converter as log_converter
-        dataframe = log_converter.apply(event_log, variant = log_converter.Variants.TO_DATA_FRAME)
-        #df.to_csv("C:/Temp/aTest.csv", sep=";")
 
-    ###### Extract funciton for getting all the possible values for the pm filters #####
+        #refresh the dataframe
+        dataframe = log_converter.apply(event_log, variant = log_converter.Variants.TO_DATA_FRAME)
+
+        #TODO figure out a better way to handle when the filters result in an insufficient event_log
+        try:
+            dataframe["time:timestamp"] = dataframe["time:timestamp"].dt.strftime("%d-%m-%Y %H:%M:%S")
+        except KeyError:
+            emit("warning", {"message": "The selected filters did not return any cases."})
+
+    # Extract function for getting all the possible values for the pm filters
     pm_filter_options = {}
-    act_col_ser = dataframe["concept:name"]
-    activity_options = act_col_ser.unique()
-    pm_filter_options["activity_options"] = activity_options.tolist()
-    tim_col_ser = dataframe["time:timestamp"]
     timestamp_options = {}
-    timestamp_options["min"] = tim_col_ser.min()
-    timestamp_options["max"] = tim_col_ser.max()
+    activity_column = dataframe["concept:name"]
+    #TODO problem: if you refresh activity options after already applying some activity options, you will probably no more able to select form the entire range of activities, but the reduction in options is on the other hand required after start time and end time change
+    activity_options = activity_column.unique()
+    pm_filter_options["activity_options"] = activity_options.tolist()
+    timestamp_column = dataframe["time:timestamp"]
+    timestamp_options["min"] = timestamp_column.min()
+    timestamp_options["max"] = timestamp_column.max()
     pm_filter_options["timestamp_options"] = timestamp_options
     # maybe add min and max cost as well
-    ###### #####
 
-    column_names = process_mining_support.get_column_names(dataframe)
     dataframe_key_metrics = process_mining_controller.get_dataframe_key_metrics(dataframe, event_log, current_session['pm_xes_attributes'])
 
     dataframe.to_csv(current_session["process_mining_data_location"], sep=";")
-
 
     emit("ProcessDiscoveryUpdateEverything", {"all_column_names": column_names, # all column names of the data frame
                                               "pm_xes_attributes": current_session['pm_xes_attributes'], # selected xes attribute columns
                                               "pm_filter_options": pm_filter_options, # get all possible values for the process mining filters
                                               "pm_filters": current_session['pm_filters'], # selected filters
                                               "pm_dataframe_key_metrics": dataframe_key_metrics}) # key metrics such as number of cases and events #update filters, columns and statistics, other options
-
-    ######################################################
-    ######################################################
-    ######################################################
-
-    # create some coherent response object/JSON
 
     return """Not yet implemented!""" # TODO return to the process mining overview page
 
@@ -242,4 +244,3 @@ def download_temporary_data():
     return send_file(working_data_path, as_attachment=True)
     #return send_from_directory(directory_name, filename, as_attachment=True)
     #send_file(working_data_path) #send_from_directory
-

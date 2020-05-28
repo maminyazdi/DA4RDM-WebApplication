@@ -57,11 +57,26 @@ check if the changes are detected, then run
 
 ## How to Use
 
-main work flow
+The typical use case will be comprised of the following three steps:
+1) Selecting a Data Source.
+2) Running a data cleaning pipeline.
+3) Running the process discovery algorithms.
 
-specifics for data sources
+### Selecitn a Data Source
 
-adding custom projects
+As a first step, your data source should be selected. If you did not prevously select the desired data source, head to Data Initialization -> Save a new data source. Your data source needs an arbitrary name and some parameters. Parameters should be separated by semicolon (;), and values of parameters should be added following the parameter after a definition symbol (:=).
+Currently used parameters are path:= and separator:= for CSV files and connection_string:= and query:= for database connections, where connection_string should be a string that can be used by sqlalchemy to create a database engine and connect to the specified database.
+
+Once the connection is stored, you can select it under Data Initialization -> Select data source. After this step has been completed, the data will be stored in a workable form on the server and can be used in the cleaning pipelines and process discovery steps.
+
+
+### Running a Cleaning Pipeline
+
+
+
+### Rnning the Process Discovery Algorithms
+
+
 
 
 
@@ -69,13 +84,16 @@ adding custom projects
 
 ## Setting up custom projects
 
-### Adding and selecting data sources
-On the corresponding page, you can add data sources.
-
 ### Adding a project
 You can add custom projects to the application which can be seelected from the main view.
 By default, custom projects are being placed in the user_projects directory inside of the da4ds directory. This path can be changed in the configuration.
 A custom project should contain a __init__.py file which takes care of all required global imports needed in the project, as well as loading the project specific configuration files. The __init__.py will be the first file to be loaded and is required for the project to be imported into the application.
+
+### Accessing the Data from the Data Source
+
+The initialization function of your project will recieve the session information of your current project. This information contains, amongst other, the location of the data that has been stored after you selected your data source. You can access it by callng
+
+> session_information["data_location"]
 
 ### Structuring your project
 Ideally a custom project is segrated into the execution and pipilening of modules that each serve a specific purpose inside of that pipeline. The intended use of the programme is to have the data pre-processing being done on temporary DASK dataframes for as long as possible.
@@ -84,8 +102,11 @@ You may also extend that library or add your own libraries there.
 Modules should adhere to the following interface: func(dataframe, options{args*}) -> {dataframe, additional_results'}.
 
 ### Output formats
+Your project should store a pandas dataframe back to the path found in
+
+> session_information["data_location"]
+
+so that the process discovery can find the cleaned data.
+
 You can store dataframes as CSV-File by including the corresponding module. The output-path for these files can be specified in the config.py of your project.
 The final result of the pipeline can be shown on the application front end. This expects a json response object that can also be created by the corresponding module. The frontend at the moments can display only text. The parameter you give to that modules should thus for now only have the value "text". In the future it is planned to support displaying graphs for data. In this case, the parameter should have the value "table".
-
-## Process Discovery
-Parameters/Options

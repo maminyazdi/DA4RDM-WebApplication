@@ -7,7 +7,8 @@ from da4ds.process_mining import ( event_log_generator, filter_handler, mining_h
 def run(session_information):
 
     event_log = event_log_generator.generate_xes_log(session_information["process_mining_data_location"], separator=';')
-    filtered_event_log = filter_handler.apply_all_filters(event_log, session_information["pm_filters"]) # TODO gleiche Auswahl auch für Options machen? Also z.B. Information about Frequency/Perofrmance??
+    if session_information["pm_filters"]:
+        filtered_event_log = filter_handler.apply_all_filters(event_log, session_information["pm_filters"]) # TODO gleiche Auswahl auch für Options machen? Also z.B. Information about Frequency/Perofrmance??
     miner = mining_handler.select_mining_strategy()
     model_type = mining_handler.select_model_type()
 
