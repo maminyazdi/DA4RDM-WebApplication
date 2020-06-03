@@ -21,7 +21,8 @@ function runProcessDiscovery(hostUrl, projectUrl){
     showSpinner();
 
     hook.innerHTML = "";
-    socket.emit('requestProcessDiscovery', session_id);
+    let options = getDiscoveryOptions();
+    socket.emit('requestProcessDiscovery', session_id, options);
     socket.on('progressLog', function(data) {
         hook.textContent = data.message;
     });
@@ -209,7 +210,14 @@ function getPMFilters() {
 }
 
 function getDiscoveryOptions() {
-    return undefined;
+    algorithm      = document.getElementById('discovery_algorithm')
+    representation = document.getElementById('model_represenations')
+    variant        = document.getElementById('model_variant')
+    options = {'discovery_algorithm': algorithm.value,
+               'model_represenations': representation.value,
+               'model_variant': variant.value}
+
+    return options;
 }
 
 function getColumnNames() {

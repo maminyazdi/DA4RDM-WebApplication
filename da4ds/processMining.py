@@ -21,4 +21,14 @@ def process_mining():
 
 @process_mining_bp.route('/process_discovery')
 def process_discovery():
-    return render_template('process_mining/process_discovery.html')
+    # get all available discovery algorithms
+    discovery_algorithm_labels = {"alpha_miner": "Alpha Miner",
+                                  "directly_follows_graph": "Directly Follows Graph",
+                                  "heuristic_miner": "Heuristic Miner",
+                                  "inductive_miner": "Inductive Miner"}
+
+    discovery_algorithm_path = './da4ds/process_mining/discovery_algorithms/'
+    files = os.listdir(discovery_algorithm_path)
+    discovery_algorithms = [str(x)[:-3] for x in files if (not (os.path.isdir(discovery_algorithm_path + x) and x != '__init__.py'))]
+
+    return render_template('process_mining/process_discovery.html', discovery_algorithms=discovery_algorithms, discovery_algorithm_labels=discovery_algorithm_labels)

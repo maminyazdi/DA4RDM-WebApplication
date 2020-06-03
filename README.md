@@ -93,7 +93,7 @@ A custom project should contain a __init__.py file which takes care of all requi
 
 The initialization function of your project will recieve the session information of your current project. This information contains, amongst other, the location of the data that has been stored after you selected your data source. You can access it by callng
 
-> session_information["data_location"]
+> session_information["unmodified_data_location"]
 
 ### Structuring your project
 Ideally a custom project is segrated into the execution and pipilening of modules that each serve a specific purpose inside of that pipeline. The intended use of the programme is to have the data pre-processing being done on temporary DASK dataframes for as long as possible.
@@ -102,7 +102,7 @@ You may also extend that library or add your own libraries there.
 Modules should adhere to the following interface: func(dataframe, options{args*}) -> {dataframe, additional_results'}.
 
 ### Output formats
-Your project should store a pandas dataframe back to the path found in
+Your project must return a dataframe object. It should return the results of the pipeline. The dataframe will be stored at
 
 > session_information["data_location"]
 

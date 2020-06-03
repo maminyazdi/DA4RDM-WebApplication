@@ -72,11 +72,11 @@
                         </div>
                     </div>
                     <div class="form-row align-items-center">
-                        <label for="process_discovery_min_performance">Parameters</label>
+                        <label for="process_discovery_min_performance">Minimum Performance</label>
                         <input id="process_discovery_min_performance" name="beginActivity" required type="text" class="form-control" aria-describedby="begin activity" onchange="sendPMOptions();">
                     </div>
                     <div class="form-row align-items-center">
-                        <label for="process_discovery_max_performance">Parameters</label>
+                        <label for="process_discovery_max_performance">Maximum Performance</label>
                         <input id="process_discovery_max_performance" name="endActivity" required type="text" class="form-control" aria-describedby="end activity" onchange="sendPMOptions();">
                     </div>
                 </form>
@@ -90,8 +90,18 @@
                     <div class="row d-flex justify-content-center">
                         <a href="javascript:runProcessDiscovery('{{ request.host_url }}', '{{ url_for('blueprints/process_mining.process_discovery') }}')" class="btn btn-primary">Start Process Discovery</a>
                     </div>
-                    <div class="row d-flex justify-content-center">
+                    <!--<div class="row d-flex justify-content-center">
                         <a href="javascript:downloadWorkingData()" class="btn btn-secondary">Download Data</a>
+                    </div>-->
+                    <div class="dropdown">
+                        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Download
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="#">CSV</a>
+                            <a class="dropdown-item" href="#">XES</a>
+                            <a class="dropdown-item" href="#">Graph</a>
+                        </div>
                     </div>
                     <div class="row d-flex justify-content-center">
                         <a href="javascript:resetAllPMOptions()" class="btn btn-secondary">Reset Project</a>
@@ -99,19 +109,30 @@
                     <form>
                         <div class="form-row align-items-center">
                             <div class="col-auto my-1 filter-select">
-                                <label class="mr-sm-2" for="discovery-algorithm">Discovery Algorithm</label>
-                                <select class="custom-select mr-sm-2" id="discovery-algorithm">
-                                    <option selected>Choose...</option>
-                                    <option value="1">Directly Follows Graph (DFG)</option>
+                                <label class="mr-sm-2" for="discovery_algorithm">Discovery Algorithm</label>
+                                <select id="discovery_algorithm" class="custom-select mr-sm-2">
+                                    {% for discovery_algorithm in discovery_algorithms %}
+                                        <option id="{{ discovery_algorithm }}" value="{{ discovery_algorithm }}">{{ discovery_algorithm_labels[discovery_algorithm] }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
                         <div class="form-row align-items-center">
                             <div class="col-auto my-1 filter-select">
-                                <label class="mr-sm-2" for="model-represenations">Model Represenations</label>
-                                <select class="custom-select mr-sm-2" id="model-represenations">
-                                    <option selected>Choose...</option>
-                                    <option value="1">Petri Net</option>
+                                <label class="mr-sm-2" for="model_represenations">Visualization Format</label>
+                                <select id="model_represenations" class="custom-select mr-sm-2">
+                                    <option value="svg">SVG</option>
+                                    <option value="png">PNG</option>
+                                    <option value="jpg">JPG</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row align-items-center">
+                            <div class="col-auto my-1 filter-select">
+                                <label class="mr-sm-2" for="model_variant">Visualization Format</label>
+                                <select id="model_variant" class="custom-select mr-sm-2">
+                                    <option value="frequency">Frequency</option>
+                                    <option value="performance">Performance</option>
                                 </select>
                             </div>
                         </div>

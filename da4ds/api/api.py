@@ -59,7 +59,8 @@ def read_data_from_source():
     selected_source = data_sources[int(request.values['selectedDataSourceId']) - 1] # -1 for zero based indexing of data_sources compared to 1 based indexing in db
 
     dataframe = data_source_handler.read_from_source(selected_source)
-    dataframe.to_csv(current_session['data_location'], sep=";") #TODO find a better way to store temporary data i.e. localstorage + uuids TODO make the temporary storage location configurable
+    dataframe.to_csv(current_session['unmodified_data_location'], sep=";")
+    dataframe.to_csv(current_session['data_location'], sep=";")
 
     return render_template('preprocessing/preprocessing.html')
 
@@ -224,11 +225,12 @@ def get_column_names(session_id):
 ###
 
 @socketio.on('requestProcessDiscovery', namespace='/api/run_process_discovery')
-def run_process_discovery(session_id):
+def run_process_discovery(session_id, options):
     emit('progressLog', {"progressLog": "Starting process mining"})
     current_session = user_session.get_session_information(session_id)
 
-    process_model = process_mining_controller.run(current_session)
+
+    process_model = process_mining_controller.run(current_session, options)
     emit(process_model[0], process_model[1])
 
     return

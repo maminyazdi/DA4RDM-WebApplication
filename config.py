@@ -22,12 +22,12 @@ class Config(object):
     ###########################
     USER_PROJECT_DIRECTORY = os.environ.get('USER_PROJ_DIR') or './da4ds/user_projects/'
 
-    ##########################
-    ### output directories ###
-    ##########################
-    CSV_STORAGE_DIRECTORY = os.environ.get('OUTPUT_DIR') or 'C:/Temp'
-
     ###################################
     ### temporary storage directory ###
     ###################################
     TEMP_STORAGE_DIRECTORY = os.environ.get('TEMP_STORAGE_DIR') or './da4ds/temporary_results/'
+
+    ##########################
+    ### output directories ###
+    ##########################
+    CSV_STORAGE_DIRECTORY = os.environ.get('OUTPUT_DIR') or 'C:/Temp'

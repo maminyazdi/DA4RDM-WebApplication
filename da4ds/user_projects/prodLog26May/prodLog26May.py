@@ -11,13 +11,11 @@ from da4ds.processing_libraries.da4ds import xes_formatter
 def run(config):
     parameters = config.parameters
 
-    dataframe = pd.read_csv(config.current_session["data_location"], index_col=0, sep=";")
+    dataframe = pd.read_csv(config.current_session["unmodified_data_location"], index_col=0, sep=";")
 
     #dataframe = pd.read_csv("C:/Temp/prodLogMai.txt", sep="\t")
 
     dataframe = parse_message(dataframe)
-
-    print(dataframe.head(50))
 
     dataframe['Timestamp'] = pd.to_datetime(dataframe['Timestamp'], utc=True)
     dataframe = dataframe.sort_values(by="Timestamp")

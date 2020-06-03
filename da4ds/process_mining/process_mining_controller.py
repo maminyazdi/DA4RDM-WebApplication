@@ -4,12 +4,13 @@ from pm4py.algo.filtering.log.variants import variants_filter
 
 from da4ds.process_mining import ( event_log_generator, filter_handler, mining_handler, visualization_handler, conformance_handler )
 
-def run(session_information):
-
+def run(session_information, options):
     event_log = event_log_generator.generate_xes_log(session_information["process_mining_data_location"], separator=';')
     if session_information["pm_filters"]:
         filtered_event_log = filter_handler.apply_all_filters(event_log, session_information["pm_filters"]) # TODO gleiche Auswahl auch für Options machen? Also z.B. Information about Frequency/Perofrmance??
-    miner = mining_handler.select_mining_strategy()
+    miner = mining_handler.select_mining_strategy(options['discovery_algorithm'])
+    output_path = session_information["output_location"] + "." + options["model_represenations"]
+    gviz = miner.run(event_log, options, output_path)
     model_type = mining_handler.select_model_type()
 
     ### temp code
@@ -23,7 +24,6 @@ def run(session_information):
     parameters = {dfg_visualization.Variants.PERFORMANCE.value.Parameters.FORMAT: "svg"}
     gviz = dfg_visualization.apply(dfg, log=event_log, variant=dfg_visualization.Variants.FREQUENCY, parameters=parameters)
     #gviz = dfg_visualization.apply(dfg, log=event_log, variant=dfg_visualization.Variants.PERFORMANCE, parameters=parameters)
-    output_path = session_information["output_location"] + ".svg"
     dfg_visualization.save(gviz, output_path)
 
     # TODO # FIXME IMPORTANT the output files are currently not secured in the static folder and can in theory be accessed by anyone connecting to the server!!!

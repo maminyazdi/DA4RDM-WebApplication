@@ -19,11 +19,12 @@ def create_new_session():
     if not temp_storage_directory[-1] == "/":
         temp_storage_directory = temp_storage_directory + "/"
 
-    new_session.WorkingDataLocation = f'{temp_storage_directory}{new_session.Id}/data_cleaning_working_data.csv'
-    new_session.PDDataLocation      = f'{temp_storage_directory}{new_session.Id}/process_discovery_working_data.csv'
-    new_session.OutputDataLocation  = f'./da4ds/static/process_mining_output/{new_session.Id}'
-    new_session.PMXesAttributes = ""
-    new_session.PMFilter = ""
+    new_session.UnmodifiedDataLocation = f'{temp_storage_directory}{new_session.Id}/data_cleaning_unmodified_data.csv'
+    new_session.WorkingDataLocation    = f'{temp_storage_directory}{new_session.Id}/data_cleaning_working_data.csv'
+    new_session.PDDataLocation         = f'{temp_storage_directory}{new_session.Id}/process_discovery_working_data.csv'
+    new_session.OutputDataLocation     = f'./da4ds/static/process_mining_output/{new_session.Id}'
+    new_session.PMXesAttributes        = ""
+    new_session.PMFilter               = ""
     db.session.add(new_session)
     db.session.commit()
 
@@ -40,6 +41,7 @@ def get_session_information(session_id):
 
     session_information = {}
     raw_session_information = SessionInformation.query.filter_by(Id=session_id).first()
+    session_information['unmodified_data_location'] = raw_session_information.UnmodifiedDataLocation
     session_information['data_location'] = raw_session_information.WorkingDataLocation
     session_information['process_mining_data_location'] = raw_session_information.PDDataLocation
     session_information['output_location'] = raw_session_information.OutputDataLocation
@@ -69,6 +71,7 @@ def clear_session(session_id):
     """Deletes the queried user session from the data base."""
 
     # TODO maybe release the disc space by deleting all the tepmorary data from the session
+    # or write a job that clears old sessions and removes them from the dabase
 
     session_information = SessionInformation.query.filter_by(Id=session_id).first()
     db.session.delete(session_information)

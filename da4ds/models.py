@@ -86,10 +86,11 @@ class DataSource(db.Model):
     Parameters     = db.Column(db.String(1000))
 
 class SessionInformation(db.Model):
-    __tablename__       = 'session_information'
-    Id                  = db.Column(db.String(64), primary_key=True)
-    WorkingDataLocation = db.Column(db.String(255))
-    PDDataLocation      = db.Column(db.String(255))
-    OutputDataLocation  = db.Column(db.String(255))
-    PMXesAttributes     = db.Column(db.String(2000))
-    PMFilters           = db.Column(db.String(2000))
+    __tablename__          = 'session_information'
+    Id                     = db.Column(db.String(64), primary_key=True)
+    UnmodifiedDataLocation = db.Column(db.String(255))
+    WorkingDataLocation    = db.Column(db.String(255))
+    PDDataLocation         = db.Column(db.String(255))
+    OutputDataLocation     = db.Column(db.String(255))
+    PMXesAttributes        = db.Column(db.String(2000))
+    PMFilters              = db.Column(db.String(2000))
