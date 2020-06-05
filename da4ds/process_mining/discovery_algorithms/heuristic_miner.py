@@ -3,7 +3,8 @@ from pm4py.visualization.heuristics_net import visualizer as hn_visualizer
 
 def run(event_log, options, output_path):
 
-    heuristic_net = heuristics_miner.apply_heu(event_log, parameters={heuristics_miner.Variants.CLASSIC.value.Parameters.DEPENDENCY_THRESH: 0.99})
+    #heuristic_net = heuristics_miner.apply_heu(event_log, parameters={heuristics_miner.Variants.CLASSIC.value.Parameters.DEPENDENCY_THRESH: 0.99})
+    heuristic_net = heuristics_miner.apply_heu(event_log)
 
     output_format = options['model_represenations']
     parameters = {"<Parameters.FORMAT: 'format'>": output_format}

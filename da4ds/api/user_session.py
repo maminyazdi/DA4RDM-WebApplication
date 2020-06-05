@@ -19,9 +19,12 @@ def create_new_session():
     if not temp_storage_directory[-1] == "/":
         temp_storage_directory = temp_storage_directory + "/"
 
+    # FIXME TODO these locations don't need to be in the database as they never change
+    # so could have an attribute or a get method only depending on session id
     new_session.UnmodifiedDataLocation = f'{temp_storage_directory}{new_session.Id}/data_cleaning_unmodified_data.csv'
     new_session.WorkingDataLocation    = f'{temp_storage_directory}{new_session.Id}/data_cleaning_working_data.csv'
     new_session.PDDataLocation         = f'{temp_storage_directory}{new_session.Id}/process_discovery_working_data.csv'
+    new_session.EventLogLocation       = f'{temp_storage_directory}{new_session.Id}/event_log.xes'
     new_session.OutputDataLocation     = f'./da4ds/static/process_mining_output/{new_session.Id}'
     new_session.PMXesAttributes        = ""
     new_session.PMFilter               = ""
@@ -44,9 +47,11 @@ def get_session_information(session_id):
     session_information['unmodified_data_location'] = raw_session_information.UnmodifiedDataLocation
     session_information['data_location'] = raw_session_information.WorkingDataLocation
     session_information['process_mining_data_location'] = raw_session_information.PDDataLocation
+    session_information['event_log_location'] = raw_session_information.EventLogLocation
     session_information['output_location'] = raw_session_information.OutputDataLocation
     session_information['pm_xes_attributes'] = parse_parameter_list(raw_session_information.PMXesAttributes)
     session_information['pm_filters'] = parse_parameter_list(raw_session_information.PMFilters)
+    session_information['pm_options'] = parse_parameter_list(raw_session_information.PMOptions)
 
     return session_information
 
@@ -61,6 +66,9 @@ def update_session(session_id, attribute, value):
         elif attribute == "PMXesAttributes":
             updated_xes_attributes = update_parameter_list(session_information, parse_parameter_list(session_information.PMXesAttributes), value)
             session_information.PMXesAttributes = serialize_parameter_list_for_db(updated_xes_attributes)
+        elif attribute == "PMOptions":
+            updated_pm_options = update_parameter_list(session_information, parse_parameter_list(session_information.PMOptions), value)
+            session_information.PMOptions = serialize_parameter_list_for_db(updated_pm_options)
         else:
             session.__table__columns[attribute] = value
     db.session.commit()
@@ -97,6 +105,10 @@ def update_parameter_list(session_information, arguments_to_update, new_argument
     they will be treated as though they are in the same format as the filters stored in the user session table,
     then existing filter are overwritten while new filters are appended."""
 
+    # for deleting these attribute values
+    if new_arguments == "":
+        return ""
+
     for parameter in new_arguments:
         arguments_to_update[parameter] = new_arguments[parameter]
 
@@ -106,8 +118,9 @@ def serialize_parameter_list_for_db(parameters):
     """Serializes a parameter list for as string ofr storage in the local database session table. """
 
     serialized_parameters = ""
-    for parameter in parameters:
-        serialized_parameters = f"{serialized_parameters}{parameter}{parameter_type_value_separator}{parameters[parameter]}{parameter_separator}"
+    if len(parameters) > 0:
+        for parameter in parameters:
+            serialized_parameters = f"{serialized_parameters}{parameter}{parameter_type_value_separator}{parameters[parameter]}{parameter_separator}"
 
     # remove trailing semicolon
     if len(serialized_parameters) > 0:

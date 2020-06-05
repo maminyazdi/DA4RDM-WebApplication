@@ -2,18 +2,18 @@ let session_id = getCurrentSession();
 let socket = io.connect('http://' + document.domain + ':' + location.port + '/api/run_process_discovery');
 
 socket.on('updateColumnNames', function(response) {
-    resetAllPMOptions();
+    resetAllPMParameters();
     updateColumnNames(response);
     hideSpinner();
 });
 
 socket.on('ProcessDiscoveryUpdateEverything', function(response) {
-    resetAllPMOptions();
+    resetAllPMParameters();
     updateEverything(response);
     hideSpinner();
 })
 
-socket.emit('requestEventLogPreparation', session_id);
+socket.emit('requestDiscoveryPreparation', session_id);
 
 
 function runProcessDiscovery(hostUrl, projectUrl){
@@ -50,7 +50,7 @@ function updateEverything(allDiscoveryInformation) {
     return;
 }
 
-function resetAllPMOptions() {
+function resetAllPMParameters() {
     document.getElementById('data_target').innerHTML = "";
     showSpinner();
 
@@ -62,6 +62,8 @@ function resetAllPMOptions() {
 
     remove_all_options_from_select("process_discovery_start_activity")
     remove_all_options_from_select("process_discovery_end_activity")
+
+    clearDiscoveryMetrics();
 
     return;
 }
@@ -76,21 +78,31 @@ function remove_all_options_from_select(elementId) {
 
 function sendXesAttributeColumns() {
     let selectedXesAttributeColumns = getXesAttributeColumns();
-    socket.emit("requestEventLogPreparation", session_id, selectedXesAttributeColumns);
+    socket.emit("requestDiscoveryPreparation", session_id, selectedXesAttributeColumns);
     return;
 }
 
-function sendPMOptions() {
+function sendPMParameters() {
     let selectedXesAttributeColumns = getXesAttributeColumns();
     let selectedPMFilters = getPMFilters();
     let selectedOptions = getDiscoveryOptions();
 
-    socket.emit("requestEventLogPreparation",
+    socket.emit("requestDiscoveryPreparation",
                 session_id,
                 selectedXesAttributeColumns,
                 selectedPMFilters,
                 selectedOptions);
     return;
+}
+
+function sendDiscoveryReset() {
+    resetAllPMParameters();
+    socket.emit('requestDiscoveryReset', session_id);
+}
+
+function sendFiltersReset() {
+    resetAllPMParameters();
+    socket.emit('requestFilterReset', session_id);
 }
 
 function updateColumnNames(allColumnNames, selectedColumns) {
@@ -155,14 +167,16 @@ function updatePMFilters(filterOptions, selectedFilters) {
     }
 
     if (selectedFilters['process_discovery_start_activity'] != undefined) {
-
+        startActivitySelect.value = selectedFilters['process_discovery_start_activity']
     }
     if (selectedFilters['process_discovery_start_activity'] != undefined) {
-
+        endActivitySelect.value = selectedFilters['process_discovery_start_activity']
     }
 
-    minPerformanceSelect.value = (selectedFilters['process_discovery_min_performance'] !== undefined) ? selectedFilters['process_discovery_min_performance'] : '';
-    maxPerformanceSelect.value = (selectedFilters['process_discovery_max_performance'] !== undefined) ? selectedFilters['process_discovery_max_performance'] : '';
+    minPerformanceSelect.value = (selectedFilters['process_discovery_min_performance'] !== undefined) ?
+                                  selectedFilters['process_discovery_min_performance'] : '';
+    maxPerformanceSelect.value = (selectedFilters['process_discovery_max_performance'] !== undefined) ?
+                                  selectedFilters['process_discovery_max_performance'] : '';
 }
 
 function updateKeyMetrics(metrics) {
@@ -170,6 +184,13 @@ function updateKeyMetrics(metrics) {
     document.getElementById('metrics_number_of_events').innerHTML     = metrics["number_of_events"];
     document.getElementById('metrics_number_of_activities').innerHTML = metrics["number_of_activities"];
     document.getElementById('metrics_number_of_variants').innerHTML   = metrics["number_of_variants"];
+}
+
+function clearDiscoveryMetrics() {
+    document.getElementById("metrics_number_of_cases").value = "";
+    document.getElementById("metrics_number_of_events").value = "";
+    document.getElementById("metrics_number_of_activities").value = "";
+    document.getElementById("metrics_number_of_variants").value = "";
 }
 
 function getXesAttributeColumns() {
@@ -218,16 +239,6 @@ function getDiscoveryOptions() {
                'model_variant': variant.value}
 
     return options;
-}
-
-function getColumnNames() {
-    socket.emit('requestColumnNames', session_id);
-}
-
-function resetAllPMOptions() {
-    //reset all ui inputs
-    //AND
-    //all server side session information on these options!!
 }
 
 function getAllValuesFromMultiSelect(selectElement) {

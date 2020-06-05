@@ -42,8 +42,6 @@ def prepare_timestamp_column(dataframe, column_index):
         #column_head = column_head.insert(column_index, new_column_name)
         #print(column_head)
 
-    print(dataframe.head(20))
-
     #prepare_values
     #column = dataframe.iloc[:, column_index]
 

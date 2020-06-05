@@ -91,6 +91,8 @@ class SessionInformation(db.Model):
     UnmodifiedDataLocation = db.Column(db.String(255))
     WorkingDataLocation    = db.Column(db.String(255))
     PDDataLocation         = db.Column(db.String(255))
+    EventLogLocation       = db.Column(db.String(255))
     OutputDataLocation     = db.Column(db.String(255))
     PMXesAttributes        = db.Column(db.String(2000))
     PMFilters              = db.Column(db.String(2000))
+    PMOptions              = db.Column(db.String(2000))

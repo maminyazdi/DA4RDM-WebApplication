@@ -18,7 +18,7 @@ from da4ds import db
 from da4ds.models import ( InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource )
 from da4ds.processing_libraries.data_source_handler import data_source_handler
 from da4ds.process_mining import ( process_mining_controller, event_log_generator, filter_handler, support_functions as process_mining_support )
-from . import ( user_session, input_parser )
+from . import ( user_session, input_parser, file_handler )
 
 api_bp = Blueprint('blueprints/api', __name__, template_folder='templates', static_folder='static')
 
@@ -124,8 +124,8 @@ def run_project_persistent_connection(session_id, data):
 
     return "Pipeline ran successfully."
 
-@socketio.on('requestEventLogPreparation', namespace='/api/run_process_discovery')
-def get_process_discovery_filters(session_id, xes_attribute_columns = None, filters = None, options = None):
+@socketio.on('requestDiscoveryPreparation', namespace='/api/run_process_discovery')
+def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, options = None):
     current_session = user_session.get_session_information(session_id)
 
     dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
@@ -145,6 +145,10 @@ def get_process_discovery_filters(session_id, xes_attribute_columns = None, filt
     # if filters are given, update session info with filters
     if not filters == None:
         user_session.update_session(session_id, "PMFilters", filters)
+
+    # if filters are given, update session info with filters
+    if not options == None:
+        user_session.update_session(session_id, "PMOptions", options)
 
     current_session = user_session.get_session_information(session_id)
 
@@ -187,62 +191,86 @@ def get_process_discovery_filters(session_id, xes_attribute_columns = None, filt
 
     dataframe_key_metrics = process_mining_controller.get_dataframe_key_metrics(dataframe, event_log, current_session['pm_xes_attributes'])
 
+    from pm4py.objects.log.exporter.xes import exporter as xes_exporter
+    xes_exporter.apply(event_log, current_session['event_log_location'])
+
     dataframe.to_csv(current_session["process_mining_data_location"], sep=";")
 
     emit("ProcessDiscoveryUpdateEverything", {"all_column_names": column_names, # all column names of the data frame
                                               "pm_xes_attributes": current_session['pm_xes_attributes'], # selected xes attribute columns
                                               "pm_filter_options": pm_filter_options, # get all possible values for the process mining filters
                                               "pm_filters": current_session['pm_filters'], # selected filters
+                                              "pm_options": current_session['pm_filters'], # selected options regarding the output of the discovery
                                               "pm_dataframe_key_metrics": dataframe_key_metrics}) # key metrics such as number of cases and events #update filters, columns and statistics, other options
 
     return """Not yet implemented!""" # TODO return to the process mining overview page
 
 ### these two functions might be superfluous
-@socketio.on('requestProcessMiningFilters', namespace='/api/request_pm_filters')
-def get_process_discovery_filters(session_id):
-    #TODO filters options need to be updated in accord with previously selected filters.
+# @socketio.on('requestProcessMiningFilters', namespace='/api/request_pm_filters')
+# def prepare_discovery(session_id):
+#     #TODO filters options need to be updated in accord with previously selected filters.
 
-    current_session = user_session.get_session_information(session_id)
-    filter_json = current_session["pm_filters"].to_json()
-    emit('json', {"pm_filters": filter_json})
+#     current_session = user_session.get_session_information(session_id)
+#     filter_json = current_session["pm_filters"].to_json()
+#     emit('json', {"pm_filters": filter_json})
 
-    return """Not yet implemented!""" # TODO return to the process mining overview page
+#     return """Not yet implemented!""" # TODO return to the process mining overview page
 
-@socketio.on('requestColumnNames', namespace='/api/run_process_discovery')
-def get_column_names(session_id):
-    current_session = user_session.get_session_information(session_id)
-    column_names = process_mining_support.get_column_names(current_session)
+# @socketio.on('requestColumnNames', namespace='/api/run_process_discovery')
+# def get_column_names(session_id):
+#     current_session = user_session.get_session_information(session_id)
+#     column_names = process_mining_support.get_column_names(current_session)
 
-    return
+#     return
 
-@socketio.on('requestColumnNames', namespace='/api/run_process_discovery')
-def get_column_names(session_id):
-    current_session = user_session.get_session_information(session_id)
-    descriptive_stats = process_mining_support.get_descriptive_statistics(current_session)
+# @socketio.on('requestColumnNames', namespace='/api/run_process_discovery')
+# def get_column_names(session_id):
+#     current_session = user_session.get_session_information(session_id)
+#     descriptive_stats = process_mining_support.get_descriptive_statistics(current_session)
 
-    emit('json')
-    return
+#     emit('json')
+#     return
 ###
 
 @socketio.on('requestProcessDiscovery', namespace='/api/run_process_discovery')
 def run_process_discovery(session_id, options):
     emit('progressLog', {"progressLog": "Starting process mining"})
+    user_session.update_session(session_id, "PMOptions", options)
     current_session = user_session.get_session_information(session_id)
-
-
     process_model = process_mining_controller.run(current_session, options)
     emit(process_model[0], process_model[1])
 
     return
 
+@socketio.on('requestDiscoveryReset', namespace='/api/run_process_discovery')
+def reset_discovery(session_id):
+    # get all the stored attributes
+    current_session = user_session.get_session_information(session_id)
+    used_xes_attributes = current_session["pm_xes_attributes"]
+    used_filterds = current_session["pm_filters"]
+
+    # clear all values
+
+    # update the stored session with empty attributes
+    user_session.update_session(session_id, "PMXesAttributes", "")
+    user_session.update_session(session_id, "PMFilters", "")
+
+    prepare_discovery(session_id)
+    return
+
+@socketio.on('requestFilterReset', namespace='/api/run_process_discovery')
+def reset_discovery_filters(session_id):
+    user_session.update_session(session_id, "PMFilters", "")
+
+    prepare_discovery(session_id)
+    return
+
 @api_bp.route('/download_temporary_data', methods=['GET'])
 def download_temporary_data():
     session_id = request.args["session_id"]
+    requested_file = request.args["requested_file"]
+
     current_session = user_session.get_session_information(session_id)
-    working_data_path = current_session["data_location"].replace('./da4ds/','').replace('/','\\')
-    #path_list = working_data_path.split('/')
-    #directory_name = '\\\\'.join(path_list[:-1]) + '\\\\'
-    #filename = path_list[-1]
-    return send_file(working_data_path, as_attachment=True)
-    #return send_from_directory(directory_name, filename, as_attachment=True)
-    #send_file(working_data_path) #send_from_directory
+    path = file_handler.get_download_path(current_session, requested_file)
+
+    return send_file(path, as_attachment=True)

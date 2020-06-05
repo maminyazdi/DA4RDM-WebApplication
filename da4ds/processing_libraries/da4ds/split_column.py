@@ -17,6 +17,5 @@ def execute(dataframe, column_name, new_column_name, split_target):
     updated_df = dataframe.assign(new_column=split_column) # might have to compute/persist the dataframe in between
 
     updated_df = rename_column_labels.execute(updated_df, {'new_column': new_column_name})
-    print(updated_df.head(25))
 
     return updated_df
