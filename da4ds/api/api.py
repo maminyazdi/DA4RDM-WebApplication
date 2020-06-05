@@ -4,6 +4,7 @@ import csv
 import sqlalchemy
 import importlib
 import datetime
+import uuid
 import pandas as pd
 from flask_socketio import emit
 from da4ds import socketio
@@ -14,7 +15,7 @@ from flask import (
 from werkzeug.exceptions import abort
 from werkzeug.utils import secure_filename
 
-from da4ds import db
+from da4ds import db, Config
 from da4ds.models import ( InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource )
 from da4ds.processing_libraries.data_source_handler import data_source_handler
 from da4ds.process_mining import ( process_mining_controller, event_log_generator, filter_handler, support_functions as process_mining_support )
@@ -36,18 +37,57 @@ def get_all_data_sources():
     data_sources = db.session.query(DataSource).all()
     return data_sources
 
+
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = {'txt', 'csv', 'xes'}
+
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @api_bp.route('/new_data_source', methods=['POST'])
 def new_data_source():
     # TODO #FIXME IMPORTANT add form validation & escaping
-    # generate a new data source entry in the app database
+
+    session_id = request.args.get("session_id")
+    current_session = user_session.get_session_information(session_id)
+
+    name_value          = request.form['dataSourceName']
+    parameters_value    = request.form['dataSourceParameters']
+    type_value          = request.form['datasource_kind']
+    last_modified_value = datetime.datetime.now()
+
     data_source = DataSource()
-    data_source.Name = request.form['dataSourceName']
-    data_source.Parameters = request.form['dataSourceParameters']
-    data_source.Type = request.form['datasource_kind']
-    data_source.LastModified = datetime.datetime.now()
+    data_source.Name         = name_value
+    data_source.Parameters   = parameters_value
+    data_source.Type         = type_value
+    data_source.LastModified = last_modified_value
+
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        filename = str(uuid.uuid4()) + "-" + secure_filename(file.filename)
+        file.save(os.path.join(Config.UPLOADED_USER_DATA_LOCATION, filename))
+        # add file location to parameter list, which is technically not necessary but is kept to keep the flexible implementation of the csv reader
+        parameters_value = data_source.Parameters + ";path:=" + Config.UPLOADED_USER_DATA_LOCATION + '/' + filename
+        data_source.Parameters = parameters_value
+
     data_source.StoredOnServer = True
     db.session.add(data_source)
     db.session.commit()
+
+    selected_source = db.session.query(DataSource).filter(DataSource.Name         == name_value,
+                                                          DataSource.Parameters   == parameters_value,
+                                                          DataSource.Type         == type_value,
+                                                          DataSource.LastModified == last_modified_value).all()
+
+    dataframe = data_source_handler.read_from_source(selected_source[0])
+    dataframe.to_csv(current_session['unmodified_data_location'], sep=";")
+    dataframe.to_csv(current_session['data_location'], sep=";")
 
     return render_template('preprocessing/preprocessing.html')
 
@@ -55,6 +95,7 @@ def new_data_source():
 def read_data_from_source():
     session_id = request.args.get("session_id")
     current_session = user_session.get_session_information(session_id)
+    selected_data_source_id = request.values['selectedDataSourceId']
     data_sources = get_all_data_sources()
     selected_source = data_sources[int(request.values['selectedDataSourceId']) - 1] # -1 for zero based indexing of data_sources compared to 1 based indexing in db
 

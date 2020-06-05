@@ -74,3 +74,8 @@
 .filter-select {
     width: 100%;
 }
+
+/* new data source page */
+.csv_radio {
+    display: none;
+}

@@ -2,6 +2,11 @@ from da4ds.models import DataSource
 from . import strategies
 import pandas as pd
 
+def select_datasource(current_session, selected_data_source):
+    """"""
+
+
+
 def read_from_source(data_source):
     """Selects an data source handler based on the input data and uses it to generate a pandas data frame."""
     reading_strategy = strategies.getReadingStrategy(data_source.Type, data_source.StoredOnServer)

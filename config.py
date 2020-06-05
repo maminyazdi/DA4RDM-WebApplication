@@ -17,6 +17,12 @@ class Config(object):
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+
+    ###################################
+    ### temporary storage directory ###
+    ###################################
+    UPLOADED_USER_DATA_LOCATION = os.environ.get('USER_PROJ_DIR') or './da4ds/uploaded_user_data'
+
     ###########################
     ### project directories ###
     ###########################
@@ -31,3 +37,4 @@ class Config(object):
     ### output directories ###
     ##########################
     CSV_STORAGE_DIRECTORY = os.environ.get('OUTPUT_DIR') or 'C:/Temp'
+
