@@ -90,14 +90,17 @@
                     <div class="row d-flex justify-content-center">
                         <a href="javascript:runProcessDiscovery('{{ request.host_url }}', '{{ url_for('blueprints/process_mining.process_discovery') }}')" class="btn btn-primary">Start Process Discovery</a>
                     </div>
-                    <div class="row d-flex justify-content-center">
+                    <!-- <div class="row d-flex justify-content-center">
                         <a href="javascript:downloadFile('model_representation')" class="btn btn-secondary">Download Data</a>
-                    </div>
+                    </div> -->
                     <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Download
+                        </button>
                         <div class="dropdown-menu" aria-labelledby="downloadModelSelect">
-                            <a class="dropdown-item" href="javascript:downloadFile('process_mining_data')">CSV</a>
-                            <a class="dropdown-item" href="javascript:downloadFile('event_log')">Event Log (.xes)</a>
-                            <a class="dropdown-item" href="javascript:downloadFile('output')">Graph</a>
+                            <a class="dropdown-item" href="javascript:downloadFile('process_mining_data');">CSV</a>
+                            <a class="dropdown-item" href="javascript:downloadFile('event_log');";>Event Log (.xes)</a>
+                            <a class="dropdown-item" href="javascript:downloadFile('output');">Graph</a>
                         </div>
                     </div>
                     <div class="row d-flex justify-content-center">

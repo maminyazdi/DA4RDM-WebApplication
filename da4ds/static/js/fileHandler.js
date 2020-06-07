@@ -18,7 +18,3 @@ function downloadFile(requestedFile) {
         link.click();
     });
 }
-
-function uploadFile() {
-    return true;
-}
