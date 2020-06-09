@@ -1,5 +1,6 @@
 let session_id = getCurrentSession();
 let socket = io.connect('http://' + document.domain + ':' + location.port + '/api/run_process_discovery');
+let hook = document.getElementById('data_target');
 
 socket.on('updateColumnNames', function(response) {
     resetAllPMParameters();
@@ -13,11 +14,15 @@ socket.on('ProcessDiscoveryUpdateEverything', function(response) {
     hideSpinner();
 })
 
+socket.on('warning', function(response) {
+    hideSpinner();
+    hook.innerHTML = response['message'];
+});
+
 socket.emit('requestDiscoveryPreparation', session_id);
 
 
 function runProcessDiscovery(hostUrl, projectUrl){
-    let hook = document.getElementById('data_target');
     showSpinner();
 
     hook.innerHTML = "";
@@ -31,11 +36,11 @@ function runProcessDiscovery(hostUrl, projectUrl){
         hideSpinner();
         img.src = response.replace(/\\/g, "/");
         hook.appendChild(img);
-    })
+    });
 
     socket.on('dataframe_information_update', function(response){
 
-    })
+    });
 
     return;
 }

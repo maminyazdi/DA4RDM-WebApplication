@@ -168,6 +168,7 @@ def run_project_persistent_connection(session_id, data):
 @socketio.on('requestDiscoveryPreparation', namespace='/api/run_process_discovery')
 def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, options = None):
     current_session = user_session.get_session_information(session_id)
+    old_filters = current_session["pm_filters"]
 
     dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
     dataframe_key_metrics = {}
@@ -211,6 +212,16 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
         #refresh the dataframe
         dataframe = log_converter.apply(event_log, variant = log_converter.Variants.TO_DATA_FRAME)
 
+        # check if the resulting dataframe still has enough information to create a valid porcess model
+        if "time:timestamp"    not in dataframe.columns or \
+           "concept:name"      not in dataframe.columns or \
+           "case:concept:name" not in dataframe.columns:
+            #reset the old filters are some
+            if old_filters:
+                user_session.update_session(session_id, "PMFilters", old_filters)
+            emit("warning", {"message": "The selected filters did not yield a valid process model."})
+            return
+
         #TODO figure out a better way to handle when the filters result in an insufficient event_log
         try:
             dataframe["time:timestamp"] = dataframe["time:timestamp"].dt.strftime("%d-%m-%Y %H:%M:%S")
@@ -220,13 +231,13 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
     # Extract function for getting all the possible values for the pm filters
     pm_filter_options = {}
     timestamp_options = {}
-    activity_column = dataframe["concept:name"]
     #TODO problem: if you refresh activity options after already applying some activity options, you will probably no more able to select form the entire range of activities, but the reduction in options is on the other hand required after start time and end time change
-    activity_options = activity_column.unique()
+    activity_column                       = dataframe["concept:name"]
+    activity_options                      = activity_column.unique()
     pm_filter_options["activity_options"] = activity_options.tolist()
-    timestamp_column = dataframe["time:timestamp"]
-    timestamp_options["min"] = timestamp_column.min()
-    timestamp_options["max"] = timestamp_column.max()
+    timestamp_column                       = dataframe["time:timestamp"]
+    timestamp_options["min"]               = timestamp_column.min()
+    timestamp_options["max"]               = timestamp_column.max()
     pm_filter_options["timestamp_options"] = timestamp_options
     # maybe add min and max cost as well
 
@@ -237,41 +248,14 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
 
     dataframe.to_csv(current_session["process_mining_data_location"], sep=";")
 
-    emit("ProcessDiscoveryUpdateEverything", {"all_column_names": column_names, # all column names of the data frame
-                                              "pm_xes_attributes": current_session['pm_xes_attributes'], # selected xes attribute columns
-                                              "pm_filter_options": pm_filter_options, # get all possible values for the process mining filters
-                                              "pm_filters": current_session['pm_filters'], # selected filters
-                                              "pm_options": current_session['pm_filters'], # selected options regarding the output of the discovery
+    emit("ProcessDiscoveryUpdateEverything", {"all_column_names":         column_names, # all column names of the data frame
+                                              "pm_xes_attributes":        current_session['pm_xes_attributes'], # selected xes attribute columns
+                                              "pm_filter_options":        pm_filter_options, # get all possible values for the process mining filters
+                                              "pm_filters":               current_session['pm_filters'], # selected filters
+                                              "pm_options":               current_session['pm_filters'], # selected options regarding the output of the discovery
                                               "pm_dataframe_key_metrics": dataframe_key_metrics}) # key metrics such as number of cases and events #update filters, columns and statistics, other options
 
-    return """Not yet implemented!""" # TODO return to the process mining overview page
-
-### these two functions might be superfluous
-# @socketio.on('requestProcessMiningFilters', namespace='/api/request_pm_filters')
-# def prepare_discovery(session_id):
-#     #TODO filters options need to be updated in accord with previously selected filters.
-
-#     current_session = user_session.get_session_information(session_id)
-#     filter_json = current_session["pm_filters"].to_json()
-#     emit('json', {"pm_filters": filter_json})
-
-#     return """Not yet implemented!""" # TODO return to the process mining overview page
-
-# @socketio.on('requestColumnNames', namespace='/api/run_process_discovery')
-# def get_column_names(session_id):
-#     current_session = user_session.get_session_information(session_id)
-#     column_names = process_mining_support.get_column_names(current_session)
-
-#     return
-
-# @socketio.on('requestColumnNames', namespace='/api/run_process_discovery')
-# def get_column_names(session_id):
-#     current_session = user_session.get_session_information(session_id)
-#     descriptive_stats = process_mining_support.get_descriptive_statistics(current_session)
-
-#     emit('json')
-#     return
-###
+    return
 
 @socketio.on('requestProcessDiscovery', namespace='/api/run_process_discovery')
 def run_process_discovery(session_id, options):
@@ -285,14 +269,7 @@ def run_process_discovery(session_id, options):
 
 @socketio.on('requestDiscoveryReset', namespace='/api/run_process_discovery')
 def reset_discovery(session_id):
-    # get all the stored attributes
-    current_session = user_session.get_session_information(session_id)
-    used_xes_attributes = current_session["pm_xes_attributes"]
-    used_filterds = current_session["pm_filters"]
-
-    # clear all values
-
-    # update the stored session with empty attributes
+    # update the stored session with empty attributes to override any existing values
     user_session.update_session(session_id, "PMXesAttributes", "")
     user_session.update_session(session_id, "PMFilters", "")
 
