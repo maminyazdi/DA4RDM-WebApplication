@@ -4,6 +4,8 @@ function runProject(projectName, pipelineParameters) {
     spinner.style.display="block"
 
     let session_id = getCurrentSession();
+    localStorage.setItem('selected_pipeline', projectName);
+    document.getElementById('user_session_pipeline_display').innerHTML = projectName;
     socket.emit('requestProjectRun', session_id, {'projectName': projectName, 'pipelineParameters': pipelineParameters});
     socket.on('progressLog', function(data) {
         let hook = document.getElementById('data_target');

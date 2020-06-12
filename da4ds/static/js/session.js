@@ -1,5 +1,7 @@
 if (localStorage["sessionId"] === undefined) {
     createSession();
+} else {
+    updateSessionDisplay();
 }
 
 function createSession() {
@@ -8,8 +10,11 @@ function createSession() {
     let sessionId = "";
     socket.emit('create_new_session');
     socket.on('session', function(data) {
-        window.localStorage.setItem('sessionId', data)
+        window.localStorage.setItem('sessionId', data);
+        window.localStorage.setItem('selected_data_source', "None");
+        window.localStorage.setItem('selected_pipeline', "None");
         document.getElementById("sessionCreatedCheckmark").style.display = "inline";
+        updateSessionDisplay();
     });
 }
 
@@ -28,4 +33,9 @@ function addSessioIdToReuqestUrl(elementId) {
 function getCurrentSession() {
     let session = window.localStorage.getItem("sessionId")
     return session
+}
+
+function updateSessionDisplay() {
+    document.getElementById("user_session_data_source_display").innerHTML = localStorage["selected_data_source"];
+    document.getElementById("user_session_pipeline_display").innerHTML = localStorage["selected_pipeline"];
 }

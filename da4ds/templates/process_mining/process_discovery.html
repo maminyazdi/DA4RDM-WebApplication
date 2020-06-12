@@ -2,52 +2,54 @@
 
 {% block content_body %}
     <div class="row">
+        <div class="col">
+            <div class="row d-flex justify-content-start">
+                <h2>Process Discovery</h2>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row d-flex justify-content-center">
+                <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                    <a href="javascript:runProcessDiscovery('{{ request.host_url }}', '{{ url_for('blueprints/process_mining.process_discovery') }}')" class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></a>
+                    <div class="btn-group" role="group">
+                        <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                            <a class="dropdown-item" href="javascript:downloadFile('process_mining_data');">CSV</a>
+                            <a class="dropdown-item" href="javascript:downloadFile('event_log');";>Event Log (.xes)</a>
+                            <a class="dropdown-item" href="javascript:downloadFile('output');">Graph</a>
+                        </div>
+                    </div>
+                    <a href="javascript:sendDiscoveryReset()" class="btn btn-secondary"> <i class="fas fa-undo-alt"></i> </a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row d-flex justify-content-end">
+            </div>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-2">
             <div class="row">
-                <h1>Even Log Attributes</h1>
-                <form>
-                    <div class="form-row align-items-center">
-                        <div class="col-auto my-1 filter-select">
-                            <label class="mr-sm-2" for="start-activity-select">Timestamp</label>
-                            <select class="custom-select mr-sm-2" id="timestamp_column">
-                            </select>
-                        </div>
+                <div class="col">
+                    <div class="row">
+                        <label class="mr-sm-2" for="metrics_number_of_cases">Number of cases: </label><p id='metrics_number_of_cases' class="mr-sm-2"></p>
                     </div>
-                    <div class="form-row align-items-center">
-                        <div class="col-auto my-1 filter-select">
-                            <label class="mr-sm-2" for="end-activity-select">Case ID</label>
-                            <select class="custom-select mr-sm-2" id="caseId_column">
-                            </select>
-                        </div>
+                    <div class="row">
+                        <label class="mr-sm-2" for="metrics_number_of_events">Number of events: </label><p id='metrics_number_of_events' class="mr-sm-2"></p>
                     </div>
-                    <div class="form-row align-items-center">
-                        <div class="col-auto my-1 filter-select">
-                            <label class="mr-sm-2" for="end-activity-select">Activitiy</label>
-                            <select class="custom-select mr-sm-2" id="activity_column">
-                            </select>
-                        </div>
+                    <div class="row">
+                        <label class="mr-sm-2" for="metrics_number_of_activities">Number of activities: </label><p id='metrics_number_of_activities' class="mr-sm-2"></p>
                     </div>
-                    <div class="form-row align-items-center">
-                        <div class="col-auto my-1 filter-select">
-                            <label class="mr-sm-2" for="end-activity-select">Resource</label>
-                            <select class="custom-select mr-sm-2" id="resource_column">
-                            </select>
-                        </div>
+                    <div class="row">
+                        <label class="mr-sm-2" for="metrics_number_of_variants">Number of variants: </label><p id='metrics_number_of_variants' class="mr-sm-2"></p>
                     </div>
-                    <div class="form-row align-items-center">
-                        <div class="col-auto my-1 filter-select">
-                            <label class="mr-sm-2" for="end-activity-select">Cost</label>
-                            <select class="custom-select mr-sm-2" id="cost_column">
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row d-flex justify-content-center">
-                        <a href="javascript:sendXesAttributeColumns()" class="btn btn-secondary">Confirm columns</a>
-                    </div>
-                </form>
+                </div>
             </div>
             <div class="row">
-                <h1>Filters</h1>
+                <h3>Filters <a href="javascript:sendFiltersReset()" class="btn btn-secondary"> <i class="far fa-trash-alt"></i> </a> </h3>
                 <div>
                     <div class="form-row align-items-center">
                         <label>Start Time</label>
@@ -60,7 +62,7 @@
                     <div class="form-row align-items-center">
                         <div class="col-auto my-1 filter-select">
                             <label class="mr-sm-2" for="process_discovery_start_activity">Start Activity</label>
-                            <select multiple id="process_discovery_start_activity" class="custom-select mr-sm-2" onchange="sendPMParameters();">
+                            <select multiple id="process_discovery_start_activity" class="selectpicker mr-sm-2" onchange="sendPMParameters();">
                             </select>
                         </div>
                     </div>
@@ -85,32 +87,59 @@
         </div>
         <div class="col-10">
             <div class="row">
-                <div class="col-5">
-                    <h1>Other Options</h1>
-                    <div class="row d-flex justify-content-center">
-                        <a href="javascript:runProcessDiscovery('{{ request.host_url }}', '{{ url_for('blueprints/process_mining.process_discovery') }}')" class="btn btn-primary">Start Process Discovery</a>
-                    </div>
-                    <!-- <div class="row d-flex justify-content-center">
-                        <a href="javascript:downloadFile('model_representation')" class="btn btn-secondary">Download Data</a>
-                    </div> -->
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Download
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="downloadModelSelect">
-                            <a class="dropdown-item" href="javascript:downloadFile('process_mining_data');">CSV</a>
-                            <a class="dropdown-item" href="javascript:downloadFile('event_log');";>Event Log (.xes)</a>
-                            <a class="dropdown-item" href="javascript:downloadFile('output');">Graph</a>
+                <div class="col-6">
+                    <h3>Even Log <a href="javascript:sendXesAttributeColumns()" class="btn btn-secondary"><i class="fas fa-clipboard-check"></i></a></h3>
+                    <form>
+                        <div class="form-row my-2">
+                            <div class="col-4 select_row_label">
+                                <label class="mr-sm-2 my-2" for="start-activity-select">Timestamp</label>
+                            </div>
+                            <div class="col-8 filter-select">
+                                <select class="custom-select mr-sm-2" id="timestamp_column"></select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row d-flex justify-content-center">
-                        <a href="javascript:sendDiscoveryReset()" class="btn btn-secondary">Reset Discovery</a>
-                        <a href="javascript:sendFiltersReset()" class="btn btn-secondary">Reset Filters</a>
-                    </div>
+                        <div class="form-row my-2">
+                            <div class="col-4 select_row_label">
+                                <label class="mr-sm-2 my-2" for="end-activity-select">Case ID</label>
+                            </div>
+                            <div class="col-8 filter-select">
+                                <select class="custom-select mr-sm-2" id="caseId_column"></select>
+                            </div>
+                        </div>
+                        <div class="form-row my-2">
+                            <div class="col-4 select_row_label">
+                                <label class="mr-sm-2 my-2" for="end-activity-select">Activitiy</label>
+                            </div>
+                            <div class="col-8 filter-select">
+                                <select class="custom-select mr-sm-2" id="activity_column"></select>
+                            </div>
+                        </div>
+                        <div class="form-row my-2">
+                            <div class="col-4 select_row_label">
+                                <label class="mr-sm-2 my-2" for="end-activity-select">Resource</label>
+                            </div>
+                            <div class="col-8 filter-select">
+                                <select class="custom-select mr-sm-2" id="resource_column"></select>
+                            </div>
+                        </div>
+                        <div class="form-row my-2">
+                            <div class="col-4 select_row_label">
+                                <label class="mr-sm-2 my-2" for="end-activity-select">Cost</label>
+                            </div>
+                            <div class="col-8 filter-select">
+                                <select class="custom-select mr-sm-2" id="cost_column"></select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <h3>Options</h3>
                     <form>
                         <div class="form-row align-items-center">
-                            <div class="col-auto my-1 filter-select">
-                                <label class="mr-sm-2" for="discovery_algorithm">Discovery Algorithm</label>
+                            <div class="col-4 select_row_label">
+                                <label class="mr-sm-2 my-2" for="discovery_algorithm">Discovery Algorithm</label>
+                            </div>
+                            <div class="col-8 my-1 filter-select">
                                 <select id="discovery_algorithm" class="custom-select mr-sm-2">
                                     {% for discovery_algorithm in discovery_algorithms %}
                                         <option id="{{ discovery_algorithm }}" value="{{ discovery_algorithm }}">{{ discovery_algorithm_labels[discovery_algorithm] }}</option>
@@ -119,8 +148,10 @@
                             </div>
                         </div>
                         <div class="form-row align-items-center">
-                            <div class="col-auto my-1 filter-select">
-                                <label class="mr-sm-2" for="model_represenations">Visualization Format</label>
+                            <div class="col-4 select_row_label">
+                                <label class="mr-sm-2 my-2" for="model_represenations">Visualization Format</label>
+                            </div>
+                            <div class="col-8 my-1 filter-select">
                                 <select id="model_represenations" class="custom-select mr-sm-2">
                                     <option value="svg">SVG</option>
                                     <option value="png">PNG</option>
@@ -129,27 +160,42 @@
                             </div>
                         </div>
                         <div class="form-row align-items-center">
-                            <div class="col-auto my-1 filter-select">
-                                <label class="mr-sm-2" for="model_variant">Visualization Format</label>
+                            <div class="col-4 select_row_label">
+                                <label class="mr-sm-2 my-2" for="model_variant">Visualization Format</label>
+                            </div>
+                            <div class="col-8 my-1 filter-select">
                                 <select id="model_variant" class="custom-select mr-sm-2">
                                     <option value="frequency">Frequency</option>
                                     <option value="performance">Performance</option>
                                 </select>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="row d-flex justify-content-center">
+                                    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                        <a href="javascript:runProcessDiscovery('{{ request.host_url }}', '{{ url_for('blueprints/process_mining.process_discovery') }}')" class="btn btn-primary"><i class="fa fa-play fa-2x" aria-hidden="true"></i></a>
+                                        <div class="btn-group" role="group">
+                                            <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="fas fa-download fa-2x"></i>
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                <a class="dropdown-item" href="javascript:downloadFile('process_mining_data');">CSV</a>
+                                                <a class="dropdown-item" href="javascript:downloadFile('event_log');";>Event Log (.xes)</a>
+                                                <a class="dropdown-item" href="javascript:downloadFile('output');">Graph</a>
+                                            </div>
+                                        </div>
+                                        <a href="javascript:sendDiscoveryReset()" class="btn btn-secondary"> <i class="fas fa-undo-alt fa-2x"></i> </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </form>
-                </div>
-                <div class="col-7">
-                    <h1>Stats</h1>
-                    <span>Number of cases: </span><span id='metrics_number_of_cases'></span><br>
-                    <span>Number of events: </span><span id='metrics_number_of_events'></span><br>
-                    <span>Number of activities: </span><span id='metrics_number_of_activities'></span><br>
-                    <span>Number of variants: </span><span id='metrics_number_of_variants'></span>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <h1>Results</h1>
+                    <h3>Results</h3>
                     <div id="discovery-spinner" class="row spinner" style="text-align: center;">
                         <div class="spinner-border" role="status">
                             <span class="sr-only">Loading...</span>
@@ -158,13 +204,11 @@
                     <div class="row d-flex justify-content-center" >
                         <div id="data_target" style="width: 100%; height: 800px;"></div>
                     </div>
-
                     <img src="{{url_for('static', filename='images/tmpz8cm2gak.gv.png')}}" style="display:none;" />
                 </div>
             </div>
         </div>
     </div>
-
 {% endblock %}
 
 {% block scripts %}

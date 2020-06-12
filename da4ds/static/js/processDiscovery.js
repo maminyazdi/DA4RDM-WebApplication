@@ -8,7 +8,7 @@ socket.on('updateColumnNames', function(response) {
     hideSpinner();
 });
 
-socket.on('ProcessDiscoveryUpdateEverything', function(response) {
+socket.on('processDiscoveryUpdateEverything', function(response) {
     resetAllPMParameters();
     updateEverything(response);
     hideSpinner();

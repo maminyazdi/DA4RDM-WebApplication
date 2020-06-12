@@ -33,7 +33,6 @@ def create_new_session():
 
 @api_bp.route('/api/get_all_data_sources')
 def get_all_data_sources():
-    #TODO veryfy user permissons to access the data sources
     data_sources = db.session.query(DataSource).all()
     return data_sources
 
@@ -210,23 +209,20 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
         from pm4py.objects.conversion.log import converter as log_converter
 
         #refresh the dataframe
-        dataframe = log_converter.apply(event_log, variant = log_converter.Variants.TO_DATA_FRAME)
+        dataframe_filtered = log_converter.apply(event_log, variant = log_converter.Variants.TO_DATA_FRAME)
 
         # check if the resulting dataframe still has enough information to create a valid porcess model
-        if "time:timestamp"    not in dataframe.columns or \
-           "concept:name"      not in dataframe.columns or \
-           "case:concept:name" not in dataframe.columns:
-            #reset the old filters are some
+        if "time:timestamp"    not in dataframe_filtered.columns or \
+           "concept:name"      not in dataframe_filtered.columns or \
+           "case:concept:name" not in dataframe_filtered.columns:
+            #if not, reset the old filters are some and dont use the filtered dataframe
             if old_filters:
                 user_session.update_session(session_id, "PMFilters", old_filters)
             emit("warning", {"message": "The selected filters did not yield a valid process model."})
-            return
+        # else use the updated data frame
+        else:
+            dataframe = dataframe_filtered
 
-        #TODO figure out a better way to handle when the filters result in an insufficient event_log
-        try:
-            dataframe["time:timestamp"] = dataframe["time:timestamp"].dt.strftime("%d-%m-%Y %H:%M:%S")
-        except KeyError:
-            emit("warning", {"message": "The selected filters did not return any cases."})
 
     # Extract function for getting all the possible values for the pm filters
     pm_filter_options = {}
@@ -248,7 +244,7 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
 
     dataframe.to_csv(current_session["process_mining_data_location"], sep=";")
 
-    emit("ProcessDiscoveryUpdateEverything", {"all_column_names":         column_names, # all column names of the data frame
+    emit("processDiscoveryUpdateEverything", {"all_column_names":         column_names, # all column names of the data frame
                                               "pm_xes_attributes":        current_session['pm_xes_attributes'], # selected xes attribute columns
                                               "pm_filter_options":        pm_filter_options, # get all possible values for the process mining filters
                                               "pm_filters":               current_session['pm_filters'], # selected filters

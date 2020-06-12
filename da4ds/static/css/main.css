@@ -75,7 +75,17 @@
     width: 100%;
 }
 
+.select_row_label {
+    text-align: right;
+}
+
 /* new data source page */
 .csv_radio {
     display: none;
+}
+
+/* process discovery page */
+.background-grey {
+    background-color: #F7F7F7;
+    margin: 0px;
 }
