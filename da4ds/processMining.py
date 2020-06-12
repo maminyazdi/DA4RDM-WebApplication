@@ -1,4 +1,5 @@
 import os
+from os.path import isfile, join
 import re
 import csv
 import sqlalchemy
@@ -28,7 +29,7 @@ def process_discovery():
                                   "inductive_miner": "Inductive Miner"}
 
     discovery_algorithm_path = './da4ds/process_mining/discovery_algorithms/'
-    files = os.listdir(discovery_algorithm_path)
-    discovery_algorithms = [str(x)[:-3] for x in files if (not (os.path.isdir(discovery_algorithm_path + x) and x != '__init__.py'))]
+    files = [file for file in os.listdir(discovery_algorithm_path)if isfile(join(discovery_algorithm_path, file))]
+    discovery_algorithms = [str(x)[:-3] for x in files if x != "__init__.py"]
 
     return render_template('process_mining/process_discovery.html', discovery_algorithms=discovery_algorithms, discovery_algorithm_labels=discovery_algorithm_labels)

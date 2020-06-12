@@ -35,6 +35,8 @@ function runProcessDiscovery(hostUrl, projectUrl){
         let img = document.createElement("img");
         hideSpinner();
         img.src = response.replace(/\\/g, "/");
+        img.style.width = "50vw";
+        img.style.height = "50vh";
         hook.appendChild(img);
     });
 
