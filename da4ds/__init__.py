@@ -9,7 +9,7 @@ from config import Config
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object(Config)
-socketio = SocketIO(app)
+socketio = SocketIO(app, ping_timeout=app.config["PING_TIMEOUT"], ping_interval=app.config["PING_INTERVALL"])
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)

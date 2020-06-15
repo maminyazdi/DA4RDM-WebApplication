@@ -19,30 +19,56 @@ socket.on('warning', function(response) {
     hook.innerHTML = response['message'];
 });
 
-socket.emit('requestDiscoveryPreparation', session_id);
+socket.on('info', function(response) {
+    hook.innerHTML = response.message;
+});
 
+socket.on('gviz', function(response) {
+    let relative_url = response.replace(/\\/g, "/");
+    hideSpinner();
+    hook.innerHTML = '';
+
+    let link = document.createElement("a");
+    link.href = window.location.protocol + "//" + window.location.host + "//" + relative_url;
+    link.target = "_blank";
+
+    let img = document.createElement("img");
+    img.src = relative_url;
+
+    // if the response is of type svg, the scale the svg to 1/2 view port, else add a container with 1/2 view port width and scroll to wrap the image
+    let image_url_split = response.split('.');
+    if (image_url_split[image_url_split.length - 1] === 'svg') {
+        img.style.width = "50vw";
+        img.style.height = "50vh";
+    } else {
+        let imgWrapper = document.createElement("div");
+        imgWrapper.style.width = "50vw";
+        imgWrapper.style.height = "50vw";
+        imgWrapper.style.overflow = "scroll";
+        hook.appendChild(imgWrapper);
+        hook = imgWrapper;
+    }
+
+    link.style.cursor = "pointer";
+    link.style.cursor = "-moz-zoom-in";
+    link.style.cursor = "-webkit-zoom-in";
+    link.style.cursor = "zoom-in";
+
+    hook.appendChild(link);
+    link.appendChild(img);
+});
+
+socket.on('dataframe_information_update', function(response){
+
+});
+
+socket.emit('requestDiscoveryPreparation', session_id);
 
 function runProcessDiscovery(hostUrl, projectUrl){
     showSpinner();
-
     hook.innerHTML = "";
     let options = getDiscoveryOptions();
     socket.emit('requestProcessDiscovery', session_id, options);
-    socket.on('progressLog', function(data) {
-        hook.textContent = data.message;
-    });
-    socket.on('gviz', function(response) {
-        let img = document.createElement("img");
-        hideSpinner();
-        img.src = response.replace(/\\/g, "/");
-        img.style.width = "50vw";
-        img.style.height = "50vh";
-        hook.appendChild(img);
-    });
-
-    socket.on('dataframe_information_update', function(response){
-
-    });
 
     return;
 }

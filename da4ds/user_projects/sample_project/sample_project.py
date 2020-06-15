@@ -1,4 +1,4 @@
-from da4ds.processing_libraries.da4ds import ( create_local_database_copy, read_local_database, read_csv, replace_column_values, export_csv,
+from da4ds.api.processing_libraries.da4ds import ( create_local_database_copy, read_local_database, read_csv, replace_column_values, export_csv,
     drop_duplicates, drop_na, rename_column_labels, split_column, add_column, merge_columns, create_json_response, serialize_as_json,
     multiply_rows, remove_rows, fill_na)
 from da4ds.models import ( CopiedFrontendLogs, CopiedBackendLogs )
@@ -140,7 +140,7 @@ def rename_activities(df): # TODO check content wise correctness of renamings
     return df
 
 def make_prediction(cross_matrix, label_column):
-    from da4ds.processing_libraries.da4ds import (split_train_test_sets, random_forest_fit, random_forest_predict, check_prediction)
+    from da4ds.api.processing_libraries.da4ds import (split_train_test_sets, random_forest_fit, random_forest_predict, check_prediction)
     goodness = []
     metrics = ['Algorithm'] + ['Recall', 'Precision', 'Accuracy', 'F1 Score'] # TODO: let user select the required metrics from config
 

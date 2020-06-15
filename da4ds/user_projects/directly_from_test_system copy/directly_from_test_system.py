@@ -6,7 +6,7 @@ from da4ds import socketio
 from flask import (
     render_template, jsonify, current_app as app
 )
-from da4ds.processing_libraries.da4ds import xes_formatter
+from da4ds.api.processing_libraries.da4ds import xes_formatter
 
 def run(config):
     parameters = config.parameters

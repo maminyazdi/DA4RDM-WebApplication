@@ -28,7 +28,7 @@ def process_discovery():
                                   "heuristic_miner": "Heuristic Miner",
                                   "inductive_miner": "Inductive Miner"}
 
-    discovery_algorithm_path = './da4ds/process_mining/discovery_algorithms/'
+    discovery_algorithm_path = './da4ds/api/process_mining/discovery_algorithms/'
     files = [file for file in os.listdir(discovery_algorithm_path)if isfile(join(discovery_algorithm_path, file))]
     discovery_algorithms = [str(x)[:-3] for x in files if x != "__init__.py"]
 

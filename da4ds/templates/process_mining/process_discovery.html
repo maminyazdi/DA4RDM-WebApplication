@@ -35,7 +35,7 @@
             <div class="row">
                 <div class="col">
                     <div class="row">
-                        <h3>Statistics</h3>
+                        <h3>Information</h3>
                     </div>
                     <div class="row">
                         <label class="mr-sm-2" for="metrics_number_of_cases">Number of cases: </label><p id='metrics_number_of_cases' class="mr-sm-2"></p>
@@ -53,7 +53,7 @@
             </div>
             <div class="row">
                 <h3>Filters <a href="javascript:sendFiltersReset()" class="btn btn-secondary"> <i class="far fa-trash-alt"></i> </a> </h3>
-                <div>
+                <div style="z-index: 1000; max-width: 100%;">
                     <div class="form-row align-items-center">
                         <label>Start Time</label>
                         <input id="process_discovery_start_date" type="date" name="bday" min="1000-01-01" max="3000-12-31" class="form-control" onchange="sendPMParameters();">
@@ -65,7 +65,7 @@
                     <div class="form-row align-items-center">
                         <div class="col-auto my-1 filter-select">
                             <label class="mr-sm-2" for="process_discovery_start_activity">Start Activity</label>
-                            <select multiple id="process_discovery_start_activity" class="selectpicker mr-sm-2" onchange="sendPMParameters();">
+                            <select multiple id="process_discovery_start_activity" class="selectpicker mr-sm-2" style="max-width: 100%;" onchange="sendPMParameters();">
                             </select>
                         </div>
                     </div>
@@ -173,26 +173,6 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <div class="row d-flex justify-content-center">
-                                    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                                        <a href="javascript:runProcessDiscovery('{{ request.host_url }}', '{{ url_for('blueprints/process_mining.process_discovery') }}')" class="btn btn-primary"><i class="fa fa-play fa-2x" aria-hidden="true"></i></a>
-                                        <div class="btn-group" role="group">
-                                            <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-download fa-2x"></i>
-                                            </button>
-                                            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                <a class="dropdown-item" href="javascript:downloadFile('process_mining_data');">CSV</a>
-                                                <a class="dropdown-item" href="javascript:downloadFile('event_log');";>Event Log (.xes)</a>
-                                                <a class="dropdown-item" href="javascript:downloadFile('output');">Graph</a>
-                                            </div>
-                                        </div>
-                                        <a href="javascript:sendDiscoveryReset()" class="btn btn-secondary"> <i class="fas fa-undo-alt fa-2x"></i> </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </form>
                 </div>
             </div>
@@ -205,7 +185,7 @@
                         </div>
                     </div>
                     <div class="row d-flex justify-content-center" >
-                        <div id="data_target" style="width: 100%; height: 800px;"></div>
+                        <div id="data_target"></div>
                     </div>
                     <img src="{{url_for('static', filename='images/tmpz8cm2gak.gv.png')}}" style="display:none;" />
                 </div>

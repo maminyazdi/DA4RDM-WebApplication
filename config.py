@@ -38,3 +38,8 @@ class Config(object):
     ##########################
     CSV_STORAGE_DIRECTORY = os.environ.get('OUTPUT_DIR') or 'C:/Temp'
 
+    #####################
+    ### socket config ###
+    #####################
+    PING_INTERVALL = 145 #interval in seconds between pings, default is 25 sec
+    PING_TIMEOUT = 300 #time in seconds until timeout on missing ping response, default is 60

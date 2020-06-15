@@ -17,8 +17,8 @@ from werkzeug.utils import secure_filename
 
 from da4ds import db, Config
 from da4ds.models import ( InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource )
-from da4ds.processing_libraries.data_source_handler import data_source_handler
-from da4ds.process_mining import ( process_mining_controller, event_log_generator, filter_handler, support_functions as process_mining_support )
+from da4ds.api.data_source import data_source_handler
+from da4ds.api.process_mining import ( process_discovery, event_log_generator, filter_handler )
 from . import ( user_session, input_parser, file_handler )
 
 api_bp = Blueprint('blueprints/api', __name__, template_folder='templates', static_folder='static')
@@ -172,7 +172,7 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
     dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
     dataframe_key_metrics = {}
 
-    column_names = process_mining_support.get_column_names(dataframe)
+    column_names = list(dataframe.columns.values)
 
     # if no xes columns have ever been selected, just return all of the column names and nothing else
     if xes_attribute_columns == None and (bool(current_session['pm_xes_attributes']) == False or current_session['pm_xes_attributes'] == None):
@@ -181,6 +181,9 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
 
     # if xes_attributes are given, update session info with the selected column names
     if not xes_attribute_columns == None:
+        if xes_attribute_columns["timestamp_column"] == "None" or xes_attribute_columns["activity_column"] == "None" or xes_attribute_columns["caseId_column"] == "None":
+            emit("warning", {"message": "You shouled select at least Acitivity, Timestamp and Case ID columns in order to obtain valid event logs."})
+            return
         user_session.update_session(session_id, "PMXesAttributes", xes_attribute_columns)
 
     # if filters are given, update session info with filters
@@ -237,7 +240,7 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
     pm_filter_options["timestamp_options"] = timestamp_options
     # maybe add min and max cost as well
 
-    dataframe_key_metrics = process_mining_controller.get_dataframe_key_metrics(dataframe, event_log, current_session['pm_xes_attributes'])
+    dataframe_key_metrics = process_discovery.get_dataframe_key_metrics(dataframe, event_log, current_session['pm_xes_attributes'])
 
     from pm4py.objects.log.exporter.xes import exporter as xes_exporter
     xes_exporter.apply(event_log, current_session['event_log_location'])
@@ -249,16 +252,47 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
                                               "pm_filter_options":        pm_filter_options, # get all possible values for the process mining filters
                                               "pm_filters":               current_session['pm_filters'], # selected filters
                                               "pm_options":               current_session['pm_filters'], # selected options regarding the output of the discovery
-                                              "pm_dataframe_key_metrics": dataframe_key_metrics}) # key metrics such as number of cases and events #update filters, columns and statistics, other options
+                                              "pm_dataframe_key_metrics": dataframe_key_metrics}) # key metrics such as number of cases and events
 
     return
 
+def process_discovery_thread_wrapper(current_session, options, results):
+    results.append(process_discovery.run(current_session, options))
+    return results
+
 @socketio.on('requestProcessDiscovery', namespace='/api/run_process_discovery')
 def run_process_discovery(session_id, options):
-    emit('progressLog', {"progressLog": "Starting process mining"})
+    emit('info', {"message": "Starting process mining"})
     user_session.update_session(session_id, "PMOptions", options)
+
+    import threading
+
     current_session = user_session.get_session_information(session_id)
-    process_model = process_mining_controller.run(current_session, options)
+    #process_model = process_discovery.run(current_session, options)
+
+    results = []
+    threading.Thread(target=process_discovery_thread_wrapper, args=(current_session, options, results)).start()
+
+    import time
+    while not (results):
+        print("ping")
+        emit("ping", "ping")
+        time.sleep(4)
+
+    process_model = results[0]
+
+    # import concurrent.futures
+
+    # process_model = None
+
+    # with concurrent.futures.ThreadPoolExecutor() as executor:
+    #     future = executor.submit(process_discovery.run, current_session, options)
+    #     process_model = future.result()
+
+    # while process_model == None:
+    #     emit("ping", "ping")
+    #     time.sleep(5)
+
     emit(process_model[0], process_model[1])
 
     return

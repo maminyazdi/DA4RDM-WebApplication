@@ -1,7 +1,7 @@
 import os
 from flask import current_app as app
 from da4ds.models import SessionInformation
-from da4ds.process_mining.filters import ProcessMiningFilters
+from da4ds.api.process_mining.filters import ProcessMiningFilters
 from da4ds import db
 import uuid
 
