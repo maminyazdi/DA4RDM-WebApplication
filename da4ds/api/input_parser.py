@@ -33,3 +33,37 @@ def serialize_parameter_list_for_db(parameters, parameter_separator, parameter_t
         serialized_parameters = serialized_parameters[:-1]
 
     return serialized_parameters
+
+def filters_correct_datetimes(filters):
+    """Checks and correccts the format of the date time filters inside the filter dictionary.
+
+    Paramter:
+        filters: dictionary of filters
+
+    Returns:
+        filters: updated dictionary of filters."""
+
+    if filters["process_discovery_start_date"]:
+        filters["process_discovery_start_date"] = format_datetime(filters["process_discovery_start_date"])
+    if filters["process_discovery_end_date"]:
+        filters["process_discovery_end_date"] = format_datetime(filters["process_discovery_end_date"])
+
+    return filters
+
+def format_datetime(datetime):
+    """Serializes the incoming date time string and formats it for storage.
+    Conforms to the requirements for usage in process discovery with pm4py.
+
+    Params:
+        datetime: date time string.
+    Return:
+        String with date and time in the following format: YYYY/MM/DD hh:mm:ss
+        If the automatic detection of the incoming date time string fails, returns the incoming string instead."""
+
+    if datetime == "" or datetime == None:
+        return ""
+    elif datetime.count("T") == 1:
+        formatted_datetime = " ".join(datetime.split('T'))
+        return formatted_datetime
+    else:
+        return datetime

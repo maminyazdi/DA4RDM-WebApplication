@@ -10,18 +10,18 @@
         <div class="col">
             <div class="row d-flex justify-content-center">
                 <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                    <a href="javascript:runProcessDiscovery('{{ request.host_url }}', '{{ url_for('blueprints/process_mining.process_discovery') }}')" class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></a>
+                    <a id="run_discovery_button" href="javascript:runProcessDiscovery('{{ request.host_url }}', '{{ url_for('blueprints/process_mining.process_discovery') }}')" class="btn btn-primary disabled" disabled><i class="fa fa-play" aria-hidden="true"></i></a>
                     <div class="btn-group" role="group">
-                        <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button id="download_button"  type="button" class="btn btn-secondary dropdown-toggle disabled" disabled data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-download"></i>
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                        <div class="dropdown-menu" aria-labelledby="download_select">
                             <a class="dropdown-item" href="javascript:downloadFile('process_mining_data');">CSV</a>
                             <a class="dropdown-item" href="javascript:downloadFile('event_log');";>Event Log (.xes)</a>
                             <a class="dropdown-item" href="javascript:downloadFile('output');">Graph</a>
                         </div>
                     </div>
-                    <a href="javascript:sendDiscoveryReset()" class="btn btn-secondary"> <i class="fas fa-undo-alt"></i> </a>
+                    <a id="reset_discovery_inputs" href="javascript:sendDiscoveryReset()" class="btn btn-secondary disabled" disabled> <i class="fas fa-undo-alt"></i> </a>
                 </div>
             </div>
         </div>
@@ -52,37 +52,37 @@
                 </div>
             </div>
             <div class="row">
-                <h3>Filters <a href="javascript:sendFiltersReset()" class="btn btn-secondary"> <i class="far fa-trash-alt"></i> </a> </h3>
+                <h3>Filters <a id="reset_filters_button" href="javascript:sendFiltersReset()" class="btn btn-secondary disabled" disabled > <i class="far fa-trash-alt"></i> </a> </h3>
                 <div style="z-index: 1000; max-width: 100%;">
                     <div class="form-row align-items-center">
-                        <label>Start Time</label>
-                        <input id="process_discovery_start_date" type="date" name="bday" min="1000-01-01" max="3000-12-31" class="form-control" onchange="sendPMParameters();">
+                        <label for="process_discovery_start_date">Start Datetime</label>
+                        <input id="process_discovery_start_date" type="datetime-local" class="form-control form-control-sm disabled" disabled aria-describedby="start time" onchange="sendPMParameters();" step="1" >
                     </div>
                     <div class="form-row align-items-center">
-                        <label>End Time</label>
-                        <input id="process_discovery_end_date" type="date" name="bday" min="1000-01-01" max="3000-12-31" class="form-control" onchange="sendPMParameters();">
+                        <label for="process_discovery_end_date">End Datetime</label>
+                        <input id="process_discovery_end_date" type="datetime-local" class="form-control form-control-sm disabled" disabled aria-describedby="end time" onchange="sendPMParameters();" step="1" ">
                     </div>
                     <div class="form-row align-items-center">
                         <div class="col-auto my-1 filter-select">
                             <label class="mr-sm-2" for="process_discovery_start_activity">Start Activity</label>
-                            <select multiple id="process_discovery_start_activity" class="selectpicker mr-sm-2" style="max-width: 100%;" onchange="sendPMParameters();">
+                            <select multiple id="process_discovery_start_activity" class="selectpicker form-control form-control-sm disabled" disabled style="max-width: 100%;" >
                             </select>
                         </div>
                     </div>
                     <div class="form-row align-items-center">
                         <div class="col-auto my-1 filter-select">
-                            <label class="mr-sm-2" for="process_discovery_end_activity">End Activity</label>
-                            <select multiple id="process_discovery_end_activity" class="custom-select mr-sm-2" onchange="sendPMParameters();">
+                            <label class="mr-sm-2" for="process_discovery_end_activity">Start Activity</label>
+                            <select multiple id="process_discovery_end_activity" class="selectpicker form-control form-control-sm disabled" disabled style="max-width: 100%;" >
                             </select>
                         </div>
                     </div>
                     <div class="form-row align-items-center">
                         <label for="process_discovery_min_performance">Minimum Performance</label>
-                        <input id="process_discovery_min_performance" name="beginActivity" required type="text" class="form-control" aria-describedby="begin activity" onchange="sendPMParameters();">
+                        <input id="process_discovery_min_performance" name="beginActivity" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="begin activity" onchange="sendPMParameters();" placeholder="100000">
                     </div>
                     <div class="form-row align-items-center">
                         <label for="process_discovery_max_performance">Maximum Performance</label>
-                        <input id="process_discovery_max_performance" name="endActivity" required type="text" class="form-control" aria-describedby="end activity" onchange="sendPMParameters();">
+                        <input id="process_discovery_max_performance" name="endActivity" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="end activity" onchange="sendPMParameters();" placeholder="100000">
                     </div>
                 </form>
             </div>
@@ -95,42 +95,42 @@
                     <form>
                         <div class="form-row my-2">
                             <div class="col-4 select_row_label">
-                                <label class="mr-sm-2 my-2" for="start-activity-select">Timestamp</label>
+                                <label class="mr-sm-2 my-1" for="start-activity-select">Timestamp</label>
                             </div>
                             <div class="col-8 filter-select">
-                                <select class="custom-select mr-sm-2" id="timestamp_column"></select>
+                                <select class="selectpicker form-control form-control-sm" id="timestamp_column"></select>
                             </div>
                         </div>
                         <div class="form-row my-2">
                             <div class="col-4 select_row_label">
-                                <label class="mr-sm-2 my-2" for="end-activity-select">Case ID</label>
+                                <label class="mr-sm-2 my-1" for="end-activity-select">Case ID</label>
                             </div>
                             <div class="col-8 filter-select">
-                                <select class="custom-select mr-sm-2" id="caseId_column"></select>
+                                <select class="selectpicker form-control form-control-sm" id="caseId_column"></select>
                             </div>
                         </div>
                         <div class="form-row my-2">
                             <div class="col-4 select_row_label">
-                                <label class="mr-sm-2 my-2" for="end-activity-select">Activitiy</label>
+                                <label class="mr-sm-2 my-1" for="end-activity-select">Activitiy</label>
                             </div>
                             <div class="col-8 filter-select">
-                                <select class="custom-select mr-sm-2" id="activity_column"></select>
+                                <select class="selectpicker form-control form-control-sm" id="activity_column"></select>
                             </div>
                         </div>
                         <div class="form-row my-2">
                             <div class="col-4 select_row_label">
-                                <label class="mr-sm-2 my-2" for="end-activity-select">Resource</label>
+                                <label class="mr-sm-2 my-1" for="end-activity-select">Resource</label>
                             </div>
                             <div class="col-8 filter-select">
-                                <select class="custom-select mr-sm-2" id="resource_column"></select>
+                                <select class="selectpicker form-control form-control-sm" id="resource_column"></select>
                             </div>
                         </div>
                         <div class="form-row my-2">
                             <div class="col-4 select_row_label">
-                                <label class="mr-sm-2 my-2" for="end-activity-select">Cost</label>
+                                <label class="mr-sm-2 my-1" for="end-activity-select">Cost</label>
                             </div>
                             <div class="col-8 filter-select">
-                                <select class="custom-select mr-sm-2" id="cost_column"></select>
+                                <select class="selectpicker form-control form-control-sm" id="cost_column"></select>
                             </div>
                         </div>
                     </form>
@@ -140,10 +140,10 @@
                     <form>
                         <div class="form-row align-items-center">
                             <div class="col-4 select_row_label">
-                                <label class="mr-sm-2 my-2" for="discovery_algorithm">Discovery Algorithm</label>
+                                <label class="mr-sm-2 my-1" for="discovery_algorithm">Discovery Algorithm</label>
                             </div>
                             <div class="col-8 my-1 filter-select">
-                                <select id="discovery_algorithm" class="custom-select mr-sm-2">
+                                <select id="discovery_algorithm" class="selectpicker form-control form-control-sm">
                                     {% for discovery_algorithm in discovery_algorithms %}
                                         <option id="{{ discovery_algorithm }}" value="{{ discovery_algorithm }}">{{ discovery_algorithm_labels[discovery_algorithm] }}</option>
                                     {% endfor %}
@@ -152,10 +152,10 @@
                         </div>
                         <div class="form-row align-items-center">
                             <div class="col-4 select_row_label">
-                                <label class="mr-sm-2 my-2" for="model_represenations">Visualization Format</label>
+                                <label class="mr-sm-2 my-1" for="model_represenations">Visualization Format</label>
                             </div>
                             <div class="col-8 my-1 filter-select">
-                                <select id="model_represenations" class="custom-select mr-sm-2">
+                                <select id="model_represenations" class="selectpicker form-control form-control-sm">
                                     <option value="svg">SVG</option>
                                     <option value="png">PNG</option>
                                     <option value="jpg">JPG</option>
@@ -164,10 +164,10 @@
                         </div>
                         <div class="form-row align-items-center">
                             <div class="col-4 select_row_label">
-                                <label class="mr-sm-2 my-2" for="model_variant">Visualization Format</label>
+                                <label class="mr-sm-2 my-1" for="model_variant">Visualization Format</label>
                             </div>
                             <div class="col-8 my-1 filter-select">
-                                <select id="model_variant" class="custom-select mr-sm-2">
+                                <select id="model_variant" class="selectpicker form-control form-control-sm">
                                     <option value="frequency">Frequency</option>
                                     <option value="performance">Performance</option>
                                 </select>

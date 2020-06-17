@@ -9,6 +9,7 @@ socket.on('updateColumnNames', function(response) {
 });
 
 socket.on('processDiscoveryUpdateEverything', function(response) {
+    activateFiltersAndOptions();
     resetAllPMParameters();
     updateEverything(response);
     hideSpinner();
@@ -29,11 +30,11 @@ socket.on('gviz', function(response) {
     hook.innerHTML = '';
 
     let link = document.createElement("a");
-    link.href = window.location.protocol + "//" + window.location.host + "//" + relative_url;
+    link.href = window.location.protocol + "//" + window.location.host + "//" + relative_url + "?prevent_browser_cache=" + (new Date()).toISOString(); //append time to each string to prevent the browser from accessing cached model images
     link.target = "_blank";
 
     let img = document.createElement("img");
-    img.src = relative_url;
+    img.src = relative_url + "?prevent_browser_cache=" + (new Date()).toISOString(); //append time to each string to prevent the browser from accessing cached model images
 
     // if the response is of type svg, the scale the svg to 1/2 view port, else add a container with 1/2 view port width and scroll to wrap the image
     let image_url_split = response.split('.');
@@ -174,16 +175,26 @@ function updatePMFilters(filterOptions, selectedFilters) {
     minPerformanceSelect = document.getElementById('process_discovery_min_performance');
     maxPerformanceSelect = document.getElementById('process_discovery_max_performance');
 
-    startDateSelect.min = filterOptions['timestamp_options']['min'];
-    startDateSelect.max = filterOptions['timestamp_options']['max'];
-    endDateSelect.min   = filterOptions['timestamp_options']['min'];
-    endDateSelect.max   = filterOptions['timestamp_options']['max'];
-
+    // update date filters
+    if (selectedFilters !== undefined && selectedFilters['process_discovery_start_date'] !== undefined) {
+        startDateSelect.value = selectedFilters["process_discovery_start_date"].split(' ').join('T');
+    }
+    if (selectedFilters !== undefined && selectedFilters['process_discovery_end_date'] !== undefined) {
+        endDateSelect.value = selectedFilters["process_discovery_end_date"].split(' ').join('T');
+    }
+    startDateSelect.setAttribute("min", filterOptions['timestamp_options']['min'].split(" ").join("T"));
+    startDateSelect.setAttribute("max", filterOptions['timestamp_options']['max'].split(" ").join("T"));
+    endDateSelect.setAttribute("min", filterOptions['timestamp_options']['min'].split(" ").join("T"));
+    endDateSelect.setAttribute("max", filterOptions['timestamp_options']['max'].split(" ").join("T"));
+    // update activity filters
     for (let activitySelect of activitySelects) {
         for (let activity of filterOptions['activity_options']) {
             var opt = document.createElement('option');
             opt.value = activity;
             opt.innerHTML = activity;
+            // if(parseJsonArray(selectedFilters[activitySelect.id]).indexOf(activity) > -1) {
+            //     opt.selected = true;
+            // }
             activitySelect.appendChild(opt);
         }
 
@@ -192,19 +203,19 @@ function updatePMFilters(filterOptions, selectedFilters) {
         opt.innerHTML = "None";
         activitySelect.appendChild(opt);
 
-        if (selectedFilters !== undefined && typeof(selectedFilters[activitySelect.id]) !== undefined) {
-            activitySelect.value = selectedFilters[activitySelect.id];
+        // set previously selected values
+        if (selectedFilters !== undefined && selectedFilters[activitySelect.id] !== undefined) {
+            parsedStartActivities = parseJsonArray(selectedFilters[activitySelect.id]);
+            //TODO rmeove jquery if possible
+            $("#" + activitySelect.id).val(parsedStartActivities);
+            //activitySelect.value = parsedStartActivities;
         } else {
             activitySelect.value = "None";
         }
     }
 
-    if (selectedFilters['process_discovery_start_activity'] != undefined) {
-        startActivitySelect.value = selectedFilters['process_discovery_start_activity']
-    }
-    if (selectedFilters['process_discovery_start_activity'] != undefined) {
-        endActivitySelect.value = selectedFilters['process_discovery_start_activity']
-    }
+    $(".selectpicker").selectpicker('refresh');
+    $(".selectpicker").selectpicker('refresh');
 
     minPerformanceSelect.value = (selectedFilters['process_discovery_min_performance'] !== undefined) ?
                                   selectedFilters['process_discovery_min_performance'] : '';
@@ -243,16 +254,11 @@ function getXesAttributeColumns() {
 }
 
 function getPMFilters() {
-    let select_inputs = [document.getElementById("process_discovery_start_date"),
-                         document.getElementById("process_discovery_end_date"),
-                         document.getElementById("process_discovery_start_activity"),
-                         document.getElementById("process_discovery_end_activity"),
-                         document.getElementById("process_discovery_min_performance"),
-                         document.getElementById("process_discovery_max_performance")];
+    let filterNodes = getFilterNodes();
 
     let selectedFilters = {};
 
-    for (let current_select_input of select_inputs) {
+    for (let current_select_input of filterNodes) {
         if (current_select_input.tagName === 'SELECT') {
             selectedFilters[current_select_input.id] = getAllValuesFromMultiSelect(current_select_input)
         } else {
@@ -295,3 +301,56 @@ function hideSpinner() {
     let spinner = document.getElementById('discovery-spinner');
     spinner.style.display="none"
 }
+
+function activateFiltersAndOptions() {
+    activateNodes(getFilterNodes());
+    $('.selectpicker').selectpicker('refresh');
+    activateNodes(getMainActionButtons());
+    activateNodes([document.getElementById("reset_filters_button")]);
+}
+
+function getFilterNodes() {
+    filterNodes = [document.getElementById("process_discovery_start_date"),
+                   document.getElementById("process_discovery_end_date"),
+                   document.getElementById("process_discovery_start_activity"),
+                   document.getElementById("process_discovery_end_activity"),
+                   document.getElementById("process_discovery_min_performance"),
+                   document.getElementById("process_discovery_max_performance")];
+
+    return filterNodes;
+}
+
+function getMainActionButtons() {
+    mainActionButtons = [document.getElementById("run_discovery_button"),
+                         document.getElementById("download_button"),
+                         document.getElementById("reset_discovery_inputs")];
+
+    return mainActionButtons;
+}
+
+function activateNodes(nodes) {
+    for (let node of nodes) {
+        node.classList.remove("disabled");
+        node.removeAttribute("disabled");
+    }
+}
+
+function parseJsonArray(jsonString) {
+    let obj = JSON.parse(jsonString);
+    let parsed = [];
+
+    for(let i in obj) {
+        parsed.push(obj[i]);
+    }
+
+    return parsed;
+}
+
+// TODO rewrite without jquery if possible
+$('#process_discovery_start_activity').on('hide.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+    sendPMParameters();
+});
+
+$('#process_discovery_end_activity').on('hide.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+    sendPMParameters();
+});

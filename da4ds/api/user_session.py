@@ -2,6 +2,7 @@ import os
 from flask import current_app as app
 from da4ds.models import SessionInformation
 from da4ds.api.process_mining.filters import ProcessMiningFilters
+from da4ds.api import input_parser
 from da4ds import db
 import uuid
 
@@ -62,6 +63,7 @@ def update_session(session_id, attribute, value):
     if attribute in session_information.__table__.columns:
         if attribute == "PMFilters":
             updated_filters = update_parameter_list(session_information, parse_parameter_list(session_information.PMFilters), value)
+            updated_filters = input_parser.filters_correct_datetimes(updated_filters)
             session_information.PMFilters = serialize_parameter_list_for_db(updated_filters)
         elif attribute == "PMXesAttributes":
             updated_xes_attributes = update_parameter_list(session_information, parse_parameter_list(session_information.PMXesAttributes), value)

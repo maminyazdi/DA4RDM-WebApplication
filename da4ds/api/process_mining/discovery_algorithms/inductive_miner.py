@@ -10,7 +10,7 @@ def run(event_log, options, output_path):
 
     ## or tree
 
-    #tree = inductive_miner.apply_tree(event_log)
-    #gviz = pt_visualizer.apply(tree)
+    tree = inductive_miner.apply_tree(event_log)
+    gviz = pt_visualizer.apply(tree)
 
     return gviz

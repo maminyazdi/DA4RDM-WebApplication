@@ -235,8 +235,10 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
     activity_options                      = activity_column.unique()
     pm_filter_options["activity_options"] = activity_options.tolist()
     timestamp_column                       = dataframe["time:timestamp"]
-    timestamp_options["min"]               = timestamp_column.min()
-    timestamp_options["max"]               = timestamp_column.max()
+    min_time = timestamp_column.min()
+    max_time = timestamp_column.max()
+    timestamp_options["min"]               = min_time.strftime("%d-%b-%Y %H:%M:%S") if (isinstance(min_time, datetime.datetime)) else min_time
+    timestamp_options["max"]               = max_time.strftime("%d-%b-%Y %H:%M:%S") if (isinstance(max_time, datetime.datetime)) else max_time
     pm_filter_options["timestamp_options"] = timestamp_options
     # maybe add min and max cost as well
 
@@ -251,7 +253,7 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
                                               "pm_xes_attributes":        current_session['pm_xes_attributes'], # selected xes attribute columns
                                               "pm_filter_options":        pm_filter_options, # get all possible values for the process mining filters
                                               "pm_filters":               current_session['pm_filters'], # selected filters
-                                              "pm_options":               current_session['pm_filters'], # selected options regarding the output of the discovery
+                                              "pm_options":               current_session['pm_options'], # selected options regarding the output of the discovery
                                               "pm_dataframe_key_metrics": dataframe_key_metrics}) # key metrics such as number of cases and events
 
     return
@@ -280,19 +282,6 @@ def run_process_discovery(session_id, options):
         time.sleep(4)
 
     process_model = results[0]
-
-    # import concurrent.futures
-
-    # process_model = None
-
-    # with concurrent.futures.ThreadPoolExecutor() as executor:
-    #     future = executor.submit(process_discovery.run, current_session, options)
-    #     process_model = future.result()
-
-    # while process_model == None:
-    #     emit("ping", "ping")
-    #     time.sleep(5)
-
     emit(process_model[0], process_model[1])
 
     return

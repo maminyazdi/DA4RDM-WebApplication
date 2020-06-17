@@ -9,11 +9,11 @@ def apply_all_filters(event_log, filters):
 
     # TODO add selection for aggregation methods for start and end time
     if (filters["process_discovery_start_date"] and filters["process_discovery_end_date"]):
-        event_log = apply_timestamp_filter(event_log, format_date(filters["process_discovery_start_date"]), format_date(filters["process_discovery_end_date"]))
+        event_log = apply_timestamp_filter(event_log, filters["process_discovery_start_date"], filters["process_discovery_end_date"])
     elif filters["process_discovery_start_date"]:
-        event_log = apply_timestamp_filter(event_log, process_discovery_start_date = format_date(filters["process_discovery_start_date"]))
+        event_log = apply_timestamp_filter(event_log, process_discovery_start_date = filters["process_discovery_start_date"])
     elif filters["process_discovery_end_date"]:
-        event_log = apply_timestamp_filter(event_log, process_discovery_end_date = format_date(filters["process_discovery_end_date"]))
+        event_log = apply_timestamp_filter(event_log, process_discovery_end_date = filters["process_discovery_end_date"])
 
     if (filters["process_discovery_start_activity"] != '[]'):
         event_log = apply_start_activitiy_filter(event_log, filters["process_discovery_start_activity"])
@@ -73,7 +73,3 @@ def apply_variants_filter():
 
 
     return """Not yet implemented!"""
-
-def format_date(date_string):
-    date_time_string = date_string + " 00:00:00"
-    return date_time_string
