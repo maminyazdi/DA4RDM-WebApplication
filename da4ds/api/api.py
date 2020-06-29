@@ -223,6 +223,7 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
             if old_filters:
                 user_session.update_session(session_id, "PMFilters", old_filters)
             emit("warning", {"message": "The selected filters did not yield a valid process model."})
+            return
         # else use the updated data frame
         else:
             dataframe = dataframe_filtered

@@ -59,10 +59,6 @@ socket.on('gviz', function(response) {
     link.appendChild(img);
 });
 
-socket.on('dataframe_information_update', function(response){
-
-});
-
 socket.emit('requestDiscoveryPreparation', session_id);
 
 function runProcessDiscovery(hostUrl, projectUrl){
