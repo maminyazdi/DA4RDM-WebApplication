@@ -62,8 +62,7 @@ def apply_end_activitiy_filter(event_log, end_activities):
 def apply_performance_filter(event_log, min_performance, max_performance):
     """"""
 
-    filtered_log = case_filter.filter_case_performance(event_log, min_performance, max_performance)
-
+    filtered_log = case_filter.filter_case_performance(event_log, float(min_performance), float(max_performance))
 
     return filtered_log
 

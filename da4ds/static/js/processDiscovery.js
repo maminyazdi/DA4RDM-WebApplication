@@ -186,6 +186,7 @@ function updatePMFilters(filterOptions, selectedFilters) {
     startDateSelect.setAttribute("max", filterOptions['timestamp_options']['max'].split(" ").join("T"));
     endDateSelect.setAttribute("min", filterOptions['timestamp_options']['min'].split(" ").join("T"));
     endDateSelect.setAttribute("max", filterOptions['timestamp_options']['max'].split(" ").join("T"));
+
     // update activity filters
     for (let activitySelect of activitySelects) {
         for (let activity of filterOptions['activity_options']) {

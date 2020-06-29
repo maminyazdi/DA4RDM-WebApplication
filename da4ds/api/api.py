@@ -201,6 +201,7 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
 
     #generate event log dataframe (might be more reasonable to use the direct dataframe -> eventlog conversion without storing to file first)
     dataframe.to_csv(current_session["process_mining_data_location"], sep=';') # TODO might be better do directly convert the dataframe to evenglog rather than saving to disk!
+
     event_log = event_log_generator.generate_xes_log(current_session["process_mining_data_location"], separator=';')
 
     #apply filters and update dataframe if there are filters selected

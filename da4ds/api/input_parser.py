@@ -43,6 +43,8 @@ def filters_correct_datetimes(filters):
     Returns:
         filters: updated dictionary of filters."""
 
+    if filters == '':
+        return ''
     if filters["process_discovery_start_date"]:
         filters["process_discovery_start_date"] = format_datetime(filters["process_discovery_start_date"])
     if filters["process_discovery_end_date"]:
