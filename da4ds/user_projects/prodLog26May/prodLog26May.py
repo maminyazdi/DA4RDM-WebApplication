@@ -21,7 +21,7 @@ def run(config):
     dataframe = dataframe.sort_values(by="Timestamp")
     dataframe.dropna()
 
-    session_id_time_threshold = int(parameters["pipeline_parameters"]) if "pipeline_parameters" in parameters else 30
+    session_id_time_threshold = int(parameters["pipeline_parameters"]) if "pipeline_parameters" in parameters else 30 # in minutes
     dataframe = create_session_ids(dataframe, session_id_time_threshold)
 
     dataframe.Timestamp = dataframe.Timestamp.dt.strftime("%YYYY-%MM-%DD %hh:%mm:%ss.%3")

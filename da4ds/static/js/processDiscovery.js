@@ -160,6 +160,8 @@ function updateColumnNames(allColumnNames, selectedColumns) {
             current_select_input.value = "None";
         }
     }
+
+    $(".selectpicker").selectpicker('refresh');
 }
 
 function updatePMFilters(filterOptions, selectedFilters) {
