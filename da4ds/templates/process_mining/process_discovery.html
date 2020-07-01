@@ -56,11 +56,13 @@
                 <div style="z-index: 1000; max-width: 100%;">
                     <div class="form-row align-items-center">
                         <label for="process_discovery_start_date">Start Datetime</label>
-                        <input id="process_discovery_start_date" type="datetime-local" class="form-control form-control-sm disabled" disabled aria-describedby="start time" onchange="sendPMParameters();" step="1" >
+                        <input placeholder="YYYY-MM-DDThh:mm:ss" id="process_discovery_start_date" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="start time" onchange="sendPMParameters();" step="1" >
+                        <!-- <input id="process_discovery_start_date" type="datetime-local" class="form-control form-control-sm disabled" disabled aria-describedby="start time" onchange="sendPMParameters();" step="1" > -->
                     </div>
                     <div class="form-row align-items-center">
                         <label for="process_discovery_end_date">End Datetime</label>
-                        <input id="process_discovery_end_date" type="datetime-local" class="form-control form-control-sm disabled" disabled aria-describedby="end time" onchange="sendPMParameters();" step="1" ">
+                        <input placeholder="YYYY-MM-DDThh:mm:ss" id="process_discovery_end_date" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="end time" onchange="sendPMParameters();" step="1" ">
+                        <!-- <input id="process_discovery_end_date" type="datetime-local" class="form-control form-control-sm disabled" disabled aria-describedby="end time" onchange="sendPMParameters();" step="1" "> -->
                     </div>
                     <div class="form-row align-items-center">
                         <div class="col-auto my-1 filter-select">

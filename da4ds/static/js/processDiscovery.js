@@ -185,6 +185,10 @@ function updatePMFilters(filterOptions, selectedFilters) {
     endDateSelect.setAttribute("min", filterOptions['timestamp_options']['min'].split(" ").join("T"));
     endDateSelect.setAttribute("max", filterOptions['timestamp_options']['max'].split(" ").join("T"));
 
+    //temporary tooltip for text input
+    $('#process_discovery_start_date').prop('title', 'min:' + filterOptions['timestamp_options']['min'].split(" ").join("T") + " max:" + filterOptions['timestamp_options']['max'].split(" ").join("T"));
+    $('#process_discovery_end_date').prop('title', 'min:' + filterOptions['timestamp_options']['min'].split(" ").join("T") + " max:" + filterOptions['timestamp_options']['max'].split(" ").join("T"));
+
     // update activity filters
     for (let activitySelect of activitySelects) {
         for (let activity of filterOptions['activity_options']) {
