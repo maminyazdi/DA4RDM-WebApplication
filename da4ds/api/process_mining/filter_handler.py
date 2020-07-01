@@ -15,9 +15,9 @@ def apply_all_filters(event_log, filters):
     elif filters["process_discovery_end_date"]:
         event_log = apply_timestamp_filter(event_log, process_discovery_end_date = filters["process_discovery_end_date"])
 
-    if (filters["process_discovery_start_activity"] != '[]'):
+    if (filters["process_discovery_start_activity"] != '[]' and filters["process_discovery_start_activity"] != "['None']"):
         event_log = apply_start_activitiy_filter(event_log, filters["process_discovery_start_activity"])
-    if (filters["process_discovery_end_activity"] != '[]'):
+    if (filters["process_discovery_end_activity"] != '[]' and filters["process_discovery_end_activity"] != "['None']"):
         event_log = apply_end_activitiy_filter(event_log, filters["process_discovery_end_activity"])
 
     if (filters["process_discovery_min_performance"] and filters["process_discovery_max_performance"]):

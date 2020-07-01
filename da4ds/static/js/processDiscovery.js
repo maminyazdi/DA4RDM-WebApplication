@@ -203,7 +203,9 @@ function updatePMFilters(filterOptions, selectedFilters) {
         activitySelect.appendChild(opt);
 
         // set previously selected values
-        if (selectedFilters !== undefined && selectedFilters[activitySelect.id] !== undefined) {
+        if (selectedFilters !== undefined
+            && selectedFilters[activitySelect.id] !== "[]"
+            && selectedFilters[activitySelect.id] !== undefined) {
             parsedStartActivities = parseJsonArray(selectedFilters[activitySelect.id]);
             //TODO rmeove jquery if possible
             $("#" + activitySelect.id).val(parsedStartActivities);

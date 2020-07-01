@@ -61,23 +61,26 @@ def new_data_source():
     data_source.Type         = type_value
     data_source.LastModified = last_modified_value
 
-    if 'file' not in request.files:
-        flash('No file part')
-        return redirect(request.url)
-    file = request.files['file']
-    if file.filename == '':
-        flash('No selected file')
-        return redirect(request.url)
-    if file and allowed_file(file.filename):
-        filename = str(uuid.uuid4()) + "-" + secure_filename(file.filename)
-        file.save(os.path.join(Config.UPLOADED_USER_DATA_LOCATION, filename))
-        # add file location to parameter list, which is technically not necessary but is kept to keep the flexible implementation of the csv reader
-        parameters_value = data_source.Parameters + ";path:=" + Config.UPLOADED_USER_DATA_LOCATION + '/' + filename
-        data_source.Parameters = parameters_value
+    if data_source.Type == 'csv':
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = str(uuid.uuid4()) + "-" + secure_filename(file.filename).split(".")[0] + ".csv"
+            file.save(os.path.join(Config.UPLOADED_USER_DATA_LOCATION, filename))
+            # add file location to parameter list, which is technically not necessary but is kept to keep the flexible implementation of the csv reader
+            parameters_value = data_source.Parameters + "&;path:=" + Config.UPLOADED_USER_DATA_LOCATION + '/' + filename
+            data_source.Parameters = parameters_value
 
     data_source.StoredOnServer = True
     db.session.add(data_source)
     db.session.commit()
+
+
 
     selected_source = db.session.query(DataSource).filter(DataSource.Name         == name_value,
                                                           DataSource.Parameters   == parameters_value,

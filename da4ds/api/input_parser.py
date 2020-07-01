@@ -34,6 +34,13 @@ def serialize_parameter_list_for_db(parameters, parameter_separator, parameter_t
 
     return serialized_parameters
 
+def clean_filters_for_database(filters):
+    if filters == '':
+        return ''
+    filters = filters_correct_datetimes(filters)
+    filters = filters_clean_activities(filters)
+    return filters
+
 def filters_correct_datetimes(filters):
     """Checks and correccts the format of the date time filters inside the filter dictionary.
 
@@ -43,13 +50,22 @@ def filters_correct_datetimes(filters):
     Returns:
         filters: updated dictionary of filters."""
 
-    if filters == '':
-        return ''
     if filters["process_discovery_start_date"]:
         filters["process_discovery_start_date"] = format_datetime(filters["process_discovery_start_date"])
     if filters["process_discovery_end_date"]:
         filters["process_discovery_end_date"] = format_datetime(filters["process_discovery_end_date"])
 
+    return filters
+
+def filters_clean_activities(filters):
+    if filters == '':
+        return ''
+    if type(filters["process_discovery_start_activity"]) == list and 'None' in filters["process_discovery_start_activity"]:
+        index = filters["process_discovery_start_activity"].index('None')
+        filters["process_discovery_start_activity"].pop(index)
+    if type(filters["process_discovery_start_activity"]) == list and 'None' in filters["process_discovery_end_activity"]:
+        index = filters["process_discovery_end_activity"].index('None')
+        filters["process_discovery_end_activity"].pop(index)
     return filters
 
 def format_datetime(datetime):
@@ -64,8 +80,8 @@ def format_datetime(datetime):
 
     if datetime == "" or datetime == None:
         return ""
-    elif datetime.count("T") == 1:
-        formatted_datetime = " ".join(datetime.split('T'))
-        return formatted_datetime
     else:
+        if datetime.count("T") == 1:
+            datetime = " ".join(datetime.split('T'))
+        datetime =  datetime.split('.')[0]
         return datetime
