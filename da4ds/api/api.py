@@ -136,7 +136,7 @@ def run_project_persistent_connection(session_id, data):
 
     # programmatically get the package and module names to import from the given project name
     project_name = data['projectName']
-    pipeline_parameters = input_parser.parse_parameter_list(data['pipelineParameters'], ';', '=')
+    pipeline_parameters = input_parser.parse_parameter_list(data['pipelineParameters'], '&;', ':=')
     emit('progressLog', {'message': f"Starting pipeline for project { project_name }"})
     module_name = "." + project_name
     project_path = app.config['USER_PROJECT_DIRECTORY']
