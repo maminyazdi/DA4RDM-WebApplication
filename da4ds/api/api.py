@@ -2,7 +2,6 @@ import os
 import re
 import csv
 import sqlalchemy
-import importlib
 import datetime
 import uuid
 import pandas as pd
@@ -19,6 +18,7 @@ from da4ds import db, Config
 from da4ds.models import ( InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource )
 from da4ds.api.data_source import data_source_handler
 from da4ds.api.process_mining import ( process_discovery, event_log_generator, filter_handler )
+from da4ds.api.preprocessing import user_project_handler
 from . import ( user_session, input_parser, file_handler )
 
 api_bp = Blueprint('blueprints/api', __name__, template_folder='templates', static_folder='static')
@@ -36,16 +36,8 @@ def get_all_data_sources():
     data_sources = db.session.query(DataSource).all()
     return data_sources
 
-
-def allowed_file(filename):
-    ALLOWED_EXTENSIONS = {'txt', 'csv', 'xes'}
-
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 @api_bp.route('/new_data_source', methods=['POST'])
 def new_data_source():
-    # TODO #FIXME IMPORTANT add form validation & escaping
 
     session_id = request.args.get("session_id")
     current_session = user_session.get_session_information(session_id)
@@ -55,35 +47,13 @@ def new_data_source():
     type_value          = request.form['datasource_kind']
     last_modified_value = datetime.datetime.now()
 
-    data_source = DataSource()
-    data_source.Name         = name_value
-    data_source.Parameters   = parameters_value
-    data_source.Type         = type_value
-    data_source.LastModified = last_modified_value
-
-    if data_source.Type == 'csv':
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = str(uuid.uuid4()) + "-" + secure_filename(file.filename).split(".")[0] + ".csv"
-            file.save(os.path.join(Config.UPLOADED_USER_DATA_LOCATION, filename))
-            # add file location to parameter list, which is technically not necessary but is kept to keep the flexible implementation of the csv reader
-            parameters_value = data_source.Parameters + "&;path:=" + Config.UPLOADED_USER_DATA_LOCATION + '/' + filename
-            data_source.Parameters = parameters_value
-
-    data_source.StoredOnServer = True
-    db.session.add(data_source)
-    db.session.commit()
-
-
+    try:
+        data_source_handler.add_datasource(name_value, parameters_value, type_value, last_modified_value, request.files)
+    except FileNotFoundError as err:
+        flash(err.args[0])
+        return redirect(request.url)
 
     selected_source = db.session.query(DataSource).filter(DataSource.Name         == name_value,
-                                                          DataSource.Parameters   == parameters_value,
                                                           DataSource.Type         == type_value,
                                                           DataSource.LastModified == last_modified_value).all()
 
@@ -110,57 +80,20 @@ def read_data_from_source():
 @api_bp.route('/get_all_pipeline_names')
 def get_all_pipeline_names():
     projects_path = app.config['USER_PROJECT_DIRECTORY']
-    if projects_path[-1] != '/':
-        projects_path += '/'
-    dirs = os.listdir(projects_path)
-    projects_directories = [str(x) for x in dirs if (os.path.isdir(projects_path + x) and x != '__pycache__')]
+    projects_directories = (user_project_handler.get_all_user_projects(projects_path))
     return projects_directories
-
-@api_bp.route('/run_project', methods=['GET'])
-def run_project():
-    project_name = request.args['project_name'] # programmatically get the package and module names to import from the given project name
-    module_name = "." + project_name
-    project_path = app.config['USER_PROJECT_DIRECTORY']
-    if project_path[-1] == "/":
-        project_path = project_path[0:-1]
-    package_name = project_path.replace("/", ".")
-    package_name = re.sub(r"^\.*", "", package_name) #replace leading and traling dots
-    package_name = re.sub(r"\.*$", "", package_name)
-
-    project = importlib.import_module(module_name, package_name) # import module at runtime
-    project_config = project.init(db)
-    response = project.run(project_config)
-
-    return response
 
 @socketio.on('requestProjectRun', namespace='/api/run_project')
 def run_project_persistent_connection(session_id, data):
     session_information = user_session.get_session_information(session_id)
-
-    # programmatically get the package and module names to import from the given project name
     project_name = data['projectName']
     pipeline_parameters = input_parser.parse_parameter_list(data['pipelineParameters'], '&;', ':=')
+
     emit('progressLog', {'message': f"Starting pipeline for project { project_name }"})
-    module_name = "." + project_name
-    project_path = app.config['USER_PROJECT_DIRECTORY']
-    if project_path[-1] == "/":
-        project_path = project_path[0:-1]
-    package_name = project_path.replace("/", ".")
 
-    #replace leading and traling dots
-    package_name = re.sub(r"^\.*", "", package_name)
-    package_name = re.sub(r"\.*$", "", package_name)
+    project_module = user_project_handler.import_project_module(app.config['USER_PROJECT_DIRECTORY'], project_name)
+    result_dataframe = user_project_handler.run_user_project(project_module, session_information, db, pipeline_parameters)
 
-    # import module at runtime
-    project = importlib.import_module(module_name, package_name)
-    project_config = project.init(session_information, db, pipeline_parameters)
-
-    # this is legacy code that makes old user pipelines create a response
-    # TODO find a way to wrap the response from pipelines under consideration of the response kind from the pipeline into a proper reponse object, store the result dataframe (if applicable) in the right data location
-    #response = project.run(project_config)
-    # emit('json', response)
-
-    result_dataframe = project.run(project_config)
     result_dataframe.to_csv(session_information["data_location"], sep=";")
 
     emit('progressLog', {'message': "Pipeline finished successfully"})
@@ -282,9 +215,7 @@ def run_process_discovery(session_id, options):
 
     import time
     while not (results):
-        print("ping")
-        emit("ping", "ping")
-        time.sleep(4)
+        time.sleep(2)
 
     process_model = results[0]
     emit(process_model[0], process_model[1])

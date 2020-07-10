@@ -8,21 +8,34 @@
             <div class="form-group">
                 <label for="dataSourceName">Datasource name</label>
                 <input name="dataSourceName" required type="text" class="form-control" id="dataSourceName" aria-describedby="dataSourceTitleHelp">
-                <small id="dataSourceTitleHelp" class="form-text text-muted">This name will be used to quickly identify this data source</small>
+                <small id="dataSourceTitleHelp" class="form-text text-muted">This name will be used to quickly identify this data source,</small>
             </div>
             <div class="form-group">
                 <label for="dataSourceParameters">Parameters</label>
-                <input name="dataSourceParameters" required type="text" class="form-control" id="dataSourceParameters" aria-describedby="dataSourceParametersHelp">
-                <small id="dataSourceParametersHelp" class="form-text text-muted">Use this field to provide all parameters required to access the data source, i.e. connection details for a data base connection or a file path for a local csv or xes file. Seperate parameters with '&' + semicolon (&;). Separate parameter name and value with a definition sign (:=) sign. Ommit empty white spaces.</small>
+                <input name="dataSourceParameters" type="text" class="form-control" id="dataSourceParameters" aria-describedby="dataSourceParametersHelp">
+                <small id="dataSourceParametersHelp" class="form-text text-muted">Use this field to provide all parameters required to access the data source, i.e. connection details for a data base connection or a file path for a local csv or xes file. Seperate parameters with '&' + semicolon (&;). Separate parameter name and value with a definition sign (:=) sign. Ommit empty white spaces.
+                    <p>The following parameters are supported:</p>
+                    <p>CSV: separator:=&lt;separator&gt; - the sign that servers as column delimiter in the uplaoded CSV file</p>
+                    <p>XES doesn't require parameters</p>
+                    <p>Database: </p>
+                    <p>connection_string:=&lt;database connection string&gt; - connection string in accordance with the SqlAlchemy interface (for instance: mssql+pyodbc://user:password@d-sp10/Coscine?driver=SQL+Server&trusted_connection=yes)</p>
+                    <p>query:=&lt;query in the database language&gt;</p>
+                    <p>index_column:=&lt;separator&gt; (optional)</p>
+                </small>
             </div>
             <div class="form-check-inline">
                 <label class="form-check-label">
-                    <input id="csv_radio" value="csv" type="radio" class="form-check-input data_source_radio" name="datasource_kind">CSV
+                    <input id="csv_radio" value="csv" type="radio" class="form-check-input data_source_radio" name="datasource_kind" required>CSV
                 </label>
             </div>
             <div class="form-check-inline">
                 <label class="form-check-label">
-                    <input id="database_radio" value="database" type="radio" class="form-check-input data_source_radio" name="datasource_kind">Database
+                    <input id="xes_radio" value="xes" type="radio" class="form-check-input data_source_radio" name="datasource_kind" required>XES
+                </label>
+            </div>
+            <div class="form-check-inline">
+                <label class="form-check-label">
+                    <input id="database_radio" value="database" type="radio" class="form-check-input data_source_radio" name="datasource_kind" required>Database
                 </label>
             </div>
             <div id="data_source_upload" class="custom-file data_source_upload" style="display:none">

@@ -62,7 +62,7 @@ The typical use case will be comprised of the following three steps:
 2) Running a data cleaning pipeline.
 3) Running the process discovery algorithms.
 
-### Selecitn a Data Source
+### Selecting a Data Source
 
 As a first step, your data source should be selected. If you did not prevously select the desired data source, head to Data Initialization -> Save a new data source. Your data source needs an arbitrary name and some parameters. Parameters should be separated by semicolon (;), and values of parameters should be added following the parameter after a definition symbol (:=).
 Currently used parameters are path:= and separator:= for CSV files and connection_string:= and query:= for database connections, where connection_string should be a string that can be used by sqlalchemy to create a database engine and connect to the specified database.
@@ -74,7 +74,7 @@ Once the connection is stored, you can select it under Data Initialization -> Se
 
 
 
-### Rnning the Process Discovery Algorithms
+### Running the Process Discovery Algorithms
 
 
 
