@@ -66,6 +66,10 @@
     margin-bottom: 8px;
 }
 
+.custom-select {
+    margin-bottom: 0.4rem;
+}
+
 .filter-select {
     width: 100%;
 }

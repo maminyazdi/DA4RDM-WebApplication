@@ -61,7 +61,9 @@ def new_data_source():
     dataframe.to_csv(current_session['unmodified_data_location'], sep=";")
     dataframe.to_csv(current_session['data_location'], sep=";")
 
-    return render_template('preprocessing/preprocessing.html')
+    data_sources = get_all_data_sources()
+    pipeline_names = get_all_pipeline_names()
+    return render_template('preprocessing/preprocessing.html', data_sources=data_sources, pipelines=pipeline_names)
 
 @api_bp.route('/read_data_from_source', methods=['POST'])
 def read_data_from_source():
@@ -75,7 +77,9 @@ def read_data_from_source():
     dataframe.to_csv(current_session['unmodified_data_location'], sep=";")
     dataframe.to_csv(current_session['data_location'], sep=";")
 
-    return render_template('preprocessing/preprocessing.html')
+    data_sources = get_all_data_sources()
+    pipeline_names = get_all_pipeline_names()
+    return render_template('preprocessing/preprocessing.html', data_sources=data_sources, pipelines=pipeline_names)
 
 @api_bp.route('/get_all_pipeline_names')
 def get_all_pipeline_names():
