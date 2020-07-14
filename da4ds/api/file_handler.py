@@ -5,7 +5,7 @@ def get_download_path(session, requested_file):
 
     if requested_file == "unmodified_data":
         path = session["unmodified_data_location"].replace('./da4ds/','').replace('/','\\')
-    if requested_file == "data":
+    if requested_file == "working_data":
         path = session["data_location"].replace('./da4ds/','').replace('/','\\')
     if requested_file == "process_mining_data":
         path = session["process_mining_data_location"].replace('./da4ds/','').replace('/','\\')

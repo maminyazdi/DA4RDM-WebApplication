@@ -78,6 +78,11 @@
     text-align: right;
 }
 
+/* preprocessing */
+#pipelineParameters {
+    margin-top: 0.4rem;
+}
+
 /* new data source page */
 .csv_radio {
     display: none;

@@ -1,23 +1,39 @@
 {% extends 'main/index.html' %}
 
+{% block header %}
+    <h2>Pre-Processing</h2>
+{% endblock %}
+
 {% block content_body %}
     <div class="row">
         <div class="col">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Data Source</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Select one of the stored data sources. Or add a new data source</h6>
-                    <form id="dataSourceSelectForm" action="{{ url_for('blueprints/api.read_data_from_source') }}" method="POST">
-                        <div class="row d-flex justify-content-center">
+                    <h6 class="card-subtitle mb-2 text-muted">Select a saved data source connection or add a new one.</h6>
+                    <form id="dataSourceSelectForm" method="POST">
+                        <div class="input-group">
+                            <select name="selectedDataSourceId" required class="custom-select" id="dataSourceSelector" aria-label="Select a data source">
+                                {% for dataSource in data_sources %}
+                                    <option id="data_source_{{ dataSource.Id }}" value="{{ dataSource.Id }}" >{{dataSource.Name}}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="input-group-append">
+                                <button id="dataSourceSubmit" type="submit" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i></button>
+                                <a href="{{ url_for('blueprints/preprocessing.new_data_source') }}" class="btn btn-secondary"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                <a href="javascript:downloadFile('unmodified_data')" class="btn btn-secondary"><i class="fa fa-download" aria-hidden="true"></i></a>
+                            </div>
+                        </div>
+                        <!-- <div class="row d-flex justify-content-center">
                             <select name="selectedDataSourceId" required class="custom-select" id="dataSourceSelector" aria-label="Select a data source">
                                 {% for dataSource in data_sources %}
                                     <option id="data_source_{{ dataSource.Id }}" value="{{ dataSource.Id }}" >{{dataSource.Name}}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <button id="dataSourceSubmit" type="submit" class="btn btn-primary">Select</button>
-                        <a href="{{ url_for('blueprints/preprocessing.new_data_source') }}" class="btn btn-secondary">New</a>
-                        <a href="javascript:downloadWorkingData()" class="btn btn-secondary">Download</a>
+                        <button id="dataSourceSubmit" type="submit" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i></button>
+                        <a href="{{ url_for('blueprints/preprocessing.new_data_source') }}" class="btn btn-secondary"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                        <a href="javascript:downloadWorkingData()" class="btn btn-secondary"><i class="fa fa-download" aria-hidden="true"></i></a> -->
                     </form>
                     {% block dataSource %}
                     {% endblock %}
@@ -31,18 +47,23 @@
                         <h5 class="card-title">Data Preprocessing Pipeline</h5>
                         <h6 class="card-subtitle mb-2 text-muted">Select a pre-defined data preprocessing pipeline.</h6>
                         <form method="GET" action="/preprocessing/view_project">
-                            <div class="row d-flex justify-content-center">
-                                <select name=project_name class="custom-select">
-                                    {% for pipeline in pipelines %}
-                                        <option value="{{ pipeline }}" >{{ pipeline }}</option>"
-                                    {% endfor %}
-                                </select>
+                            <fieldset id="pipeline_actions" disabled>
+                                <div class="input-group">
+                                    <select name=project_name class="custom-select">
+                                        {% for pipeline in pipelines %}
+                                            <option value="{{ pipeline }}" >{{ pipeline }}</option>"
+                                        {% endfor %}
+                                    </select>
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i></button>
+                                        <a href="{{ url_for('blueprints/preprocessing.view_project') }}" class="btn btn-secondary"><i class="fa fa-search" aria-hidden="true"></i></a>
+                                        <a href="javascript:downloadFile('working_data')" class="btn btn-secondary"><i class="fa fa-download" aria-hidden="true"></i></a>
+                                    </div>
+                                </div>
                                 <input name="pipelineParameters" type="text" class="form-control" id="pipelineParameters" aria-describedby="pipelineParametersHelp">
-                                <small id="pipelineParametersHelp" class="form-text text-muted">Use this field to provide all parameters you want to provide to the pipeline. Seperate parameters with '&' + semicolon (&;). Separate parameter name and value with a definition sign (:=) sign. Ommit empty white spaces.</small>
-                            </div>
-                            <div class="row d-flex justify-content-center">
-                                <input type="submit" class="btn btn-primary btn-lower" value="View Project">
-                            </div>
+                                <small id="pipelineParametersHelp" class="form-text text-muted">Use this field to provide all parameters you want to provide to the pipeline. Seperate parameters with '&' + semicolon (&;). Separate parameter name and value with a definition sign (:=) sign.</small>
+
+                            </fieldset>
                         </form>
                     {% endblock %}
                 </div>

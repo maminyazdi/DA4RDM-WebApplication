@@ -20,9 +20,9 @@ def import_project_module(project_path, project_name):
     project = importlib.import_module(module_name, package_name)
     return project
 
-def run_user_project(project, session, database, pipeline_parameters):
+def run_user_project(project, data_source, pipeline_parameters):
 
-    project_config = project.init(session, database, pipeline_parameters)
+    project_config = project.init(data_source, pipeline_parameters)
 
     result_dataframe = project.run(project_config)
 

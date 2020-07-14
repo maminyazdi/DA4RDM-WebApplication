@@ -11,7 +11,7 @@ from da4ds.processing_libraries.da4ds import xes_formatter
 def run(config):
     parameters = config.parameters
 
-    dataframe = pd.read_csv(config.current_session["unmodified_data_location"], index_col=0, sep=";")
+    dataframe = pd.read_csv(config.data_source, index_col=0, sep=";")
 
     #dataframe = pd.read_csv("C:/Temp/prodLogMai.txt", sep="\t")
 
@@ -26,9 +26,6 @@ def run(config):
 
     dataframe.Timestamp = dataframe.Timestamp.dt.strftime("%YYYY-%MM-%DD %hh:%mm:%ss.%3")
     dataframe.Timestamp = dataframe.Timestamp.str.slice(0, 23)
-
-    # TODO treat inconsistencies and missing values
-    dataframe.to_csv(config.current_session["data_location"], sep=";")
 
     return dataframe
 

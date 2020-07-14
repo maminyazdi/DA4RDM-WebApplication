@@ -13,9 +13,6 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def select_datasource(current_session, selected_data_source):
-    """"""
-
 def add_datasource(name_value, parameters_value, type_value, last_modified_value, file_data):
 
     data_source = DataSource()
@@ -36,6 +33,13 @@ def add_datasource(name_value, parameters_value, type_value, last_modified_value
     return
 
 def add_file(file_data, data_source_parameters=""):
+    """Saves a file to the data source location specified in Config.UPLOADED_USER_DATA_LOCATION and adds the path to the data source data base item.
+    parameters:
+        file_data: File data as coming from an upload form's post-request,
+        data_source_parameters: Already set parameters required to read from the data source, default = "";
+    returns:
+        string: the data source parameters with the file location appended as "path:=<paht>"
+    """
     if 'file' not in file_data:
         raise FileNotFoundError("No file part")
     file = file_data['file']

@@ -65,21 +65,40 @@ def new_data_source():
     pipeline_names = get_all_pipeline_names()
     return render_template('preprocessing/preprocessing.html', data_sources=data_sources, pipelines=pipeline_names)
 
-@api_bp.route('/read_data_from_source', methods=['POST'])
-def read_data_from_source():
-    session_id = request.args.get("session_id")
+# @api_bp.route('/read_data_from_source', methods=['POST'])
+# def read_data_from_source():
+#     session_id = request.args.get("session_id")
+#     current_session = user_session.get_session_information(session_id)
+#     selected_data_source_id = request.values['selectedDataSourceId']
+#     data_sources = get_all_data_sources()
+#     selected_source = data_sources[int(request.values['selectedDataSourceId']) - 1] # -1 for zero based indexing of data_sources compared to 1 based indexing in db
+
+#     dataframe = data_source_handler.read_from_source(selected_source)
+#     dataframe.to_csv(current_session['unmodified_data_location'], sep=";")
+#     dataframe.to_csv(current_session['data_location'], sep=";")
+
+#     data_sources = get_all_data_sources()
+#     pipeline_names = get_all_pipeline_names()
+#     return render_template('preprocessing/preprocessing.html', data_sources=data_sources, pipelines=pipeline_names)
+
+# @api_bp.route('/read_data_from_source', methods=['POST'])
+@socketio.on('requestReadDataFromSource', namespace='/api/preprocessing')
+def read_data_from_source(session_id, data):
     current_session = user_session.get_session_information(session_id)
-    selected_data_source_id = request.values['selectedDataSourceId']
+    #selected_data_source_id = request.values['selectedDataSourceId']
+    selected_data_source_id = int(data['data_source_id']) - 1 # -1 for zero based indexing of data_sources compared to 1 based indexing in db
     data_sources = get_all_data_sources()
-    selected_source = data_sources[int(request.values['selectedDataSourceId']) - 1] # -1 for zero based indexing of data_sources compared to 1 based indexing in db
+    selected_source = data_sources[selected_data_source_id]
 
     dataframe = data_source_handler.read_from_source(selected_source)
     dataframe.to_csv(current_session['unmodified_data_location'], sep=";")
     dataframe.to_csv(current_session['data_location'], sep=";")
 
-    data_sources = get_all_data_sources()
-    pipeline_names = get_all_pipeline_names()
-    return render_template('preprocessing/preprocessing.html', data_sources=data_sources, pipelines=pipeline_names)
+    #data_sources = get_all_data_sources()
+    #pipeline_names = get_all_pipeline_names()
+    emit('preprocessingStatus', {'task': 'read', 'result': 'success', 'data_source_name': selected_source.Name})
+    return #render_template('preprocessing/preprocessing.html', data_sources=data_sources, pipelines=pipeline_names)
+
 
 @api_bp.route('/get_all_pipeline_names')
 def get_all_pipeline_names():
@@ -96,7 +115,7 @@ def run_project_persistent_connection(session_id, data):
     emit('progressLog', {'message': f"Starting pipeline for project { project_name }"})
 
     project_module = user_project_handler.import_project_module(app.config['USER_PROJECT_DIRECTORY'], project_name)
-    result_dataframe = user_project_handler.run_user_project(project_module, session_information, db, pipeline_parameters)
+    result_dataframe = user_project_handler.run_user_project(project_module, session_information['unmodified_data_location'], pipeline_parameters)
 
     result_dataframe.to_csv(session_information["data_location"], sep=";")
 
@@ -108,9 +127,12 @@ def run_project_persistent_connection(session_id, data):
 def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, options = None):
     current_session = user_session.get_session_information(session_id)
     old_filters = current_session["pm_filters"]
-
-    dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
     dataframe_key_metrics = {}
+
+    try:
+       dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
+    except FileNotFoundError:
+       return
 
     column_names = list(dataframe.columns.values)
 
@@ -215,6 +237,8 @@ def run_process_discovery(session_id, options):
     #process_model = process_discovery.run(current_session, options)
 
     results = []
+
+    #use parallelization to run the texing logics in a separate threat. TODO Is not supported on development server, needs to be veryified on productive server.
     threading.Thread(target=process_discovery_thread_wrapper, args=(current_session, options, results)).start()
 
     import time

@@ -1,5 +1,9 @@
 {% extends 'process_mining/process_mining.html' %}
 
+{% block header %}
+    <h2>Process-Discovery</h2>
+{% endblock %}
+
 {% block content_body %}
     <div class="row">
         <div class="col">
@@ -147,7 +151,7 @@
                             <div class="col-8 my-1 filter-select">
                                 <select id="discovery_algorithm" class="selectpicker form-control form-control-sm">
                                     {% for discovery_algorithm in discovery_algorithms %}
-                                        <option id="{{ discovery_algorithm }}" value="{{ discovery_algorithm }}">{{ discovery_algorithm_labels[discovery_algorithm] }}</option>
+                                        <option id="{{ discovery_algorithm }}" value="{{ discovery_algorithm }}" {% if discovery_algorithm == "directly_follows_graph" %}selected="selected"{% endif %}>{{ discovery_algorithm_labels[discovery_algorithm] }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
