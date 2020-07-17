@@ -20,6 +20,7 @@ function onDatasourceSelected(dataSourceName) {
     document.getElementById('pipeline_actions').disabled = false;
     localStorage.setItem("selected_data_source", dataSourceName);
     document.getElementById("user_session_data_source_display").innerHTML = dataSourceName;
+    document.getElementById("user_session_data_source_display").style.color = "black";
 }
 
 function downloadWorkingData(fileName) {

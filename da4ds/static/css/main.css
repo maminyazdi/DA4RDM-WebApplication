@@ -76,6 +76,8 @@
 
 .select_row_label {
     text-align: right;
+    margin-right: 0;
+    padding-right: 0;
 }
 
 /* preprocessing */
@@ -92,4 +94,9 @@
 .background-grey {
     background-color: #F7F7F7;
     margin: 0px;
+}
+
+.discovey-left-side-input {
+    z-index: 1000;
+    width: 100%;
 }

@@ -36,6 +36,11 @@ function getCurrentSession() {
 }
 
 function updateSessionDisplay() {
-    document.getElementById("user_session_data_source_display").innerHTML = localStorage["selected_data_source"];
-    document.getElementById("user_session_pipeline_display").innerHTML = localStorage["selected_pipeline"];
+    let pipelineDisplay = document.getElementById("user_session_pipeline_display");
+    let dataSourceDisplay = document.getElementById("user_session_data_source_display");
+    pipelineDisplay.innerHTML = localStorage["selected_pipeline"];
+    dataSourceDisplay.innerHTML = localStorage["selected_data_source"];
+    if (localStorage["selected_data_source"] != "None") {
+        dataSourceDisplay.style.color = "black";
+    }
 }

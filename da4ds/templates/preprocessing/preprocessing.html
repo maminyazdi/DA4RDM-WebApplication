@@ -24,16 +24,6 @@
                                 <a href="javascript:downloadFile('unmodified_data')" class="btn btn-secondary"><i class="fa fa-download" aria-hidden="true"></i></a>
                             </div>
                         </div>
-                        <!-- <div class="row d-flex justify-content-center">
-                            <select name="selectedDataSourceId" required class="custom-select" id="dataSourceSelector" aria-label="Select a data source">
-                                {% for dataSource in data_sources %}
-                                    <option id="data_source_{{ dataSource.Id }}" value="{{ dataSource.Id }}" >{{dataSource.Name}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <button id="dataSourceSubmit" type="submit" class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i></button>
-                        <a href="{{ url_for('blueprints/preprocessing.new_data_source') }}" class="btn btn-secondary"><i class="fa fa-plus" aria-hidden="true"></i></a>
-                        <a href="javascript:downloadWorkingData()" class="btn btn-secondary"><i class="fa fa-download" aria-hidden="true"></i></a> -->
                     </form>
                     {% block dataSource %}
                     {% endblock %}

@@ -1,6 +1,6 @@
 {% extends 'preprocessing/preprocessing.html' %}
 
-{% block dataSource %}
+{% block content_body %}
     <div class="card-body">
         <h5 class="card-title">Data Source</h5>
         <h6 class="card-subtitle mb-2 text-muted">Save a new one</h6>
@@ -9,19 +9,6 @@
                 <label for="dataSourceName">Datasource name</label>
                 <input name="dataSourceName" required type="text" class="form-control" id="dataSourceName" aria-describedby="dataSourceTitleHelp">
                 <small id="dataSourceTitleHelp" class="form-text text-muted">This name will be used to quickly identify this data source,</small>
-            </div>
-            <div class="form-group">
-                <label for="dataSourceParameters">Parameters</label>
-                <input name="dataSourceParameters" type="text" class="form-control" id="dataSourceParameters" aria-describedby="dataSourceParametersHelp">
-                <small id="dataSourceParametersHelp" class="form-text text-muted">Use this field to provide all parameters required to access the data source, i.e. connection details for a data base connection or a file path for a local csv or xes file. Seperate parameters with '&' + semicolon (&;). Separate parameter name and value with a definition sign (:=) sign. Ommit empty white spaces.
-                    <p>The following parameters are supported:</p>
-                    <p>CSV: separator:=&lt;separator&gt; - the sign that servers as column delimiter in the uplaoded CSV file</p>
-                    <p>XES doesn't require parameters</p>
-                    <p>Database: </p>
-                    <p>connection_string:=&lt;database connection string&gt; - connection string in accordance with the SqlAlchemy interface (for instance: mssql+pyodbc://user:password@d-sp10/Coscine?driver=SQL+Server&trusted_connection=yes)</p>
-                    <p>query:=&lt;query in the database language&gt;</p>
-                    <p>index_column:=&lt;separator&gt; (optional)</p>
-                </small>
             </div>
             <div class="form-check-inline">
                 <label class="form-check-label">
@@ -37,6 +24,23 @@
                 <label class="form-check-label">
                     <input id="database_radio" value="database" type="radio" class="form-check-input data_source_radio" name="datasource_kind" required>Database
                 </label>
+            </div>
+            <div class="form-group">
+                <label for="dataSourceParameters">Parameters</label>
+                <input name="dataSourceParameters" type="text" class="form-control" id="dataSourceParameters" aria-describedby="dataSourceParametersHelp">
+                <small id="dataSourceParametersHelp" class="form-text text-muted">Use this field to provide all parameters required to access the data source, i.e. connection details for a data base connection or a file path for a local csv or xes file. Seperate parameters with '&' + semicolon (&;). Separate parameter name and value with a definition sign (:=) sign.
+                    <!-- <p>The following parameters are supported:</p> -->
+                    <div id="csv_parameter_description" style="display: none;">
+                        <p>Parameters:</p>
+                        <p>separator:=&lt;separator&gt; - the sign that servers as column delimiter in the uplaoded CSV file</p>
+                    </div>
+                    <div id="database_parameter_description" style="display: none;">
+                        <p>Parameters:</p>
+                        <p>connection_string:=&lt;database connection string&gt; - connection string in accordance with the SqlAlchemy interface (for instance: mssql+pyodbc://user:password@d-sp10/Coscine?driver=SQL+Server&trusted_connection=yes)</p>
+                        <p>query:=&lt;query in the database language&gt;</p>
+                        <p>index_column:=&lt;separator&gt; (optional)</p>
+                    </div>
+                </small>
             </div>
             <div id="data_source_upload" class="custom-file data_source_upload" style="display:none">
                 <input type="file" class="custom-file-input" id="data_source_file_input" name="file">
@@ -66,5 +70,5 @@
         addSessionIdToFormAction("data_source_save_form")
     </script>
 
-    <script src="{{url_for('static', filename='js/preprocessign.data_source_new.js')}}"></script>
+    <script src="{{url_for('static', filename='js/preprocessing.data_source_new.js')}}"></script>
 {% endblock %}
