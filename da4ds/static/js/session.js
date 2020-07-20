@@ -5,6 +5,10 @@ if (localStorage["sessionId"] === undefined) {
 }
 
 function createSession() {
+    let isReset = false;
+    if ('sessionId' in localStorage) {
+        isReset = true;
+    }
     var socket = io.connect('http://' + document.domain + ':' + location.port + '/api/create_new_session');
     window.localStorage.clear();
     let sessionId = "";
@@ -15,6 +19,9 @@ function createSession() {
         window.localStorage.setItem('selected_pipeline', "None");
         document.getElementById("sessionCreatedCheckmark").style.display = "inline";
         updateSessionDisplay();
+        if (isReset) {
+            location.reload();
+        }
     });
 }
 

@@ -16,6 +16,15 @@ function runProject(projectName, pipelineParameters) {
         spinner.style.display="none";
         visualize(response);
     })
+    socket.on('success', function(response) {
+        let discoveryUrl = window.location.protocol + "//" + window.location.host + "/process_mining/process_discovery";
+        window.location.replace(discoveryUrl);
+
+    })
+
+    // Simulate a mouse click:
+    //window.location.href = "http://www.w3schools.com";
+
 }
 
 function visualize(response) {

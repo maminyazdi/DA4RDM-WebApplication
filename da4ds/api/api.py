@@ -63,7 +63,9 @@ def new_data_source():
 
     data_sources = get_all_data_sources()
     pipeline_names = get_all_pipeline_names()
-    return render_template('preprocessing/preprocessing.html', data_sources=data_sources, pipelines=pipeline_names)
+    return redirect(url_for('blueprints/preprocessing.preprocessing'))
+
+    # return render_template('preprocessing/preprocessing.html', data_sources=data_sources, pipelines=pipeline_names)
 
 # @api_bp.route('/read_data_from_source', methods=['POST'])
 # def read_data_from_source():
@@ -119,9 +121,9 @@ def run_project_persistent_connection(session_id, data):
 
     result_dataframe.to_csv(session_information["data_location"], sep=";")
 
-    emit('progressLog', {'message': "Pipeline finished successfully"})
+    emit('success', {'message': "Pipeline finished successfully"})
 
-    return "Pipeline ran successfully."
+    return redirect(url_for('blueprints/process_mining.process_discovery'))
 
 @socketio.on('requestDiscoveryPreparation', namespace='/api/run_process_discovery')
 def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, options = None):

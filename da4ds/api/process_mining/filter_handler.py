@@ -51,7 +51,7 @@ def apply_timestamp_filter(event_log, process_discovery_start_date = "0000-01-01
 def apply_start_activitiy_filter(event_log, start_activities):
     """"""
 
-    log_start = start_activities_filter.get_start_activities(event_log)
+    #log_start = start_activities_filter.get_start_activities(event_log)
     filtered_log = start_activities_filter.apply(event_log, start_activities)
 
 
@@ -60,7 +60,7 @@ def apply_start_activitiy_filter(event_log, start_activities):
 def apply_end_activitiy_filter(event_log, end_activities):
     """"""
 
-    end_activities = end_activities_filter.get_end_activities(event_log)
+    #end_activities = end_activities_filter.get_end_activities(event_log)
     filtered_log = end_activities_filter.apply(event_log, end_activities)
 
     return filtered_log
