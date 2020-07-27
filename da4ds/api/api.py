@@ -196,10 +196,15 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
     # Extract function for getting all the possible values for the pm filters
     pm_filter_options = {}
     timestamp_options = {}
+
     #TODO problem: if you refresh activity options after already applying some activity options, you will probably no more able to select form the entire range of activities, but the reduction in options is on the other hand required after start time and end time change
-    activity_column                       = dataframe["concept:name"]
-    activity_options                      = activity_column.unique()
-    pm_filter_options["activity_options"] = activity_options.tolist()
+    from pm4py.algo.filtering.log.start_activities import start_activities_filter
+    from pm4py.algo.filtering.log.end_activities import end_activities_filter
+    start_activities                            = list(start_activities_filter.get_start_activities(event_log).keys())
+    end_activities                              = list(end_activities_filter.get_end_activities(event_log).keys())
+    pm_filter_options["start_activity_options"] = start_activities
+    pm_filter_options["end_activity_options"]   = end_activities
+
     timestamp_column                       = dataframe["time:timestamp"]
     min_time = timestamp_column.min()
     max_time = timestamp_column.max()

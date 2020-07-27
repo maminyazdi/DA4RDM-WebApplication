@@ -190,34 +190,40 @@ function updatePMFilters(filterOptions, selectedFilters) {
     $('#process_discovery_end_date').prop('title', 'min:' + filterOptions['timestamp_options']['min'].split(" ").join("T") + " max:" + filterOptions['timestamp_options']['max'].split(" ").join("T"));
 
     // update activity filters
-    for (let activitySelect of activitySelects) {
-        for (let activity of filterOptions['activity_options']) {
-            var opt = document.createElement('option');
-            opt.value = activity;
-            opt.innerHTML = activity;
-            // if(parseJsonArray(selectedFilters[activitySelect.id]).indexOf(activity) > -1) {
-            //     opt.selected = true;
-            // }
-            activitySelect.appendChild(opt);
-        }
+    // for (let activitySelect of activitySelects) {
 
-        var opt = document.createElement('option');
-        opt.value = "None";
-        opt.innerHTML = "None";
-        activitySelect.appendChild(opt);
 
-        // set previously selected values
-        if (selectedFilters !== undefined
-            && selectedFilters[activitySelect.id] !== "[]"
-            && selectedFilters[activitySelect.id] !== undefined) {
-            parsedStartActivities = parseJsonArray(selectedFilters[activitySelect.id]);
-            //TODO rmeove jquery if possible
-            $("#" + activitySelect.id).val(parsedStartActivities);
-            //activitySelect.value = parsedStartActivities;
-        } else {
-            activitySelect.value = "None";
-        }
-    }
+
+
+    updateActivityFilter(startActivitySelect, filterOptions['start_activity_options'], selectedFilters);
+    updateActivityFilter(endActivitySelect, filterOptions['end_activity_options'], selectedFilters);
+
+    //     for (let activity of filterOptions['activity_options']) {
+    //         var opt = document.createElement('option');
+    //         opt.value = activity;
+    //         opt.innerHTML = activity;
+    //         // if(parseJsonArray(selectedFilters[activitySelect.id]).indexOf(activity) > -1) {
+    //         //     opt.selected = true;
+    //         // }
+    //         activitySelect.appendChild(opt);
+    //     }
+
+    //     var opt = document.createElement('option');
+    //     opt.value = "None";
+    //     opt.innerHTML = "None";
+    //     activitySelect.appendChild(opt);
+
+    //     // set previously selected values
+    //     if (selectedFilters !== undefined
+    //         && selectedFilters[activitySelect.id] !== "[]"
+    //         && selectedFilters[activitySelect.id] !== undefined) {
+    //         parsedStartActivities = parseJsonArray(selectedFilters[activitySelect.id]);
+    //         $("#" + activitySelect.id).val(parsedStartActivities);
+    //         //activitySelect.value = parsedStartActivities;
+    //     } else {
+    //         activitySelect.value = "None";
+    //     }
+    // }
 
     $(".selectpicker").selectpicker('refresh');
     $(".selectpicker").selectpicker('refresh');
@@ -226,6 +232,31 @@ function updatePMFilters(filterOptions, selectedFilters) {
                                   selectedFilters['process_discovery_min_performance'] : '';
     maxPerformanceSelect.value = (selectedFilters['process_discovery_max_performance'] !== undefined) ?
                                   selectedFilters['process_discovery_max_performance'] : '';
+}
+
+function updateActivityFilter(activitySelect, activityFilterOptions, selectedFilters) {
+    for (let activity of activityFilterOptions) {
+        var opt = document.createElement('option');
+        opt.value = activity;
+        opt.innerHTML = activity;
+        activitySelect.appendChild(opt);
+    }
+
+    var opt = document.createElement('option');
+    opt.value = "None";
+    opt.innerHTML = "None";
+    activitySelect.appendChild(opt);
+
+    // set previously selected values
+    if (selectedFilters !== undefined
+        && selectedFilters[activitySelect.id] !== "[]"
+        && selectedFilters[activitySelect.id] !== undefined) {
+        parsedStartActivities = parseJsonArray(selectedFilters[activitySelect.id]);
+        $("#" + activitySelect.id).val(parsedStartActivities);
+        //activitySelect.value = parsedStartActivities;
+    } else {
+        activitySelect.value = "None";
+    }
 }
 
 function updateKeyMetrics(metrics) {

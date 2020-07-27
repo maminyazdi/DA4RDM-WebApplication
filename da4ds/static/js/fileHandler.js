@@ -4,7 +4,9 @@ function downloadFile(requestedFile) {
 
     axios({
         method: 'get',
-        url: base_url + '/api/download_temporary_data?session_id=' + currentSession + "&requested_file=" + requestedFile,
+        url: base_url + '/api/download_temporary_data?session_id=' + currentSession
+                      + '&requested_file=' + requestedFile
+                      + '&prevent_browser_cache=' + (new Date()).toISOString(),
         responseType: 'blob'
     })
     .then(function(response) {
