@@ -16,16 +16,13 @@ def run(config):
     dataframe = parse_message(dataframe)
 
     dataframe['Timestamp'] = pd.to_datetime(dataframe['Timestamp'], utc=True, format="%Y-%m-%d %H:%M:%S.%f")
-    dataframe.to_csv("C:/Temp/test0.csv")
     dataframe = dataframe.sort_values(by="Timestamp")
     dataframe.dropna()
 
     session_id_time_threshold = int(parameters["pipeline_parameters"]) if "pipeline_parameters" in parameters else 30 # in minutes
     dataframe = create_session_ids(dataframe, session_id_time_threshold)
 
-    dataframe.to_csv("C:/Temp/test1.csv")
     dataframe.Timestamp = dataframe.Timestamp.dt.strftime("%Y-%m-%d %H:%M:%S.%f")
-    dataframe.to_csv("C:/Temp/test2.csv")
     dataframe.Timestamp = dataframe.Timestamp.str.slice(0, 23)
 
     return dataframe
