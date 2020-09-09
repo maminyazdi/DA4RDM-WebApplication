@@ -77,9 +77,6 @@ Once the connection is stored, you can select it under Data Initialization -> Se
 ### Running the Process Discovery Algorithms
 
 
-
-
-
 ---
 
 ## Setting up custom projects

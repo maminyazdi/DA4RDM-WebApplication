@@ -68,22 +68,6 @@ def new_data_source():
     # return render_template('preprocessing/preprocessing.html', data_sources=data_sources, pipelines=pipeline_names)
 
 # @api_bp.route('/read_data_from_source', methods=['POST'])
-# def read_data_from_source():
-#     session_id = request.args.get("session_id")
-#     current_session = user_session.get_session_information(session_id)
-#     selected_data_source_id = request.values['selectedDataSourceId']
-#     data_sources = get_all_data_sources()
-#     selected_source = data_sources[int(request.values['selectedDataSourceId']) - 1] # -1 for zero based indexing of data_sources compared to 1 based indexing in db
-
-#     dataframe = data_source_handler.read_from_source(selected_source)
-#     dataframe.to_csv(current_session['unmodified_data_location'], sep=";")
-#     dataframe.to_csv(current_session['data_location'], sep=";")
-
-#     data_sources = get_all_data_sources()
-#     pipeline_names = get_all_pipeline_names()
-#     return render_template('preprocessing/preprocessing.html', data_sources=data_sources, pipelines=pipeline_names)
-
-# @api_bp.route('/read_data_from_source', methods=['POST'])
 @socketio.on('requestReadDataFromSource', namespace='/api/preprocessing')
 def read_data_from_source(session_id, data):
     current_session = user_session.get_session_information(session_id)
