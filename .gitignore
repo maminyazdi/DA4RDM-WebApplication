@@ -1,4 +1,6 @@
 #project specific
+*/uploaded_user_data/*
+!*/uploaded_user_data/.gitkeep
 */temporary_results/*
 !*/temporary_results/.gitkeep
 */static/process_mining_output/*
