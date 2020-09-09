@@ -1,4 +1,4 @@
-from . import sample_project
+from . import seminar_pipeline
 
 _local_database = None
 
@@ -26,4 +26,4 @@ def run(config):
         #emit('progressLog', {'message': f"Starting pipepline for { config.PROJECT_NAME }"})
         print(f"Starting pipepline for { config.PROJECT_NAME }")
         #run_steps(config)
-        return sample_project.run(config)
+        return seminar_pipeline.run(config)

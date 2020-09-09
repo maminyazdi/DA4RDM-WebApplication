@@ -1,4 +1,4 @@
-from . import directly_from_test_system
+from . import bachelor_pipeline
 import pandas as pd
 
 _local_database = None
@@ -8,12 +8,11 @@ if __name__ == "__main__":
 else:
     pass
 
-def init(session_information, database, parameters):
+def init(data_source, parameters):
     """Set required values coming from the server and add session information."""
     from .config import Config
     config = Config()
-    config._local_database = database
-    config.current_session = session_information
+    config.data_source = data_source
     config.parameters = parameters
 
     #config.data = pd.read_csv("C:/Temp/da4ds_temp1.csv")
@@ -23,9 +22,5 @@ def init(session_information, database, parameters):
 def run(config):
     """Run the pipeline.
     Expects a configuration"""
-    if config._local_database == None:
-        print("No Connection to local data base given!")
-        return
-    else:
-        print(f"Starting pipepline")
-        return directly_from_test_system.run(config)
+    print(f"Starting pipepline")
+    return bachelor_pipeline.run(config)
