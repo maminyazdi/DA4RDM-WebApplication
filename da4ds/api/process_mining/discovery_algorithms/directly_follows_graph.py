@@ -1,8 +1,8 @@
-from pm4py.algo.discovery.dfg import factory as dfg_factory
+from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
 from pm4py.visualization.dfg import visualizer as dfg_visualization
 
 def run(event_log, options, output_path):
-    dfg = dfg_factory.apply(event_log)
+    dfg = dfg_discovery.apply(event_log)
     output_format = options['model_represenations']
 
     variant = dfg_visualization.Variants.FREQUENCY

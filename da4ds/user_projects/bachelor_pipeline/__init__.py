@@ -8,9 +8,11 @@ if __name__ == "__main__":
 else:
     pass
 
+
+
 def init(data_source, parameters):
     """Set required values coming from the server and add session information."""
-    from .config import Config
+    from config import Config
     config = Config()
     config.data_source = data_source
     config.parameters = parameters
