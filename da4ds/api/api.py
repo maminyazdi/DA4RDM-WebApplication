@@ -144,7 +144,7 @@ def prepare_discovery(session_id, xes_attribute_columns = None, filters = None, 
 
     current_session = user_session.get_session_information(session_id)
 
-    # prepare dataframe by applying xes column names to selected colunns
+    # prepare dataframe by applying xes column names to selected columns
     dataframe = event_log_generator.prepare_event_log_dataframe(dataframe, current_session['pm_xes_attributes'])
 
     #generate event log dataframe (might be more reasonable to use the direct dataframe -> eventlog conversion without storing to file first)
