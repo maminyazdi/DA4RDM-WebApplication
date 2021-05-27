@@ -1,4 +1,4 @@
-from pm4py.visualization.petrinet import visualizer as pn_visualizer
+from pm4py.visualization.petri_net import visualizer as pn_visualizer
 
 def visualize(net, initial_marking, final_marking, event_log, variant, output_path):
     parsed_variant = pn_visualizer.Variants.WO_DECORATION
