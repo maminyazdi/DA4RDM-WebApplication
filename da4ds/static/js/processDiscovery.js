@@ -25,12 +25,19 @@ socket.on('info', function(response) {
 });
 
 socket.on('gviz', function(response) {
-    let relative_url = response.replace(/\\/g, "/");
+
+    // URL modification at at specific index
+    function setCharAt(str,index,chr) {
+        if(index > str.length-1) return str;
+        return str.substring(0,index) + chr + str.substring(index+1);
+    }
+
+    let relative_url = setCharAt(response,0,'');
     hideSpinner();
     hook.innerHTML = '';
 
     let link = document.createElement("a");
-    link.href = window.location.protocol + "//" + window.location.host + "//" + relative_url + "?prevent_browser_cache=" + (new Date()).toISOString(); //append time to each string to prevent the browser from accessing cached model images
+    link.href = window.location.protocol + "//" + window.location.host + "" + relative_url + "?prevent_browser_cache=" + (new Date()).toISOString(); //append time to each string to prevent the browser from accessing cached model images
     link.target = "_blank";
 
     let img = document.createElement("img");
