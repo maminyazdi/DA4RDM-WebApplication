@@ -5,100 +5,123 @@
 {% endblock %}
 
 {% block content_body %}
-    <div class="row">
-        <div class="col-3">
-            <div class="row">
-                <h4>Event Log </h4>
-                <form>
+    <div class="card col-12">
+        <span class="row">
+            <div class="col-3">
+                <span class="row">
+                    <div class="col-12 ">
+                    <h4>Event Log </h4>
+                    <form>
+                        <div class="discovey-left-side-input">
+                            <div class="form-row my-2">
+                                <div class="col-4 select_row_label">
+                                    <label class="mr-sm-2 my-1" for="start-activity-select">Timestamp</label>
+                                </div>
+                                <div class="col-8 filter-select">
+                                    <select class="selectpicker form-control form-control-sm" id="timestamp_column"></select>
+                                </div>
+                            </div>
+                            <div class="form-row my-2">
+                                <div class="col-4 select_row_label">
+                                    <label class="mr-sm-2 my-1" for="end-activity-select">Case ID</label>
+                                </div>
+                                <div class="col-8 filter-select">
+                                    <select class="selectpicker form-control form-control-sm" id="caseId_column"></select>
+                                </div>
+                            </div>
+                            <div class="form-row my-2">
+                                <div class="col-4 select_row_label">
+                                    <label class="mr-sm-2 my-1" for="end-activity-select">Activitiy</label>
+                                </div>
+                                <div class="col-8 filter-select">
+                                    <select class="selectpicker form-control form-control-sm" id="activity_column"></select>
+                                </div>
+                            </div>
+                            <div class="form-row my-2">
+                                <div class="col-4 select_row_label">
+                                    <label class="mr-sm-2 my-1" for="end-activity-select">Resource</label>
+                                </div>
+                                <div class="col-8 filter-select">
+                                    <select class="selectpicker form-control form-control-sm" id="resource_column"></select>
+                                </div>
+                            </div>
+                            <div class="form-row my-2">
+                                <div class="col-4 select_row_label">
+                                    <label class="mr-sm-2 my-1" for="end-activity-select">Cost</label>
+                                </div>
+                                <div class="col-8 filter-select">
+                                    <select class="selectpicker form-control form-control-sm" id="cost_column"></select>
+                                </div>
+                            </div>
+                            <div class="form-row my-2 float-right">
+                                <a href="javascript:sendXesAttributeColumns()" class="btn btn-secondary">Submit</i></a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                </span>
+                <span class="row">
+                    <div class="col-12">
+                    <h4>Filters </h4>
                     <div class="discovey-left-side-input">
                         <div class="form-row my-2">
                             <div class="col-4 select_row_label">
-                                <label class="mr-sm-2 my-1" for="start-activity-select">Timestamp</label>
+                                <label for="process_discovery_start_date">Start Datetime</label>
                             </div>
                             <div class="col-8 filter-select">
-                                <select class="selectpicker form-control form-control-sm" id="timestamp_column"></select>
+                                <input placeholder="YYYY-MM-DDThh:mm:ss" id="process_discovery_start_date" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="start time" onchange="sendPMParameters();" step="1" >
                             </div>
                         </div>
                         <div class="form-row my-2">
                             <div class="col-4 select_row_label">
-                                <label class="mr-sm-2 my-1" for="end-activity-select">Case ID</label>
+                                <label for="process_discovery_end_date">End Datetime</label>
                             </div>
                             <div class="col-8 filter-select">
-                                <select class="selectpicker form-control form-control-sm" id="caseId_column"></select>
+                                <input placeholder="YYYY-MM-DDThh:mm:ss" id="process_discovery_end_date" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="end time" onchange="sendPMParameters();" step="1" ">
                             </div>
                         </div>
                         <div class="form-row my-2">
                             <div class="col-4 select_row_label">
-                                <label class="mr-sm-2 my-1" for="end-activity-select">Activitiy</label>
+                                <label class="mr-sm-2" for="process_discovery_start_activity">Start Activity</label>
                             </div>
                             <div class="col-8 filter-select">
-                                <select class="selectpicker form-control form-control-sm" id="activity_column"></select>
+                                <select multiple id="process_discovery_start_activity" class="selectpicker form-control form-control-sm disabled" disabled style="max-width: 100%;" ></select>
                             </div>
                         </div>
                         <div class="form-row my-2">
                             <div class="col-4 select_row_label">
-                                <label class="mr-sm-2 my-1" for="end-activity-select">Resource</label>
+                                <label class="mr-sm-2" for="process_discovery_end_activity">End Activity</label>
                             </div>
                             <div class="col-8 filter-select">
-                                <select class="selectpicker form-control form-control-sm" id="resource_column"></select>
+                                <select multiple id="process_discovery_end_activity" class="selectpicker form-control form-control-sm disabled" disabled style="max-width: 100%;" ></select>
                             </div>
                         </div>
                         <div class="form-row my-2">
                             <div class="col-4 select_row_label">
-                                <label class="mr-sm-2 my-1" for="end-activity-select">Cost</label>
+                                <label for="process_discovery_min_performance">Min. Perform.</label>
                             </div>
                             <div class="col-8 filter-select">
-                                <select class="selectpicker form-control form-control-sm" id="cost_column"></select>
+                                <input id="process_discovery_min_performance" name="beginActivity" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="begin activity" onchange="sendPMParameters();" placeholder="10">
                             </div>
                         </div>
-                        <div class="form-row my-2 float-right">
-                            <a href="javascript:sendXesAttributeColumns()" class="btn btn-secondary">Submit</i></a>
+                         <div class="form-row my-2">
+                            <div class="col-4 select_row_label">
+                                <label for="process_discovery_max_performance">Max. Perform.</label>
+                            </div>
+                            <div class="col-8 filter-select">
+                                <input id="process_discovery_max_performance" name="endActivity" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="end activity" onchange="sendPMParameters();" placeholder="100">                            </div>
                         </div>
-                    </div>
-                </form>
+                         <div class="form-row my-2 float-right">
+                                <a id="reset_filters_button" href="javascript:sendFiltersReset()" class="btn btn-secondary disabled" disabled >Clear Filters</i></a>
+                         </div>
+                    </form>
+                </div>
+                </div>
+                </span>
             </div>
+            <div class="col-9">
             <div class="row">
-                <h4>Filters <a id="reset_filters_button" href="javascript:sendFiltersReset()" class="btn btn-secondary disabled" disabled > <i class="far fa-trash-alt"></i> </a> </h4>
-                <div class="discovey-left-side-input">
-                    <div class="form-row align-items-center">
-                        <label for="process_discovery_start_date">Start Datetime</label>
-                        <input placeholder="YYYY-MM-DDThh:mm:ss" id="process_discovery_start_date" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="start time" onchange="sendPMParameters();" step="1" >
-                        <!-- <input id="process_discovery_start_date" type="datetime-local" class="form-control form-control-sm disabled" disabled aria-describedby="start time" onchange="sendPMParameters();" step="1" > -->
-                    </div>
-                    <div class="form-row align-items-center">
-                        <label for="process_discovery_end_date">End Datetime</label>
-                        <input placeholder="YYYY-MM-DDThh:mm:ss" id="process_discovery_end_date" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="end time" onchange="sendPMParameters();" step="1" ">
-                        <!-- <input id="process_discovery_end_date" type="datetime-local" class="form-control form-control-sm disabled" disabled aria-describedby="end time" onchange="sendPMParameters();" step="1" "> -->
-                    </div>
-                    <div class="form-row align-items-center">
-                        <div class="col-auto my-1 filter-select">
-                            <label class="mr-sm-2" for="process_discovery_start_activity">Start Activity</label>
-                            <select multiple id="process_discovery_start_activity" class="selectpicker form-control form-control-sm disabled" disabled style="max-width: 100%;" >
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-row align-items-center">
-                        <div class="col-auto my-1 filter-select">
-                            <label class="mr-sm-2" for="process_discovery_end_activity">End Activity</label>
-                            <select multiple id="process_discovery_end_activity" class="selectpicker form-control form-control-sm disabled" disabled style="max-width: 100%;" >
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-row align-items-center">
-                        <label for="process_discovery_min_performance">Minimum Performance</label>
-                        <input id="process_discovery_min_performance" name="beginActivity" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="begin activity" onchange="sendPMParameters();" placeholder="10">
-                    </div>
-                    <div class="form-row align-items-center">
-                        <label for="process_discovery_max_performance">Maximum Performance</label>
-                        <input id="process_discovery_max_performance" name="endActivity" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="end activity" onchange="sendPMParameters();" placeholder="100">
-                    </div>
-                </form>
-            </div>
-            </div>
-        </div>
-        <div class="col-9">
-            <div class="row">
-                <div class="col-6">
+                <div class="col-8">
                     <h4>Options</h4>
                     <form>
                         <div class="form-row align-items-center">
@@ -137,30 +160,7 @@
                             </div>
                         </div>
                     </form>
-                </div>
-                <div class="col-1"></div>
-                <div class="col-5">
-                    <div class="row">
-                        <h2>Information</h2>
-                    </div>
-                    <div class="row">
-                        <label class="mr-sm-2" for="metrics_number_of_cases">Number of cases: </label><p id='metrics_number_of_cases' class="mr-sm-2"></p>
-                    </div>
-                    <div class="row">
-                        <label class="mr-sm-2" for="metrics_number_of_events">Number of events: </label><p id='metrics_number_of_events' class="mr-sm-2"></p>
-                    </div>
-                    <div class="row">
-                        <label class="mr-sm-2" for="metrics_number_of_activities">Number of activities: </label><p id='metrics_number_of_activities' class="mr-sm-2"></p>
-                    </div>
-                    <div class="row">
-                        <label class="mr-sm-2" for="metrics_number_of_variants">Number of variants: </label><p id='metrics_number_of_variants' class="mr-sm-2"></p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="row d-flex justify-content-center">
-                        <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                    <div class="btn-group" role="group" style="float: right;margin-top: 5px;" aria-label="Button group with nested dropdown">
                             <a id="run_discovery_button" href="javascript:runProcessDiscovery('{{ request.host_url }}', '{{ url_for('blueprints/process_mining.process_discovery') }}')" class="btn btn-primary disabled" disabled><i class="fa fa-play" aria-hidden="true"></i></a>
                             <div class="btn-group" role="group">
                                 <button id="download_button"  type="button" class="btn btn-secondary dropdown-toggle disabled" disabled data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -174,7 +174,28 @@
                             </div>
                             <a id="reset_discovery_inputs" href="javascript:sendDiscoveryReset()" class="btn btn-secondary disabled" disabled> <i class="fas fa-undo-alt"></i> </a>
                         </div>
-                    </div>
+                </div>
+                <div class="col-4">
+                    <span class="row">
+                        <span class="col-5"></span>
+                        <span class="col-7">
+                            <div class="row">
+                                <h2>Information</h2>
+                            </div>
+                            <div class="row">
+                                <label class="mr-sm-2" for="metrics_number_of_cases">Number of cases: </label><p id='metrics_number_of_cases' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
+                            </div>
+                            <div class="row">
+                                <label class="mr-sm-2" for="metrics_number_of_events">Number of events: </label><p id='metrics_number_of_events' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
+                            </div>
+                            <div class="row">
+                                <label class="mr-sm-2" for="metrics_number_of_activities">Number of activities: </label><p id='metrics_number_of_activities' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
+                            </div>
+                            <div class="row">
+                                <label class="mr-sm-2" for="metrics_number_of_variants">Number of variants: </label><p id='metrics_number_of_variants' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
+                            </div>
+                        </span>
+                    </span>
                 </div>
             </div>
             <div class="row">
@@ -192,6 +213,7 @@
                 </div>
             </div>
         </div>
+        </span>
     </div>
 {% endblock %}
 

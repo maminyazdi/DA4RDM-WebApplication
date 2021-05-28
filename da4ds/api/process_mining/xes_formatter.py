@@ -99,7 +99,7 @@ def prepare_case_colum(dataframe, column_index):
     dataframe[column_name] = np.where((not str(dataframe[column_name]).startswith("'case:concept:name'")),"'case:concept:name': '" + dataframe[column_name] + "'",dataframe[column_name])
 
     #Remove rows with empty "case:concept:name"
-    dataframe.dropna(axis=0, how='any', subset=[column_name])
+    dataframe = dataframe.dropna(axis=0, how='any', subset=[column_name])
 
     return dataframe
 

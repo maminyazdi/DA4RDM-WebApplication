@@ -7,12 +7,11 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-12">
-            <nav class="navbar navbar-expand-sm navbar-light bg-light ">
+            <nav class="navbar navbar-expand-sm navbar-light" style="width: 100%;">
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="nav nav-tabs nav-fill col-12" >
                         <li class="nav-item">
-                            <a id="preprocessing" class="nav-link main-nav-item" href="{{ url_for('blueprints/preprocessing.preprocessing') }}" active >Data Preprocessing</span></a>
+                            <a id="preprocessing" class="nav-link main-nav-item" href="{{ url_for('blueprints/preprocessing.preprocessing') }}" active >Data Pre-processing</span></a>
                         </li>
                         <li class="nav-item">
                             <a id="process_mining" class="nav-link main-nav-item" href="{{ url_for('blueprints/process_mining.process_discovery') }}">Process Analysis</a>
@@ -20,41 +19,39 @@
                         <li class="nav-item disabled">
                             <a id="conformance_checking" class="nav-link main-nav-item disabled" href="#">Conformance Checking</a>
                         </li>
-                        <li class="nav-item disabled">
+                       {# <li class="nav-item disable
+
+
+                       d">
                             <a id="RDLC" class="nav-link main-nav-item disabled" href="#">RDLC</a>
                         </li>
                         <li class="nav-item disabled">
                             <a id="FAIR" class="nav-link main-nav-item disabled" href="#">FAIR Maturity Model</a>
-                        </li>
+                        </li>#}
                     </ul>
                 </div>
             </nav>
-        </div>
     </div>
 
-    <div class="row background-grey">
-        <div class="col-10">
-            <div class="form-row align-items-start">
-                <span class="mr-sm-2"> Current Session: </span>
-                <span class="mr-sm-2"> Selected Data Source:  </span>
-                <span id="user_session_data_source_display" class="mr-sm-2" style="color: red"> None </span>
-                <span class="mr-sm-2"> Selected Preprocessing Pipeline: </span>
-                <span id="user_session_pipeline_display" class="mr-sm-2"> None </span>
-            </div>
-        </div>
-        <div class="col-2">
-            <div class="row d-flex justify-content-end">
-                <a href="javascript:createSession()" class="btn btn-secondary"> <i class="fas fa-undo-alt"></i> </a>
+    <div class="row background-grey" style="margin-top: 5px;">
+        <div class="col-12">
+            <div class="form-row align-items-start" style="line-height: 40px;">
+                <a href="javascript:createSession()" class="btn btn-secondary" style="margin-right: 15px;margin-bottom: 2px;margin-left: 5px;margin-top: 2px;" > <i class="fas fa-undo-alt"></i> </a>
                 <span id="sessionCreatedCheckmark" class="glyphicon glyphicon-ok" aria-hidden="true" style="display: none;"">&#10004;</span>
+{#                <span class="mr-sm-2"> Current Session: </span>#}
+                <span class="mr-sm-2"> Data Source:  </span>
+                <span id="user_session_data_source_display" class="mr-sm-2" style="font-weight: bold;" > None </span>
+                <span class="mr-sm-2"> Pre-processing Pipeline: </span>
+                <span id="user_session_pipeline_display" class="mr-sm-2" style="font-weight: bold;"> None </span>
             </div>
         </div>
-    </div>
+   </div>
 
     <div class="row">
         <br>
     </div>
     <div class="row">
-        <div class="col-12">
+        <div class="col-12" style="margin-top: 5px;">
             {% block content_body %}
 
             {% endblock %}

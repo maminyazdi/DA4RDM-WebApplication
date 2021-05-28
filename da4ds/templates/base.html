@@ -33,21 +33,19 @@
             <div class="container text-center" style="text-align: center; max-width: 100%;">
                 <div class="row">
                     <div class="col-1 side-margin"></div>
-                    <div class="col-10">
+                    <div class="col-10" style="min-height: 1000px;">
                         <div class="row top-bar">
                             <div class="col-12">
                                 <div class="row black-bar">
-                                    <div class="col-1">
-                                        <!--empty space-->
-                                    </div>
                                     <div class="col-9">
                                         <img src="{{url_for('static', filename='images/rwth-itc.png')}}" />
                                     </div>
-                                    <div class="col-2">
+                                    <div class="col-3">
                                         <!--can add additional general info like language settings or user name here-->
                                     </div>
                                 </div>
-                                <div class="row light-bar">
+                                <div class="row light-bar" style="height: 5em;">
+                                    {#
                                     <div class="col-12">
                                         <div class="row">
                                             <div class="col-1">
@@ -55,10 +53,10 @@
                                             <div class="col-8">
                                             </div>
                                             <div class="col-3">
-                                                <h1>.</h1>
+                                                <h1 style="visibility: hidden;">DA4DS</h1>
                                             </div>
                                         </div>
-                                        <div class="row">
+                                       <div class="row">
                                             <div class="col-1">
                                             </div>
                                             <div class="col-9">
@@ -68,20 +66,16 @@
                                             </div>
                                         </div>
                                     </div>
+#}
                                 </div>
+
                             </div>
                         </div>
-                        <div class="row body-content">
+                        <div class="row body-content" style="margin-top: 0em;">
                             <div class="col-12">
                                 <div class="row">
-                                    <div class="col-1">
-                                        <!--blank space-->
-                                    </div>
-                                    <div class="col-10">
+                                    <div class="col-12">
                                         {% block content %}{% endblock %}
-                                    </div>
-                                    <div class="col-1">
-                                        <!--blank space-->
                                     </div>
                                 </div>
                             </div>
