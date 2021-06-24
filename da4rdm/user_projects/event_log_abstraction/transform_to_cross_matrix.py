@@ -4,7 +4,7 @@ import pandas as pd
 import dask.dataframe as dd
 from flask_socketio import emit
 
-from da4ds.processing_libraries.da4ds import (drop_na, drop_duplicates, fill_na)
+from da4rdm.processing_libraries.da4rdm import (drop_na, drop_duplicates, fill_na)
 
 def execute(backend_df, frontend_df, binary=False):
     """Generates the specific cross matrix required for sample project analysis.

@@ -1,9 +1,9 @@
 import pandas as pd
-# from da4ds.processing_libraries.da4ds import ( replace_column_values, export_csv, rename_column_labels, split_column, add_column, merge_columns, remove_rows )
+# from da4rdm.processing_libraries.da4rdm import ( replace_column_values, export_csv, rename_column_labels, split_column, add_column, merge_columns, remove_rows )
 # from pm4py.objects.log.adapters.pandas import csv_import_adapter
 # from pm4py.objects.conversion.log import factory as conversion_factory
 
-from da4ds.api.process_mining import xes_formatter
+from da4rdm.api.process_mining import xes_formatter
 
 def prepare_event_log_dataframe(dataframe, xes_attributes):
     """Applies all Xes Attribute Columns, prepares these columns for xes format conversion,

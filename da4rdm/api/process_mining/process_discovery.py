@@ -3,7 +3,7 @@ import pandas as pd
 from flask_socketio import emit
 from pm4py.algo.filtering.log.variants import variants_filter
 
-from da4ds.api.process_mining import ( event_log_generator, filter_handler, mining_handler, conformance_handler )
+from da4rdm.api.process_mining import (event_log_generator, filter_handler, mining_handler, conformance_handler)
 
 def run(session_information, options):
     #TODO the generation of the model and its visualization might take longer than the ping period of the socket connection. The values for the ping intervall and timeout can be configuredin the main server config.
@@ -19,7 +19,7 @@ def run(session_information, options):
     #emit('info', {'message': 'Starting Discovery...'})
     gviz = miner.run(event_log, options, output_path)
 
-    output_path_relative = re.sub(r"da4ds/", "", output_path)
+    output_path_relative = re.sub(r"da4rdm/", "", output_path)
     return ['gviz', output_path_relative]
 
 def get_dataframe_key_metrics(dataframe, event_log, xes_attribute_columns):

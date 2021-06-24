@@ -4,7 +4,7 @@ from dask.distributed import Client
 import numpy as np
 from flask_socketio import emit
 
-from da4ds.processing_libraries.da4ds import rename_column_labels
+from da4rdm.processing_libraries.da4rdm import rename_column_labels
 
 def execute(dataframe, column_name, new_column_name, split_target):
     """Split a column of a dataframe into new columns."""

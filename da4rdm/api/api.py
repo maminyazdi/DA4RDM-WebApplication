@@ -6,7 +6,7 @@ import datetime
 import uuid
 import pandas as pd
 from flask_socketio import emit
-from da4ds import socketio
+from da4rdm import socketio
 
 from flask import (
     Blueprint, flash, redirect, render_template, request, url_for, jsonify, current_app as app, send_from_directory, send_file
@@ -14,11 +14,11 @@ from flask import (
 from werkzeug.exceptions import abort
 from werkzeug.utils import secure_filename
 
-from da4ds import db, Config
-from da4ds.models import ( InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource )
-from da4ds.api.data_source import data_source_handler
-from da4ds.api.process_mining import ( process_discovery, event_log_generator, filter_handler )
-from da4ds.api.preprocessing import user_project_handler
+from da4rdm import db, Config
+from da4rdm.models import (InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource)
+from da4rdm.api.data_source import data_source_handler
+from da4rdm.api.process_mining import (process_discovery, event_log_generator, filter_handler)
+from da4rdm.api.preprocessing import user_project_handler
 from . import ( user_session, input_parser, file_handler )
 
 api_bp = Blueprint('blueprints/api', __name__, template_folder='templates', static_folder='static')

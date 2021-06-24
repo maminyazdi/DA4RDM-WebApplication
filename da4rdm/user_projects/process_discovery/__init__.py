@@ -16,7 +16,7 @@ def init(data_source, parameters):
     config.data_source = data_source
     config.parameters = parameters
 
-    #config.data = pd.read_csv("C:/Temp/da4ds_temp1.csv")
+    #config.data = pd.read_csv("C:/Temp/da4rdm_temp1.csv")
     return config
 
 

@@ -1,5 +1,5 @@
 from flask_socketio import emit
-from da4ds import socketio
+from da4rdm import socketio
 
 def execute(df, column_name, regex_target, replacement_expression):
     """function

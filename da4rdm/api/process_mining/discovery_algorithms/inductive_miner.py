@@ -1,6 +1,6 @@
 from pm4py.algo.discovery.inductive import algorithm as inductive_miner
 from pm4py.visualization.process_tree import visualizer as pt_visualizer
-from da4ds.api.process_mining.discovery_algorithms.visualizers import petrinet_visualization
+from da4rdm.api.process_mining.discovery_algorithms.visualizers import petrinet_visualization
 
 def run(event_log, options, output_path):
     ## petri net

@@ -2,7 +2,7 @@ from flask import (
     Blueprint, render_template, request
 )
 
-import da4ds.api.api as api
+import da4rdm.api.api as api
 preprocessing_bp = Blueprint('blueprints/preprocessing', __name__, template_folder='templates', static_folder='static')
 
 @preprocessing_bp.route('/')

@@ -23,17 +23,17 @@ class Config(object):
     ###################################
     ### temporary storage directory ###
     ###################################
-    UPLOADED_USER_DATA_LOCATION = os.environ.get('USER_PROJ_DIR') or './da4ds/uploaded_user_data'
+    UPLOADED_USER_DATA_LOCATION = os.environ.get('USER_PROJ_DIR') or './da4rdm/uploaded_user_data'
 
     ###########################
     ### project directories ###
     ###########################
-    USER_PROJECT_DIRECTORY = os.environ.get('USER_PROJ_DIR') or './da4ds/user_projects/'
+    USER_PROJECT_DIRECTORY = os.environ.get('USER_PROJ_DIR') or './da4rdm/user_projects/'
 
     ###################################
     ### temporary storage directory ###
     ###################################
-    TEMP_STORAGE_DIRECTORY = os.environ.get('TEMP_STORAGE_DIR') or './da4ds/temporary_results/'
+    TEMP_STORAGE_DIRECTORY = os.environ.get('TEMP_STORAGE_DIR') or './da4rdm/temporary_results/'
 
     ##########################
     ### output directories ###

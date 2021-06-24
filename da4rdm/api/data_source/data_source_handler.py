@@ -2,10 +2,10 @@ import os
 import uuid
 from flask import flash
 from werkzeug.utils import secure_filename
-from da4ds.models import DataSource
+from da4rdm.models import DataSource
 from . import strategies
 import pandas as pd
-from da4ds import db, Config
+from da4rdm import db, Config
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'txt', 'csv', 'xes'}

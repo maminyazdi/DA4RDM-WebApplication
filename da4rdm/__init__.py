@@ -29,4 +29,4 @@ app.register_blueprint(api.api_bp, url_prefix='/api')
 
 socketio.run(app) # if using socketio I cannot make use of the app factory, so app will stay in the global name space. I need to make sure that the unit testing will be working correctly anyway
 
-from da4ds import models
+from da4rdm import models

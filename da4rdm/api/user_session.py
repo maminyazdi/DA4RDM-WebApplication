@@ -1,9 +1,9 @@
 import os
 from flask import current_app as app
-from da4ds.models import SessionInformation
-from da4ds.api.process_mining.filters import ProcessMiningFilters
-from da4ds.api import input_parser
-from da4ds import db
+from da4rdm.models import SessionInformation
+from da4rdm.api.process_mining.filters import ProcessMiningFilters
+from da4rdm.api import input_parser
+from da4rdm import db
 import uuid
 
 parameter_separator = ";"
@@ -26,7 +26,7 @@ def create_new_session():
     new_session.WorkingDataLocation    = f'{temp_storage_directory}{new_session.Id}/data_cleaning_working_data.csv'
     new_session.PDDataLocation         = f'{temp_storage_directory}{new_session.Id}/process_discovery_working_data.csv'
     new_session.EventLogLocation       = f'{temp_storage_directory}{new_session.Id}/event_log.xes'
-    new_session.OutputDataLocation     = f'./da4ds/static/process_mining_output/{new_session.Id}'
+    new_session.OutputDataLocation     = f'./da4rdm/static/process_mining_output/{new_session.Id}'
     new_session.PMXesAttributes        = ""
     new_session.PMFilter               = ""
     db.session.add(new_session)

@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "da4ds",
+                "FLASK_APP": "da4rdm",
                 "FLASK_ENV": "development",
                 "FLASK_DEBUG": "1"
             },

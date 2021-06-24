@@ -1,4 +1,4 @@
-name: da4ds
+name: da4rdm
 channels:
   - conda-forge
   - defaults

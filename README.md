@@ -20,14 +20,14 @@ Additionally, if you get error frmo graphviz, you may need to install the [graph
 
 ### To run the local development server, set environment variables:
 
-Loading the environment "da4ds" should already register the environment variables required to run the server. If that seems to not be the case, add them manually. Under powershell:
+Loading the environment "da4rdm" should already register the environment variables required to run the server. If that seems to not be the case, add them manually. Under powershell:
 
-> $env:FLASK_APP = "da4ds"
+> $env:FLASK_APP = "da4rdm"
 > $env:FLASK_ENV = "development"
 > flask run
 
 If you are running on comand shell or anaconda prompt, use these commands instead:
-> set FLASK_APP=da4ds
+> set FLASK_APP=da4rdm
 > set FLASK_ENV=development
 > flask run
 
@@ -83,7 +83,7 @@ Once the connection is stored, you can select it under Data Initialization -> Se
 
 ### Adding a project
 You can add custom projects to the application which can be seelected from the main view.
-By default, custom projects are being placed in the user_projects directory inside of the da4ds directory. This path can be changed in the configuration.
+By default, custom projects are being placed in the user_projects directory inside of the da4rdm directory. This path can be changed in the configuration.
 A custom project should contain a __init__.py file which takes care of all required global imports needed in the project, as well as loading the project specific configuration files. The __init__.py will be the first file to be loaded and is required for the project to be imported into the application.
 
 ### Accessing the Data from the Data Source
@@ -94,7 +94,7 @@ The initialization function of your project will recieve the session information
 
 ### Structuring your project
 Ideally a custom project is segrated into the execution and pipilening of modules that each serve a specific purpose inside of that pipeline. The intended use of the programme is to have the data pre-processing being done on temporary DASK dataframes for as long as possible.
-Some frequently used modules can be found in ./da4ds/processing_libraries/da4ds. These include modules for reading data from csv files or databases into DASK dataframes or storing data as csv files, as well as modules for replacing columnar values or column names and such.
+Some frequently used modules can be found in ./da4rdm/processing_libraries/da4rdm. These include modules for reading data from csv files or databases into DASK dataframes or storing data as csv files, as well as modules for replacing columnar values or column names and such.
 You may also extend that library or add your own libraries there.
 Modules should adhere to the following interface: func(dataframe, options{args*}) -> {dataframe, additional_results'}.
 

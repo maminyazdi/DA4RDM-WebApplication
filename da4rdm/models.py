@@ -1,4 +1,4 @@
-from da4ds import db
+from da4rdm import db
 
 class InflexibleDataSourceConnection(db.Model):
     id = db.Column(db.Integer, primary_key=True)

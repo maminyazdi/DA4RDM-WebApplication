@@ -1,7 +1,7 @@
 import dask.dataframe as dd
 import numpy as np
 
-from da4ds.processing_libraries.da4ds import rename_column_labels
+from da4rdm.processing_libraries.da4rdm import rename_column_labels
 
 def execute(dataframe, series, new_column_name):
     """Adds a series object as a column to a dataframe."""

@@ -2,7 +2,7 @@ from flask import (
     Blueprint, render_template
 )
 
-import da4ds.api.api as api
+import da4rdm.api.api as api
 bp = Blueprint('blueprints/main', __name__)
 
 @bp.route('/')
