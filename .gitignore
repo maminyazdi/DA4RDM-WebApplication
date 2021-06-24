@@ -5,6 +5,7 @@
 !*/temporary_results/.gitkeep
 */static/process_mining_output/*
 !*/static/process_mining_output/.gitkeep
+app.db
 
 #IDE
 .vscode
