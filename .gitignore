@@ -7,6 +7,7 @@
 !*/static/process_mining_output/.gitkeep
 app.db
 
+
 #IDE
 .vscode
 .vscode/*
