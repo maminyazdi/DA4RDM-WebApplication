@@ -2,4 +2,4 @@ Provided is the sample data from the Coscine test system from may 2020 ("databas
 
 Import it to DA4DS as csv file, specify column separator as comma.
 
-The data should be ready for process discovery after running the bachelor_pipeline.
+The data should be ready for process discovery after running the 'process_discovery' pipeline.

@@ -1,12 +1,5 @@
 import pandas as pd
-import numpy as np
 import json
-from flask_socketio import emit
-from da4ds import socketio
-from flask import (
-    render_template, jsonify, current_app as app
-)
-from da4ds.processing_libraries.da4ds import xes_formatter
 
 def run(config):
     parameters = config.parameters
@@ -61,7 +54,7 @@ def create_session_ids(dataframe, threshold):
         user_dataframe.SessionIdCalculated = user_dataframe.SessionIdCalculated.ffill()
 
         return_dataframe = pd.concat([return_dataframe, user_dataframe], axis=0, join='outer', ignore_index=True, keys=None,
-          levels=None, names=None, verify_integrity=False, copy=True)
+                                     levels=None, names=None, verify_integrity=False, copy=True)
 
     #maybe sort the resultring dataframe again
     dataframe.sort_values(by="Timestamp")
