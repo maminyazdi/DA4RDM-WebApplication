@@ -1,7 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/2d7f7894-64f0-4d52-97d6-d16ccd6e4cb8" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/2f8be900-b3dc-41e3-a886-aaf2e99acca8" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/3acc80f2-3461-416e-b4cb-0863932d8594" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/3cf758ca-525e-48ab-acc0-157cd1f55b90" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/4ad6b094-6e4d-41d6-8565-bdb05a095c89" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/04cb5562-98af-4d6b-8dae-8654e8c84e59" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/5b17b38d-f82f-450c-af8c-8afa4e283bfc" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/6fa4ca12-526c-407a-8015-d2aafaa008a4" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/8d255658-5113-423c-b0b0-e097dec55e4b" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/9b8ef58e-8973-43ea-a65c-61ec96ff1fa3" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/0028e5d8-89d3-4208-8007-7aed5583cb1f" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/045eeb41-ec5f-4e3b-bb26-49aef805eb25" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/163bee22-196c-4923-b51d-8e5e913dfb58" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/270d2086-0d67-465b-9aed-b993e180d00d" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/463cf3a7-0302-484c-80e5-a7a4ff81032c" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/901c2a19-1707-4dff-aa63-49424949ee3e" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/41645dd3-96ac-49ba-87f1-a41ad7a2e0e0" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/843377b4-9c95-4e81-b2d3-7d3da288bfde" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/4432608e-d2fe-4af7-bf1d-7ef33846bc59" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/6825890e-df85-42e3-a5a9-51dcf7e91f19" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/9112281e-93bf-4caa-885e-fea2e5e9d5a4" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/54603277-4064-4ef2-9404-aeb8d2c15ded" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/64808226-ff02-44f5-90ff-89a91737dc66" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/b2892330-8a24-47be-a898-0fd0270f601d" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/c316202c-5781-49ee-a892-a7c12b63db2d" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/db958481-41dd-4ff3-bade-24d3daf98c74" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/e8c56054-1930-4330-abdf-11a36b62ddb4" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/e5785810-2428-4385-b373-755bc0de0888" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/ed54f4f4-b062-44b2-9a4b-d51ba25042b2" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/eecd6c65-eec4-425f-8299-0860865deaf2" />
+      <excludeFolder url="file://$MODULE_DIR$/da4ds/temporary_results/ffe52ad8-84e4-4ac0-bc0f-45a753cd2c4a" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
