@@ -16,18 +16,11 @@
                         <li class="nav-item">
                             <a id="process_mining" class="nav-link main-nav-item" href="{{ url_for('blueprints/process_mining.process_discovery') }}">Process Analysis</a>
                         </li>
+                        {#
                         <li class="nav-item disabled">
-                            <a id="conformance_checking" class="nav-link main-nav-item disabled" href="#">Conformance Checking</a>
+                            <a id="conformance_checking" class="nav-link main-nav-item disabled" href="#">Conformance</a>
                         </li>
-                       {# <li class="nav-item disable
-
-
-                       d">
-                            <a id="RDLC" class="nav-link main-nav-item disabled" href="#">RDLC</a>
-                        </li>
-                        <li class="nav-item disabled">
-                            <a id="FAIR" class="nav-link main-nav-item disabled" href="#">FAIR Maturity Model</a>
-                        </li>#}
+                        #}
                     </ul>
                 </div>
             </nav>
@@ -37,7 +30,7 @@
         <div class="col-12">
             <div class="form-row align-items-start" style="line-height: 40px;">
                 <a href="javascript:createSession()" class="btn btn-secondary" style="margin-right: 15px;margin-bottom: 2px;margin-left: 5px;margin-top: 2px;" > <i class="fas fa-undo-alt"></i> </a>
-                <span id="sessionCreatedCheckmark" class="glyphicon glyphicon-ok" aria-hidden="true" style="display: none;"">&#10004;</span>
+                <span id="sessionCreatedCheckmark" class="glyphicon glyphicon-ok" aria-hidden="true" style="display: none;">&#10004;</span>
 {#                <span class="mr-sm-2"> Current Session: </span>#}
                 <span class="mr-sm-2"> Data Source:  </span>
                 <span id="user_session_data_source_display" class="mr-sm-2" style="font-weight: bold;" > None </span>
