@@ -1,3 +1,4 @@
+from pm4py.algo.filtering.log.attributes import attributes_filter
 from pm4py.algo.filtering.log.timestamp import timestamp_filter
 from pm4py.algo.filtering.log.start_activities import start_activities_filter
 from pm4py.algo.filtering.log.end_activities import end_activities_filter
@@ -21,6 +22,9 @@ def apply_all_filters(event_log, filters):
 
     if (filters["process_discovery_min_performance"] and filters["process_discovery_max_performance"]):
         event_log = apply_performance_filter(event_log, filters["process_discovery_min_performance"], filters["process_discovery_max_performance"])
+
+    if (filters["process_discovery_case_id"] != '[]' and filters["process_discovery_case_id"] != "['None']"):
+        event_log = apply_case_filter(event_log, filters["process_discovery_case_id"])
 
     return event_log
 
@@ -72,9 +76,9 @@ def apply_performance_filter(event_log, min_performance, max_performance):
 
     return filtered_log
 
-def apply_variants_filter():
-    """"""
+def apply_case_filter(event_log, case_id):
+    filtered_log = attributes_filter.apply_events(event_log, case_id,
+                                                     parameters={attributes_filter.Parameters.ATTRIBUTE_KEY: "case:concept:name", attributes_filter.Parameters.POSITIVE: True})
 
+    return filtered_log
 
-
-    return """Not yet implemented!"""

@@ -100,6 +100,8 @@ function resetAllPMParameters() {
     remove_all_options_from_select("process_discovery_start_activity")
     remove_all_options_from_select("process_discovery_end_activity")
 
+    remove_all_options_from_select("process_discovery_case_id")
+
     clearDiscoveryMetrics();
 
     return;
@@ -179,6 +181,7 @@ function updatePMFilters(filterOptions, selectedFilters) {
     activitySelects = [startActivitySelect, endActivitySelect]
     minPerformanceSelect = document.getElementById('process_discovery_min_performance');
     maxPerformanceSelect = document.getElementById('process_discovery_max_performance');
+    caseId = document.getElementById('process_discovery_case_id');
 
     // update date filters
     if (selectedFilters !== undefined && selectedFilters['process_discovery_start_date'] !== undefined) {
@@ -204,6 +207,7 @@ function updatePMFilters(filterOptions, selectedFilters) {
 
     updateActivityFilter(startActivitySelect, filterOptions['start_activity_options'], selectedFilters);
     updateActivityFilter(endActivitySelect, filterOptions['end_activity_options'], selectedFilters);
+    updateActivityFilter(caseId, filterOptions['case_id_options'], selectedFilters);
 
     //     for (let activity of filterOptions['activity_options']) {
     //         var opt = document.createElement('option');
@@ -358,7 +362,8 @@ function getFilterNodes() {
                    document.getElementById("process_discovery_start_activity"),
                    document.getElementById("process_discovery_end_activity"),
                    document.getElementById("process_discovery_min_performance"),
-                   document.getElementById("process_discovery_max_performance")];
+                   document.getElementById("process_discovery_max_performance"),
+                   document.getElementById("process_discovery_case_id")];
 
     return filterNodes;
 }
@@ -395,5 +400,9 @@ $('#process_discovery_start_activity').on('hide.bs.select', function (e, clicked
 });
 
 $('#process_discovery_end_activity').on('hide.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+    sendPMParameters();
+});
+
+$('#process_discovery_case_id').on('hide.bs.select', function (e, clickedIndex, isSelected, previousValue) {
     sendPMParameters();
 });

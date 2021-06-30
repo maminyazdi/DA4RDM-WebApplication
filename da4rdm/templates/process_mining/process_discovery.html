@@ -54,7 +54,7 @@
                                 </div>
                             </div>
                             <div class="form-row my-2 float-right">
-                                <a href="javascript:sendXesAttributeColumns()" class="btn btn-secondary">Submit</i></a>
+                                <a href="javascript:sendXesAttributeColumns()" class="btn btn-secondary">Submit</a>
                             </div>
                         </div>
                     </form>
@@ -77,7 +77,7 @@
                                 <label for="process_discovery_end_date">End Datetime</label>
                             </div>
                             <div class="col-8 filter-select">
-                                <input placeholder="YYYY-MM-DDThh:mm:ss" id="process_discovery_end_date" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="end time" onchange="sendPMParameters();" step="1" ">
+                                <input placeholder="YYYY-MM-DDThh:mm:ss" id="process_discovery_end_date" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="end time" onchange="sendPMParameters();" step="1">
                             </div>
                         </div>
                         <div class="form-row my-2">
@@ -111,8 +111,16 @@
                             <div class="col-8 filter-select">
                                 <input id="process_discovery_max_performance" name="endActivity" type="text" class="form-control form-control-sm disabled" disabled aria-describedby="end activity" onchange="sendPMParameters();" placeholder="100">                            </div>
                         </div>
+                         <div class="form-row my-2">
+                            <div class="col-4 select_row_label">
+                                <label class="mr-sm-2" for="process_discovery_case_id">case Id</label>
+                            </div>
+                            <div class="col-8 filter-select">
+                                <select multiple id="process_discovery_case_id" class="selectpicker form-control form-control-sm disabled" disabled style="max-width: 100%;" ></select>
+                            </div>
+                        </div>
                          <div class="form-row my-2 float-right">
-                                <a id="reset_filters_button" href="javascript:sendFiltersReset()" class="btn btn-secondary disabled" disabled >Clear Filters</i></a>
+                                <a id="reset_filters_button" href="javascript:sendFiltersReset()" class="btn btn-secondary disabled" disabled >Clear Filters</a>
                          </div>
                     </form>
                 </div>

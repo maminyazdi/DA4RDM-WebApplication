@@ -39,6 +39,7 @@ def clean_filters_for_database(filters):
         return ''
     filters = filters_correct_datetimes(filters)
     filters = filters_clean_activities(filters)
+    filters = filters_clean_case_ids(filters)
     return filters
 
 def filters_correct_datetimes(filters):
@@ -66,6 +67,14 @@ def filters_clean_activities(filters):
     if type(filters["process_discovery_start_activity"]) == list and 'None' in filters["process_discovery_end_activity"]:
         index = filters["process_discovery_end_activity"].index('None')
         filters["process_discovery_end_activity"].pop(index)
+    return filters
+
+def filters_clean_case_ids(filters):
+    if filters == '':
+        return ''
+    if type(filters["process_discovery_case_id"]) == list and 'None' in filters["process_discovery_case_id"]:
+        index = filters["process_discovery_case_id"].index('None')
+        filters["process_discovery_case_id"].pop(index)
     return filters
 
 def format_datetime(datetime):
