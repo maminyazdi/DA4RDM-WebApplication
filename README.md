@@ -1,4 +1,4 @@
-# DA4DS
+# DA4RDM-Conformance
 
 ## Dependencies:
 If you want to use anaconda/miniconda, you can (and should) import the following environment.yml from the repository top level. To do this, from your anaconda prompt (in administrator mode) you can enter (with environment.yml pointing to the right file):
