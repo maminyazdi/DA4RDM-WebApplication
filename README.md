@@ -107,3 +107,26 @@ so that the process discovery can find the cleaned data.
 
 You can store dataframes as CSV-File by including the corresponding module. The output-path for these files can be specified in the config.py of your project.
 The final result of the pipeline can be shown on the application front end. This expects a json response object that can also be created by the corresponding module. The frontend at the moments can display only text. The parameter you give to that modules should thus for now only have the value "text". In the future it is planned to support displaying graphs for data. In this case, the parameter should have the value "table".
+
+
+---
+### Working with DA4RDM UI
+- Use the example data available in the SampleData folder (use the latest csv file)
+- Go to "Data Pre-processing" tab
+- Use the + button in "Data Source" section
+- Give any name to "Datasource name" field
+- Select CSV file format from the set of radio buttons
+- Select your local file (sample data)
+- Press Save
+- Select the data source from the dropdown list within the "Data Source" section and press Checkmark button
+- From the "Data Pre-processing Pipeline" section, select "Process_Discovery" within the dropdown and press Checkmark button
+- Click on Run project
+- You get redirected to the "Process Analysis" tab
+- In "Event Log" section, 
+    - Select Timestamp as "Timestamp"
+    - Select Case ID as "User Id"
+    - Select Activity as "Operation"
+    - Submit
+- Within Options section, click on the Play button (blue color) to run the algorithm and produce a process model.
+
+
