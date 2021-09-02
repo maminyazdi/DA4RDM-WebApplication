@@ -7,7 +7,7 @@ from flask_socketio import emit
 from da4rdm.processing_libraries.da4rdm import (drop_na, drop_duplicates, fill_na)
 
 def execute(backend_df, frontend_df, binary=False):
-    """Generates the specific cross matrix required for sample project analysis.
+    """This generates the specific cross matrix required for sample project analysis.
     This is achieved by grouping frontned and backend logs by access tokens. Then each of this groups gets iterated through line wise. Instances of bulks of same subsequent Rids on the backend will form a data point in the transformed matrix. It will contain the count (or dichotomous representation) of all the methods that can be assiciated with it. This assiciation will be established when the Rids on the front and the backend match (for subsequent entries). I.e. This algorithm walks through the frontend logs in order, checks if the Rid matches the backend rid - if there is a match, it walks through the backend logs and adds the methods it encounters to the curresponding method count for this bulk (i.e. activity) until there is no longer a match. Then it goes on to walk through the front end logs again until the access token group is finished. When Rid = 0 is encountered, during this process, a separate activity with the name 'loading' is created and then treated as if it were a frontend activity, even though it is distinct from the front end activity that is currently under scrutiny.
     Example:
         Frontend:                   Backend:
