@@ -1,0 +1,82 @@
+{% extends 'main/index.html' %}
+
+{% block header %}
+    <h2>Conformance-Checking</h2>
+{% endblock %}
+
+{% block content_body %}
+    <div class="card col-12">
+        <span class="row">
+            <div class="col-3">
+                <span class="row">
+                    <div class="col-12 ">
+                    <h4>Conformance Checking</h4>
+                    <form id="operationSeqSetFrom" action="{{ url_for('blueprints/api.conformance_checking') }}" method="POST">
+                        <div class="discovey-left-side-input">
+                            <div class="form-row my-2">
+                                <div class="col-4 select_row_label">
+                                    <label class="mr-sm-2 my-1" for="start-activity-select">Operation Sequence Set 1</label>
+                                </div>
+                                <div class="col-8 filter-select">
+                                    {# <select class="selectpicker form-control form-control-sm" id="timestamp_column"></select> #}
+                                    <textarea id="OpSeqSet1" name="OpSeqSet1"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-row my-2">
+                                <div class="col-4 select_row_label">
+                                    <label class="mr-sm-2 my-1" for="end-activity-select">Performance</label>
+                                </div>
+                                <div class="col-8 filter-select">
+                                    <input placeholder="hh:mm:ss" id="timespan" name="performance" type="text" class="form-control form-control-sm">
+                                </div>
+                            </div>
+                            <div class="form-row my-2">
+                                <div class="col-4 select_row_label">
+                                    <label class="mr-sm-2 my-1" for="end-activity-select">Operation Sequence Set 2</label>
+                                </div>
+                                <div class="col-8 filter-select">
+                                    {# <select class="selectpicker form-control form-control-sm" id="activity_column"></select> #}
+                                    <textarea id="OpSeqSet2" name="OpSeqSet2"></textarea>
+                                </div>
+                            </div>
+                            <div class="button">
+                                <button type="submit">Send Operation Sequence Sets</button>
+                            </div>
+						</div>
+					</form>
+					</div>
+				</span>
+			</div>
+			<div class="col-9">
+                    <span class="row">
+                        <span class="col-5"></span>
+                        <span class="col-7">
+                            <div class="row">
+                                <h4>Report</h4>
+                            </div>
+                            <div class="row">
+                                <label class="mr-sm-2" for="metrics_number_of_cases">Data set start time: </label><p id='metrics_number_of_cases' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
+                            </div>
+                            <div class="row">
+                                <label class="mr-sm-2" for="metrics_number_of_events"> Data set end time: </label><p id='metrics_number_of_events' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
+                            </div>
+                            <div class="row">
+                                <label class="mr-sm-2" for="metrics_number_of_activities">Total Number of Cases: </label><p id='metrics_number_of_activities' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
+                            </div>
+                            <div class="row">
+                                <label class="mr-sm-2" for="metrics_number_of_variants">Number of non-conforming Cases: </label><p id='metrics_number_of_variants' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
+                            </div>
+                        </span>
+                    </span>
+                </div>
+
+		</span>
+	</div>
+{% endblock %}
+	
+	{% block scripts %}
+    {{ super() }}
+        <script>
+            addSessionIdToFormAction("operationSeqSetFrom")
+        </script>
+	{% endblock %}

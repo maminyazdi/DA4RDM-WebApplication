@@ -21,7 +21,7 @@ from werkzeug.utils import secure_filename
 from da4rdm import db, Config
 from da4rdm.models import (InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource)
 from da4rdm.api.data_source import data_source_handler
-from da4rdm.api.process_mining import (process_discovery, event_log_generator, filter_handler)
+from da4rdm.api.process_mining import (process_discovery, event_log_generator, filter_handler,conformance_handler)
 from da4rdm.api.preprocessing import user_project_handler
 from . import (user_session, input_parser, file_handler)
 
@@ -32,6 +32,7 @@ api_bp = Blueprint('blueprints/api', __name__, template_folder='templates', stat
 
 @socketio.on('create_new_session', namespace='/api/create_new_session')
 def create_new_session():
+    print('New Session Creation')
     session_id = user_session.create_new_session()
     emit('session',
          session_id)  # TODO maybe use simple http request instead of socket or find a way to wait for the response
@@ -40,12 +41,14 @@ def create_new_session():
 
 @api_bp.route('/api/get_all_data_sources')
 def get_all_data_sources():
+    print('Get all datasources')
     data_sources = db.session.query(DataSource).all()
     return data_sources
 
 
 @api_bp.route('/new_data_source', methods=['POST'])
 def new_data_source():
+    print('New datasource')
     session_id = request.args.get("session_id")
     current_session = user_session.get_session_information(session_id)
 
@@ -78,6 +81,7 @@ def new_data_source():
 # @api_bp.route('/read_data_from_source', methods=['POST'])
 @socketio.on('requestReadDataFromSource', namespace='/api/preprocessing')
 def read_data_from_source(session_id, data):
+    print('Read data from source')
     current_session = user_session.get_session_information(session_id)
     # selected_data_source_id = request.values['selectedDataSourceId']
     selected_data_source_id = int(
@@ -97,6 +101,7 @@ def read_data_from_source(session_id, data):
 
 @api_bp.route('/get_all_pipeline_names')
 def get_all_pipeline_names():
+    print('Get all pipeline names')
     projects_path = app.config['USER_PROJECT_DIRECTORY']
     projects_directories = (user_project_handler.get_all_user_projects(projects_path))
     return projects_directories
@@ -107,7 +112,6 @@ def run_project_persistent_connection(session_id, data):
     session_information = user_session.get_session_information(session_id)
     project_name = data['projectName']
     pipeline_parameters = input_parser.parse_parameter_list(data['pipelineParameters'], '&;', ':=')
-
     emit('progressLog', {'message': f"Starting pipeline for project {project_name}"})
 
     project_module = user_project_handler.import_project_module(app.config['USER_PROJECT_DIRECTORY'], project_name)
@@ -116,7 +120,6 @@ def run_project_persistent_connection(session_id, data):
                                                              pipeline_parameters)
 
     result_dataframe.to_csv(session_information["data_location"], sep=";")
-
     emit('success', {'message': "Pipeline finished successfully"})
 
     return redirect(url_for('blueprints/process_mining.process_discovery'))
@@ -127,7 +130,6 @@ def prepare_discovery(session_id, xes_attribute_columns=None, filters=None, opti
     current_session = user_session.get_session_information(session_id)
     old_filters = current_session["pm_filters"]
     dataframe_key_metrics = {}
-
     try:
         dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
     except FileNotFoundError:
@@ -179,7 +181,6 @@ def prepare_discovery(session_id, xes_attribute_columns=None, filters=None, opti
 
         # refresh the dataframe
         dataframe_filtered = log_converter.apply(event_log, variant=log_converter.Variants.TO_DATA_FRAME)
-
         # check if the resulting dataframe still has enough information to create a valid porcess model
         if "time:timestamp" not in dataframe_filtered.columns or \
                 "concept:name" not in dataframe_filtered.columns or \
@@ -243,6 +244,12 @@ def prepare_discovery(session_id, xes_attribute_columns=None, filters=None, opti
 
 def process_discovery_thread_wrapper(current_session, options, results):
     results.append(process_discovery.run(current_session, options))
+    result_dataframe = pd.read_csv(current_session["data_location"],index_col=0, sep=";")
+    df1 = result_dataframe[['Type','Operation']]
+    prev_action_seq1 = ['View Project', 'Project Create', 'Add Project']
+    next_action_seq1 = ['Open Project', 'Project', 'View Project']
+    KPI = 0.5
+    #conformance_handler.check_comformance(result_dataframe,prev_action_seq1,next_action_seq1,KPI)
     return results
 
 
@@ -268,6 +275,7 @@ def run_process_discovery(session_id, options):
     process_model = results[0]
     emit(process_model[0], process_model[1])
 
+    #check_comformance(result_dataframe)
     return
 
 
@@ -298,3 +306,32 @@ def download_temporary_data():
     path = file_handler.get_download_path(current_session, requested_file)
 
     return send_file(path, as_attachment=True)
+
+##ConformanceChecking ..added by Mrunmai
+@api_bp.route('/conformance_checking', methods=['GET','POST'])
+#@socketio.on('requestReadOperationSeqSet', namespace='/api/conformance')
+def conformance_checking():
+    print('api/conformance')
+    session_id = request.args.get("session_id")
+    current_session = user_session.get_session_information(session_id)
+    print('New1',session_id)
+    opSeqSet1 = (request.form['OpSeqSet1']).split(",")
+    #opSeqSet1 = data['op_seq_set1']
+    print('New2', opSeqSet1)
+    print(opSeqSet1[0])
+    opSeqSet2 = (request.form['OpSeqSet2']).split(",")
+    print('New3', type(opSeqSet2))
+    print(opSeqSet2[0])
+    performance = request.form['performance']
+    print('New4', performance)
+    print('new5',type(performance))
+    result_dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
+    print('result_dataframe',result_dataframe)
+    #df1 = result_dataframe[['Type', 'Operation']]
+    #prev_action_seq1 = ['View Project', 'Project Create', 'Add Project']
+    #next_action_seq1 = ['Open Project', 'Project', 'View Project']
+    #KPI = 0.5
+    conformance_handler.check_comformance(result_dataframe, opSeqSet1, opSeqSet2, performance)
+
+
+    return redirect(url_for('blueprints/conformance_checking.conformance_checking'))
