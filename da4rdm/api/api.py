@@ -5,6 +5,7 @@ import sqlalchemy
 import datetime
 import uuid
 import pandas as pd
+import json
 from flask_socketio import emit
 from pm4py.algo.filtering.log.attributes import attributes_filter
 from pm4py.algo.filtering.log.variants import variants_filter
@@ -13,7 +14,7 @@ from da4rdm import socketio
 
 from flask import (
     Blueprint, flash, redirect, render_template, request, url_for, jsonify, current_app as app, send_from_directory,
-    send_file
+    send_file,make_response
 )
 from werkzeug.exceptions import abort
 from werkzeug.utils import secure_filename
@@ -136,6 +137,7 @@ def prepare_discovery(session_id, xes_attribute_columns=None, filters=None, opti
         return
 
     column_names = list(dataframe.columns.values)
+    print('columnNames',column_names)
 
     # if no xes columns have ever been selected, just return all of the column names and nothing else
     if xes_attribute_columns == None and (
@@ -308,30 +310,44 @@ def download_temporary_data():
     return send_file(path, as_attachment=True)
 
 ##ConformanceChecking ..added by Mrunmai
-@api_bp.route('/conformance_checking', methods=['GET','POST'])
-#@socketio.on('requestReadOperationSeqSet', namespace='/api/conformance')
-def conformance_checking():
+#@api_bp.route('/conformance_checking', methods=['POST'])
+#@api_bp.route('/api/conformance_checking', methods=['POST'])
+@socketio.on('requestReadOperationSeqSet', namespace='/api/conformance')
+def conformance_checking(session_id,action1,action2,data):
     print('api/conformance')
-    session_id = request.args.get("session_id")
+    #session_id = request.args.get("session_id")
     current_session = user_session.get_session_information(session_id)
     print('New1',session_id)
-    opSeqSet1 = (request.form['OpSeqSet1']).split(",")
-    #opSeqSet1 = data['op_seq_set1']
-    print('New2', opSeqSet1)
-    print(opSeqSet1[0])
-    opSeqSet2 = (request.form['OpSeqSet2']).split(",")
-    print('New3', type(opSeqSet2))
-    print(opSeqSet2[0])
-    performance = request.form['performance']
-    print('New4', performance)
-    print('new5',type(performance))
+    #opSeqSet1 = (data['op_seq_set1']).split(",")
+    #opSeqSet2= (data['op_seq_set2']).split(",")
+    #performance= data['performance']
+    opList1 = action1.split(",")
+    print('opList', opList1, type(opList1))
+    print('action2', action2, type(action2))
+    opList2 = action2.split(",")
+    print('opList', opList2, type(opList2))
+    print(opList1[:len(opList1)-1])
+    Mins = data['min']
+    print('Mins',type(Mins),Mins)
+    sec = data['sec']
+    print('sec', type(sec), sec)
+    total_time = ((float(Mins)/60) + float(sec))
+    print('total_time',total_time,type(total_time))
     result_dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
     print('result_dataframe',result_dataframe)
-    #df1 = result_dataframe[['Type', 'Operation']]
-    #prev_action_seq1 = ['View Project', 'Project Create', 'Add Project']
-    #next_action_seq1 = ['Open Project', 'Project', 'View Project']
-    #KPI = 0.5
-    conformance_handler.check_comformance(result_dataframe, opSeqSet1, opSeqSet2, performance)
+    op,nonConformanceCases = conformance_handler.check_comformance(result_dataframe, opList1[:len(opList1)-1], opList2[:len(opList2)-1], total_time)
+    print('Final OP',op)
+    print('op0',type(op))
+    print('op',type(jsonify(op)))
+    #op1 = jsonify(op)
+    #op1 = make_response(jsonify(op), 200)
+    #print('op1',op1)
+    #op2 = {'name': 'M', 'kind': 'kind'}
+    #print('op2',type(op2))
+    op1 = json.loads(op)
+    print('op1',type(op1),op1)
 
+    emit("conformanceCheckingOP", {"NonConformingCases" : nonConformanceCases,
+                                   "JSON_Response" : op1})
 
-    return redirect(url_for('blueprints/conformance_checking.conformance_checking'))
+    return #render_template('conformance_checking/conformance_checking.html',data=op1) #redirect(url_for('blueprints/conformance_checking.conformance_checking'))
