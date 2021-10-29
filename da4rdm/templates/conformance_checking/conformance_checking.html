@@ -20,37 +20,15 @@
                                 </div>
                                 <div class="wraper1">
                                     <div>
-                                     <button class="add_icon1">Add Actions</button>
+                                     <button class="add_icon1"><i class="fa fa-plus" aria-hidden="true"></i></button>
                                     </div>
                                  </div>
-                                {# <div class="col-8 filter-select">
-                                {#                                    {# <select class="selectpicker form-control form-control-sm" id="timestamp_column"></select> #}
-                                {#                                    <textarea id="OpSeqSet1" name="OpSeqSet1" ></textarea>
-                                {#                                </div> #}
                             </div>
-                            {# <div class="form-row my-2">
-                            {#                                <div class="col-4 select_row_label">
-                            {#                                    <label class="mr-sm-2 my-1" for="start-activity-select">Operation Sequence Set 1</label>
-                            {#                                </div>
-                            {#                                <div class="col-8 filter-select">
-                            {#                                    <select class="form-select1" id="OperationSeq"multiple aria-label="multiple select example">
-                            {#                                        <option selected>Choose actions from drop-down</option>
-                            {#                                        <option value="View Project">View Project</option>
-                            {#                                        <option value="Add Project">Add Project</option>
-                            {#                                        <option value="Open Project">Open Project</option>
-                            {#                                        <option value="Project">Project</option>
-                            {#                                        <option value="Project Create">Project Create</option>
-                            {#                                    </select>
-                            {#                                </div>
-                                </div>#}
-
-
                             <div class="form-row my-2">
                                 <div class="col-4 select_row_label">
                                     <label class="mr-sm-2 my-1" for="end-activity-select">Performance</label>
                                 </div>
                                 <div class="col-8 filter-select">
-                                    {# <input placeholder="hh:mm:ss" id="timespan" name="performance" type="text" class="form-control form-control-sm"> #}
                                     <input type="number" id="min" name="performance" step="any" class="form-control form-control-sm"><label class="mr-sm-2 my-1" >Min</label>
                                     <input type="number" id="sec" name="performance" min="0.0" max="60" step="any" class="form-control form-control-sm"><label class="mr-sm-2 my-1" >Sec</label>
                                 </div>
@@ -62,13 +40,9 @@
                                 </div>
                                 <div class="wraper2">
                                     <div>
-                                        <button class="add_icon2">Add Actions</button>
+                                        <button class="add_icon2"><i class="fa fa-plus" aria-hidden="true"></i></button>
                                     </div>
                                 </div>
-                                {# <div class="col-8 filter-select">
-                                {#                                    {# <select class="selectpicker form-control form-control-sm" id="activity_column"></select> #}
-                                {#                                    <textarea id="OpSeqSet2" name="OpSeqSet2"></textarea>
-                                {#                                </div> #}
                             </div>
 
                             <div class="button">
@@ -88,19 +62,19 @@
                             </div>
 
                             <div class="row">
-                                <label class="mr-sm-2" for="metrics_number_of_cases1">Data set start time: </label><p id='metrics_number_of_cases1' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
+                                <label class="mr-sm-2" for="dataSet_start_time">Data set start time: </label><p id='dataSet_start_time' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
                             </div>
                             <div class="row">
-                                <label class="mr-sm-2" for="metrics_number_of_events"> Data set end time: </label><p id='metrics_number_of_events' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
+                                <label class="mr-sm-2" for="dataSet_end_time"> Data set end time: </label><p id='dataSet_end_time' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
                             </div>
                             <div class="row">
-                                <label class="mr-sm-2" for="metrics_number_of_activities">Total Number of Cases: </label><p id='metrics_number_of_activities' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
+                                <label class="mr-sm-2" for="total_number_of_cases">Total Number of Cases: </label><p id='total_number_of_cases' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
                             </div>
                             <div class="row">
-                                <label class="mr-sm-2" for="metrics_number_of_variants1">Number of non-conforming Cases: </label><p id='metrics_number_of_variants1' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
+                                <label class="mr-sm-2" for="no_of_nonConforming_cases">Number of non-conforming Cases: </label><p id='no_of_nonConforming_cases' class="mr-sm-2" style="margin-bottom: 0rem;"></p>
                             </div>
                             <div class="row">
-                                <label class="mr-sm-2" for="OP">OP: </label><p id="OP" class="mr-sm-2" style="margin-bottom: 0rem;"></p>
+                                <label class="mr-sm-2" for="Result">Result: </label><p id="Result" class="mr-sm-2" style="margin-bottom: 0rem;"></p>
                             </div>
                         </span>
                     </span>
@@ -125,7 +99,7 @@
                 $(add).click(function(e) { e.preventDefault();
                    if(x < max) {
                        x++;
-                       $(container).append('<div><select class="actionSelect1" aria-label="Default select example"><option selected>Choose Operation</option><option value="View Project">View Project</option><option value="Project">Project</option><option value="Open Project">Open Project</option><option value="Add Project">Add Project</option><option value="Project Create">Project Create</option></select><a href="#" class="delete">delete</a></div>');
+                       $(container).append('<div class="col-8 my-1 filter-select"><select id="operation_list" class="actionSelect1">{% for operation in operation_list %}<option value="{{ operation }}" >{{ operation }}</option>{% endfor %}</select><a href="#" class="delete">delete</a></div>');
                     }});
 
                 $(container).on("click",".delete",function(e){
@@ -137,14 +111,14 @@
         </script>
         <script>
             $(document).ready(function(){
-                var max = 5;
+                var max = 10;
                 var container = $(".wraper2");
                 var add = $(".add_icon2");
                 var x = 1;
                 $(add).click(function(e) { e.preventDefault();
                    if(x < max) {
                        x++;
-                       $(container).append('<div><select class="actionSelect2" aria-label="Default select example"><option selected>Choose Operation</option><option value="View Project">View Project</option><option value="Project">Project</option><option value="Open Project">Open Project</option><option value="Add Project">Add Project</option><option value="Project Create">Project Create</option></select><a href="#" class="delete">delete</a></div>');
+                       $(container).append('<div class="col-8 my-1 filter-select"><select id="operation_list" class="actionSelect2">{% for operation in operation_list %}<option value="{{ operation }}" >{{ operation }}</option>{% endfor %}</select><a href="#" class="delete">delete</a></div>');
                     }});
                 $(container).on("click",".delete",function(e){
                     e.preventDefault();
@@ -153,5 +127,4 @@
                 })
             });
         </script>
-
-	{% endblock %}
+    {% endblock %}

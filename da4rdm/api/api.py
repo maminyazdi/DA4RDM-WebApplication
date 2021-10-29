@@ -20,11 +20,12 @@ from werkzeug.exceptions import abort
 from werkzeug.utils import secure_filename
 
 from da4rdm import db, Config
-from da4rdm.models import (InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource)
+from da4rdm.models import (InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource,SessionInformation)
 from da4rdm.api.data_source import data_source_handler
 from da4rdm.api.process_mining import (process_discovery, event_log_generator, filter_handler,conformance_handler)
 from da4rdm.api.preprocessing import user_project_handler
 from . import (user_session, input_parser, file_handler)
+from da4rdm import conformanceChecking
 
 api_bp = Blueprint('blueprints/api', __name__, template_folder='templates', static_folder='static')
 
@@ -33,7 +34,6 @@ api_bp = Blueprint('blueprints/api', __name__, template_folder='templates', stat
 
 @socketio.on('create_new_session', namespace='/api/create_new_session')
 def create_new_session():
-    print('New Session Creation')
     session_id = user_session.create_new_session()
     emit('session',
          session_id)  # TODO maybe use simple http request instead of socket or find a way to wait for the response
@@ -42,14 +42,12 @@ def create_new_session():
 
 @api_bp.route('/api/get_all_data_sources')
 def get_all_data_sources():
-    print('Get all datasources')
     data_sources = db.session.query(DataSource).all()
     return data_sources
 
 
 @api_bp.route('/new_data_source', methods=['POST'])
 def new_data_source():
-    print('New datasource')
     session_id = request.args.get("session_id")
     current_session = user_session.get_session_information(session_id)
 
@@ -82,7 +80,6 @@ def new_data_source():
 # @api_bp.route('/read_data_from_source', methods=['POST'])
 @socketio.on('requestReadDataFromSource', namespace='/api/preprocessing')
 def read_data_from_source(session_id, data):
-    print('Read data from source')
     current_session = user_session.get_session_information(session_id)
     # selected_data_source_id = request.values['selectedDataSourceId']
     selected_data_source_id = int(
@@ -102,7 +99,6 @@ def read_data_from_source(session_id, data):
 
 @api_bp.route('/get_all_pipeline_names')
 def get_all_pipeline_names():
-    print('Get all pipeline names')
     projects_path = app.config['USER_PROJECT_DIRECTORY']
     projects_directories = (user_project_handler.get_all_user_projects(projects_path))
     return projects_directories
@@ -137,7 +133,6 @@ def prepare_discovery(session_id, xes_attribute_columns=None, filters=None, opti
         return
 
     column_names = list(dataframe.columns.values)
-    print('columnNames',column_names)
 
     # if no xes columns have ever been selected, just return all of the column names and nothing else
     if xes_attribute_columns == None and (
@@ -246,11 +241,6 @@ def prepare_discovery(session_id, xes_attribute_columns=None, filters=None, opti
 
 def process_discovery_thread_wrapper(current_session, options, results):
     results.append(process_discovery.run(current_session, options))
-    result_dataframe = pd.read_csv(current_session["data_location"],index_col=0, sep=";")
-    df1 = result_dataframe[['Type','Operation']]
-    prev_action_seq1 = ['View Project', 'Project Create', 'Add Project']
-    next_action_seq1 = ['Open Project', 'Project', 'View Project']
-    KPI = 0.5
     #conformance_handler.check_comformance(result_dataframe,prev_action_seq1,next_action_seq1,KPI)
     return results
 
@@ -276,8 +266,9 @@ def run_process_discovery(session_id, options):
 
     process_model = results[0]
     emit(process_model[0], process_model[1])
-
-    #check_comformance(result_dataframe)
+    #Added for getting session_id for get_unique_operations() method
+    global temp_id
+    temp_id = session_id
     return
 
 
@@ -309,45 +300,34 @@ def download_temporary_data():
 
     return send_file(path, as_attachment=True)
 
-##ConformanceChecking ..added by Mrunmai
-#@api_bp.route('/conformance_checking', methods=['POST'])
-#@api_bp.route('/api/conformance_checking', methods=['POST'])
+#For fetching list of unique operations ...further to be modified for fetching unique options based on Activity
+@api_bp.route('/api/get_unique_operations')
+def get_unique_operations():
+    #session_id = db.session.query(SessionInformation)
+    current_session = user_session.get_session_information(temp_id)
+    result_dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
+    unique_operations = list(pd.unique(result_dataframe.Operation))
+    unique_operations.sort()
+    print('unique_operations', unique_operations)
+    return unique_operations
+
+#socket for ConformanceChecking
 @socketio.on('requestReadOperationSeqSet', namespace='/api/conformance')
 def conformance_checking(session_id,action1,action2,data):
-    print('api/conformance')
-    #session_id = request.args.get("session_id")
     current_session = user_session.get_session_information(session_id)
-    print('New1',session_id)
-    #opSeqSet1 = (data['op_seq_set1']).split(",")
-    #opSeqSet2= (data['op_seq_set2']).split(",")
-    #performance= data['performance']
-    opList1 = action1.split(",")
-    print('opList', opList1, type(opList1))
-    print('action2', action2, type(action2))
-    opList2 = action2.split(",")
-    print('opList', opList2, type(opList2))
-    print(opList1[:len(opList1)-1])
+    operationSeq1 = action1.split(",")
+    operationSeq2 = action2.split(",")
     Mins = data['min']
-    print('Mins',type(Mins),Mins)
     sec = data['sec']
-    print('sec', type(sec), sec)
-    total_time = ((float(Mins)/60) + float(sec))
-    print('total_time',total_time,type(total_time))
+    total_time = ((float(Mins)*60) + float(sec)) if((Mins != '') & (sec != '')) else ''  # check for empty Mins and Sec field
+    print('total_time',type(total_time),total_time)
     result_dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
-    print('result_dataframe',result_dataframe)
-    op,nonConformanceCases = conformance_handler.check_comformance(result_dataframe, opList1[:len(opList1)-1], opList2[:len(opList2)-1], total_time)
-    print('Final OP',op)
-    print('op0',type(op))
-    print('op',type(jsonify(op)))
-    #op1 = jsonify(op)
-    #op1 = make_response(jsonify(op), 200)
-    #print('op1',op1)
-    #op2 = {'name': 'M', 'kind': 'kind'}
-    #print('op2',type(op2))
-    op1 = json.loads(op)
-    print('op1',type(op1),op1)
-
+    # Calling Conformance Check method
+    json_result,nonConformanceCases,totalNoOfCases,dataSet_start_time,dataSet_end_time = conformance_handler.check_comformance(result_dataframe, operationSeq1[:len(operationSeq1)-1], operationSeq2[:len(operationSeq2)-1], total_time)
     emit("conformanceCheckingOP", {"NonConformingCases" : nonConformanceCases,
-                                   "JSON_Response" : op1})
-
-    return #render_template('conformance_checking/conformance_checking.html',data=op1) #redirect(url_for('blueprints/conformance_checking.conformance_checking'))
+                                   "dataSet_start_time": dataSet_start_time,
+                                   "dataSet_end_time" : dataSet_end_time,
+                                   "JSON_Response" : [json_result[i] for i in range(len(json_result))],
+                                   "TotalNoOfCases" : totalNoOfCases,
+                                    })
+    return
