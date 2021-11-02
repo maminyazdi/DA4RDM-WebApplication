@@ -39,7 +39,7 @@ def check_comformance(result_dataframe, operationSeqSet1, operationSeqSet2, KPI)
                     count = 0
                     # Checking for conformance with operationSeqSet2
                     for i in range(len(operationSeqSet2)):
-                        if (next_index < len(temp_seq)):            # Condition added to remove out of bound indexing problem
+                        if ((next_index + len(operationSeqSet2)- 1) < len(temp_seq)):            # Condition added to remove out of bound indexing problem
                             if (temp_seq[next_index + i] != operationSeqSet2[i]):       # Checking for each consecutive operations, if not satisfied with the user given operationSeq, then non-conforming case
                                 print('not', temp_seq[next_index + i], next_index + i)
                                 set_projectId(first_index, next_index, i, operationSeqSet2, sessionIdFiltered_df)    # Method to add ProjectId if empty
@@ -65,7 +65,9 @@ def check_comformance(result_dataframe, operationSeqSet1, operationSeqSet2, KPI)
 # Adds ProjectId where, ProjectId is null in case of Non-conforming case
 def set_projectId(first_index, next_index, current_index, OpSeqSet, dataFrame):
     if (str(dataFrame.ProjectId.iloc[next_index + current_index])) == 'nan':
+        #print('Projects',dataFrame.ProjectId.iloc[next_index + current_index - 1])
         project_id = dataFrame.ProjectId.iloc[first_index:next_index + len(OpSeqSet)].unique()[0]
+        #project_id = dataFrame.ProjectId.iloc[next_index + current_index - 1]
         dataFrame.ProjectId.iloc[next_index + current_index] = project_id
         print('NewProjectId', dataFrame.ProjectId.iloc[next_index + current_index])
     else:

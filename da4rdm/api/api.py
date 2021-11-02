@@ -37,6 +37,8 @@ def create_new_session():
     session_id = user_session.create_new_session()
     emit('session',
          session_id)  # TODO maybe use simple http request instead of socket or find a way to wait for the response
+    global temp_id
+    temp_id = session_id
     return session_id
 
 
@@ -267,8 +269,7 @@ def run_process_discovery(session_id, options):
     process_model = results[0]
     emit(process_model[0], process_model[1])
     #Added for getting session_id for get_unique_operations() method
-    global temp_id
-    temp_id = session_id
+
     return
 
 
@@ -305,11 +306,17 @@ def download_temporary_data():
 def get_unique_operations():
     #session_id = db.session.query(SessionInformation)
     current_session = user_session.get_session_information(temp_id)
-    result_dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
-    unique_operations = list(pd.unique(result_dataframe.Operation))
-    unique_operations.sort()
-    print('unique_operations', unique_operations)
-    return unique_operations
+    xes_attributes = current_session['pm_xes_attributes']
+    print('xes',xes_attributes)
+    if bool(xes_attributes):
+        activity_col = xes_attributes["activity_column"]
+        result_dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
+        df = pd.unique(result_dataframe[activity_col])
+        df.sort()
+    else:
+        df = []
+    print('Returning df',df)
+    return df
 
 #socket for ConformanceChecking
 @socketio.on('requestReadOperationSeqSet', namespace='/api/conformance')

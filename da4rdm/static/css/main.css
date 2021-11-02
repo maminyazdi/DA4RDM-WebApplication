@@ -103,3 +103,11 @@
 .dropdown-menu{
     z-index:10001;
 }
+
+.scrollBox{
+    display: none;
+    max-height: 550px;
+    overflow-y: auto;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+}
