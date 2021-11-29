@@ -268,7 +268,7 @@ def run_process_discovery(session_id, options):
 
     process_model = results[0]
     emit(process_model[0], process_model[1])
-    #Added for getting session_id for get_unique_operations() method
+    # Added for getting session_id for get_unique_operations() method
 
     return
 
@@ -301,13 +301,12 @@ def download_temporary_data():
 
     return send_file(path, as_attachment=True)
 
-#For fetching list of unique operations ...further to be modified for fetching unique options based on Activity
+
+# For fetching list of unique operations based on Activity column
 @api_bp.route('/api/get_unique_operations')
 def get_unique_operations():
-    #session_id = db.session.query(SessionInformation)
     current_session = user_session.get_session_information(temp_id)
     xes_attributes = current_session['pm_xes_attributes']
-    print('xes',xes_attributes)
     if bool(xes_attributes):
         activity_col = xes_attributes["activity_column"]
         result_dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
@@ -315,26 +314,37 @@ def get_unique_operations():
         df.sort()
     else:
         df = []
-    print('Returning df',df)
     return df
 
-#socket for ConformanceChecking
+
+# socket for invoking ConformanceChecking method
 @socketio.on('requestReadOperationSeqSet', namespace='/api/conformance')
-def conformance_checking(session_id,action1,action2,data):
+def conformance_checking(session_id, action1, action2, data):
     current_session = user_session.get_session_information(session_id)
-    operationSeq1 = action1.split(",")
-    operationSeq2 = action2.split(",")
-    Mins = data['min']
+    operation_seq1 = action1.split(",")
+    operation_seq2 = action2.split(",")
+    eventually_followed_flg_val = data['eventuallyFollowedFlg']
+
+    mins = data['min']
     sec = data['sec']
-    total_time = ((float(Mins)*60) + float(sec)) if((Mins != '') & (sec != '')) else ''  # check for empty Mins and Sec field
-    print('total_time',type(total_time),total_time)
+    # check for empty Mins and Sec field
+    total_time = ((float(mins)*60) + float(sec)) if((mins != '') & (sec != '')) else ''
+    print('total_time', type(total_time), total_time)
     result_dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
-    # Calling Conformance Check method
-    json_result,nonConformanceCases,totalNoOfCases,dataSet_start_time,dataSet_end_time = conformance_handler.check_comformance(result_dataframe, operationSeq1[:len(operationSeq1)-1], operationSeq2[:len(operationSeq2)-1], total_time)
-    emit("conformanceCheckingOP", {"NonConformingCases" : nonConformanceCases,
-                                   "dataSet_start_time": dataSet_start_time,
-                                   "dataSet_end_time" : dataSet_end_time,
-                                   "JSON_Response" : [json_result[i] for i in range(len(json_result))],
-                                   "TotalNoOfCases" : totalNoOfCases,
+
+    # Calling Conformance Check method based on Eventually Followed By checkbox
+    json_result, non_conforming_cases, total_no_of_cases, dataset_start_time, dataset_end_time = \
+        conformance_handler.conformance_eventually_followed_by(result_dataframe, operation_seq1[:len(operation_seq1)-1],
+                                                               operation_seq2[:len(operation_seq2)-1], total_time) \
+        if eventually_followed_flg_val \
+        else conformance_handler.check_conformance(result_dataframe, operation_seq1[:len(operation_seq1)-1],
+                                                   operation_seq2[:len(operation_seq2)-1], total_time)
+
+    emit("conformanceCheckingOP", {"NonConformingCases": non_conforming_cases,
+                                   "dataSet_start_time": dataset_start_time,
+                                   "dataSet_end_time": dataset_end_time,
+                                   "JSON_Response": json_result,
+                                   "TotalNoOfCases": total_no_of_cases,
                                     })
+
     return

@@ -5,6 +5,9 @@ let socket = io.connect('http://' + document.domain + ':' + location.port + '/ap
 let operationSeqSetFrom= document.getElementById('operationSeqSetFrom');
 operationSeqSetFrom.addEventListener('submit', function(event) {
 	event.preventDefault();
+
+	let eventuallyFollowedFlg = document.querySelector('#accept')
+	let eventuallyFollowedFlg_value = eventuallyFollowedFlg.checked
 	let minutes = document.getElementById("min");
 	let seconds = document.getElementById("sec");
 	let actions1 = document.getElementsByClassName("actionSelect1");
@@ -19,7 +22,7 @@ operationSeqSetFrom.addEventListener('submit', function(event) {
 		actionList2 = actionList2 + actions2[i].value + ',';
 	}
 
-	socket.emit('requestReadOperationSeqSet', sessionId,actionList1,actionList2,{'min': minutes.value,'sec':seconds.value})
+	socket.emit('requestReadOperationSeqSet', sessionId,actionList1,actionList2,{'min': minutes.value,'sec':seconds.value,'eventuallyFollowedFlg':eventuallyFollowedFlg_value})
 });
 
 socket.on('conformanceCheckingOP',function(response) {
