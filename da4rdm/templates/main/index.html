@@ -19,6 +19,9 @@
 						<li class="nav-item">
                             <a id="conformance_checking" class="nav-link main-nav-item" href="{{ url_for('blueprints/conformance_checking.conformance_checking') }}">Conformance Checking</a>
                         </li>
+                        <li class="nav-item">
+                            <a id="visualization" class="nav-link main-nav-item" href="{{ url_for('blueprints/visualization.visualization') }}">Visualization</a>
+                        </li>
 					</ul>
                 </div>
             </nav>
@@ -53,6 +56,7 @@
 
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.1/chart.min.js"></script>
 <script src="{{url_for('static', filename='js/session.js')}}"></script>
 <script src="{{url_for('static', filename='js/fileHandler.js')}}"></script>
 {% endblock %}

@@ -39,6 +39,7 @@ def create_new_session():
          session_id)  # TODO maybe use simple http request instead of socket or find a way to wait for the response
     global temp_id
     temp_id = session_id
+    #vis()
     return session_id
 
 
@@ -348,3 +349,176 @@ def conformance_checking(session_id, action1, action2, data):
                                     })
 
     return
+
+
+@api_bp.route('/api/get_unique_projects')
+def get_unique_projects():
+    import math
+    data = pd.read_csv(r"C:\Users\ph-admin\PycharmProjects\da4rdm-conformance\da4rdm\api\test_data.csv", index_col=0, sep=";")
+    """ TODO start ------
+    current_session = user_session.get_session_information(temp_id)
+    result_dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
+    df = pd.unique(result_dataframe.ProjectId)
+    print('rdf',df)
+    start = []
+    end = []
+    for i in range(len(df) - 1):
+
+        project_filtered = list(result_dataframe[result_dataframe.ProjectId == df[i+1]].Timestamp)
+        project_filtered.sort()
+        #print(project_filtered)
+        start.append(project_filtered[0])
+        end.append(project_filtered[-1])
+    print('s12',start)
+    print('e12',end)
+    -------- END """
+    unique_project_id = pd.unique(data.ProjectId)
+
+    return unique_project_id
+
+@socketio.on('visualizationTest', namespace='/api/visualization')
+def vis(sessionId,project_list,start_date,end_date,options):
+    import numpy as np
+    from datetime import datetime
+    from scipy.stats import pearsonr
+    from numpy.linalg import norm
+    """ TODO Start -----
+    print('session',sessionId)
+    current_session = user_session.get_session_information(sessionId)
+    result_dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
+    u_project = pd.unique(result_dataframe.ProjectId)
+    print('u_project', u_project)
+    ---END """
+    print('Inside vis', project_list)
+    print('date',type(start_date),start_date)
+    start = datetime.strptime(start_date,'%Y-%m-%d')
+    end = datetime.strptime(end_date,'%Y-%m-%d')
+    print('start',start,end)
+    project_id_list = project_list.split(",")
+    print('project_id_list',project_id_list)
+    #datafile = open(r"C:\Users\ph-admin\PycharmProjects\da4rdm-conformance\da4rdm\api\test_data.csv")
+    #data = pd.DataFrame.from_dict(datafile)
+    data = pd.read_csv(r"C:\Users\ph-admin\PycharmProjects\da4rdm-conformance\da4rdm\api\test_data.csv", index_col=0,sep=";")
+    print('data', data)
+    sheet = pd.read_excel(r"C:\Users\ph-admin\PycharmProjects\da4rdm-conformance\da4rdm\api\RDLC_Vector_Metrices - Copy.xlsx",sheet_name='Sheet1')
+
+    dict1 = {}
+    list1 = []
+    # sorted_df = data.sort_values(by=['ProjectId'])
+    unique_project_id = pd.unique(data.ProjectId)
+    # print('vis_data',sorted_df[['Type','Operation','Timestamp','ProjectId']])
+    operation_list = list(sheet.Operations)
+    print('operation_list', type(operation_list), operation_list)
+    for project_id in range(len(project_id_list)-1):
+        print('PR',project_id_list[project_id])
+        example_dataset_full = []
+        example_dataset_binary__full = []
+        p_op = []
+        p_op1 = []
+        cos_sim_list = []
+        cos_sim_list1 = []
+        df = time_df(data,project_id_list,project_id,start,end)
+        example_dataset = np.zeros(len(operation_list))
+        example_dataset_binary = np.zeros(len(operation_list))
+        # print('example_dataset', example_dataset)
+        #pdf = data[data.ProjectId == project_id_list[project_id]][['Operation','Timestamp']]
+        #print('pdf',pdf)
+        project_filtered_df = list(df.Operation)
+        #project_filtered_df = list(data[data.ProjectId == project_id_list[project_id]].Operation)
+        print('project_filtered_df',project_filtered_df)
+
+
+        for j in range(len(project_filtered_df)):
+            #print('project_filtered_df[j]', project_filtered_df[j])
+            if (project_filtered_df[j] in operation_list):
+                #print('index', operation_list.index(project_filtered_df[j]))
+                index_of_op = operation_list.index(project_filtered_df[j])
+                example_dataset[index_of_op] = example_dataset[index_of_op] + 1
+                example_dataset_binary[index_of_op] = 1
+                # print('example_dataset_update', example_dataset)
+        example_dataset_full.append(example_dataset)
+        example_dataset_binary__full.append(example_dataset_binary)
+        print('example_dataset_full', example_dataset_full)
+        print('example_dataset_binary__full', example_dataset_binary__full)
+        print('options',options["PearsonWeighted"],options["PearsonBinary"],options["CosineWeighted"],options["CosineBinary"])
+        if options["PearsonWeighted"]:
+            print('PW')
+            corr_list = pearson_corr(sheet, example_dataset)
+            p_op = normlize(corr_list)
+        if options["PearsonBinary"]:
+            print('PB')
+            corr_list1 = pearson_corr(sheet, example_dataset_binary)
+            p_op1 = normlize(corr_list1)
+        if options["CosineWeighted"]:
+            print('CW')
+            cos_sim_list = cosine_similarity(sheet, example_dataset)
+        if options["CosineBinary"]:
+            print('PB')
+            cos_sim_list1 = cosine_similarity(sheet, example_dataset_binary)
+
+        print('normalized',p_op,p_op1,cos_sim_list,cos_sim_list1)
+        dict1 = {"pearson_weighted": p_op,
+                    "pearson_binary":p_op1,
+                    "cosine_similarity": cos_sim_list,
+                    "cosine_similarity_binary": cos_sim_list1,
+                                     }
+        print('dict1',dict1)
+        list1.append(dict1)
+        print('list1',list1)
+
+    emit("radarChart", {"Similarity_Response":list1})
+
+    return
+
+
+def pearson_corr(sheet,dataset):
+    from scipy.stats import pearsonr
+
+    corr1, _ = pearsonr(list(sheet.Planning), dataset)
+    corr2, _ = pearsonr(list(sheet.Production), dataset)
+    corr3, _ = pearsonr(list(sheet.Analysis), dataset)
+    corr4, _ = pearsonr(list(sheet.Archival), dataset)
+    corr5, _ = pearsonr(list(sheet.Access), dataset)
+    corr6, _ = pearsonr(list(sheet['Re-Use']), dataset)
+    corr_list = [corr1, corr2, corr3, corr4, corr5, corr6]
+    return corr_list
+
+def cosine_similarity(sheet,example_dataset):
+    from numpy.linalg import norm
+    import numpy as np
+    cos_sim1 = np.dot(list(sheet.Planning), example_dataset) / (norm(list(sheet.Planning)) * norm(example_dataset))
+    cos_sim2 = np.dot(list(sheet.Production), example_dataset) / (norm(list(sheet.Production)) * norm(example_dataset))
+    cos_sim3 = np.dot(list(sheet.Analysis), example_dataset) / (norm(list(sheet.Analysis)) * norm(example_dataset))
+    cos_sim4 = np.dot(list(sheet.Archival), example_dataset) / (norm(list(sheet.Archival)) * norm(example_dataset))
+    cos_sim5 = np.dot(list(sheet.Access), example_dataset) / (norm(list(sheet.Access)) * norm(example_dataset))
+    cos_sim6 = np.dot(list(sheet['Re-Use']), example_dataset) / (norm(list(sheet['Re-Use'])) * norm(example_dataset))
+    cos_sim_list = [cos_sim1, cos_sim2, cos_sim3, cos_sim4, cos_sim5, cos_sim6]
+    return cos_sim_list
+
+
+def normlize(list1):
+    op = []
+    for i in range(len(list1)):
+        #op.append((list1[i] - min(list1))/(max(list1) - min(list1)))
+        op.append((list1[i] - (-1)) / 2)
+    print('norm',op)
+
+    return op
+
+def time_df(data,project_id_list,project_id,start,end):
+    from datetime import datetime
+    dataframe = pd.DataFrame()
+    pdf = data[data.ProjectId == project_id_list[project_id]]
+    for i in range(len(pdf)):
+        time = datetime.strptime(pdf.Timestamp.iloc[i],'%Y-%m-%d %H:%M:%S.%f')
+        print('time',time,start,end)
+        if (time >= start) and (time <= end):
+            print('iloc',pdf.iloc[i])
+            dataframe = dataframe.append(pdf.iloc[i])
+
+    #print('dataframe',dataframe[['ProjectId','Timestamp']])
+    return dataframe
+
+
+
+

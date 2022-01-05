@@ -1,0 +1,91 @@
+{% extends 'main/index.html' %}
+
+{% block header %}
+    <h2>Conformance-Checking</h2>
+
+{% endblock %}
+
+{% block content_body %}
+    <form id="visualizationFrom">
+        <div class="card col-12">
+            <div class="col-4 select_row_label">
+                <label class="mr-sm-2 my-1" for="projectid">Project ID</label>
+            </div>
+            <span class="col-12 card wraper1" style="min-height: 250px;">
+                    <div class="form-row my-2 ">
+                        <div class="col-8">
+                            <select class="form-control form-control-sm projectSelect" id="projectid">
+								{% for operation in operation_list %}<option value="{{ operation }}" >{{ operation }}</option>{% endfor %}
+							</select>
+                            <input type="date" class="startDate" id="date1" name="date1">
+                            <input type="date" class="endDate" id="date2" name="date2">
+						</div>
+						<div class="col">
+							<button  type="button" class=" add_project btn btn-secondary fa fa-plus" ></button>
+						</div>
+					</div>
+				</span>
+        </div>
+        <div class="col-8 row">
+            <span class="col-6">
+                <input type="date" id="date1" name="date1">
+            </span>
+            <span class="col-6">
+                <input type="date" id="date2" name="date2">
+            </span>
+            <span class="col-6">
+                <label for="pearsonWeighted">
+                        <input type="checkbox" id="pearsonWeighted" name="pearsonWeighted"> Pearson Weighted
+                    </label>
+					<label for="pearsonBinary">
+                        <input type="checkbox" id="pearsonBinary" name="pearsonBinary"> Pearson Binary
+                    </label>
+					<label for="cosineWeighted">
+                        <input type="checkbox" id="cosineWeighted" name="cosineWeighted"> Cosine Weighted
+                    </label>
+					<label for="cosineBinary">
+                        <input type="checkbox" id="cosineBinary" name="cosineBinary"> Cosine Binary
+                    </label>
+            </span>
+        </div>
+
+        <div class="form-row my-2 float-right button">
+            <button type="submit" class="btn btn-primary">RUN</button>
+        </div>
+
+        <div class="wrapper">
+            <h2>Radar Chart</h2>
+            <canvas id="myChart" height="100" width="100"></canvas>
+            <script src="{{url_for('static', filename='js/chart.js')}}"></script>
+
+
+        </div>
+
+    </form>
+    {#  <script src="{{url_for('static', filename='js/visualization.js')}}"></script>#}
+{% endblock %}
+
+	{% block scripts %}
+    {{ super() }}
+        <script src="{{url_for('static', filename='js/visualization.js')}}"></script>
+        <script>
+            $(document).ready(function(){
+                var max = 20;
+                var container = $(".wraper1");
+                var add = $(".add_project");
+                var x = 1;
+                $(add).click(function(e) { e.preventDefault();
+                   if(x < max) {
+                       x++;
+                       $(container).append('<div class="form-row my-2 "><div class="col-10"><select class="form-control form-control-sm projectSelect" id="projectid">{% for operation in operation_list %}<option value="{{ operation }}" >{{ operation }}</option>{% endfor %}</select> <input type="date" class="startDate" id="date1" name="date1"><input type="date" class="endDate" id="date2" name="date2"></div> <div class="col"> <button  type="button" class="delete btn btn-outline-danger fa fa-times" ></button></div></div>');
+                    }});
+
+                $(container).on("click",".delete",function(e){
+                    e.preventDefault();
+                    $(this).closest('.form-row').remove();
+                    x--;
+                })
+            });
+        </script>
+
+    {% endblock %}
