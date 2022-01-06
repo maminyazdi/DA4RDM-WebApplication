@@ -28,6 +28,10 @@ app.register_blueprint(processMining.process_mining_bp, url_prefix="/process_min
 from . import conformanceChecking
 app.register_blueprint(conformanceChecking.conformance_checking_bp, url_prefix="/conformance_checking")
 
+#ConformanceChecking ..added by Mrunmai
+from . import visualization
+app.register_blueprint(visualization.visualization_bp, url_prefix="/visualization")
+
 from .api import api
 app.register_blueprint(api.api_bp, url_prefix='/api')
 
