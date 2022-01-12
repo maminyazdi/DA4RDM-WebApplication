@@ -1,12 +1,12 @@
 {% extends 'main/index.html' %}
 
 {% block header %}
-    <h2>Conformance-Checking</h2>
+    <h2>Visualization</h2>
 
 {% endblock %}
 
 {% block content_body %}
-    <form id="visualizationFrom">
+    <form id="visualizationFrom" method="GET">
         <div class="card col-12">
             <div class="col-4 select_row_label">
                 <label class="mr-sm-2 my-1" for="projectid">Project ID</label>
@@ -14,28 +14,31 @@
             <span class="col-12 card wraper1" style="min-height: 250px;">
                     <div class="form-row my-2 ">
                         <div class="col-8">
-                            <select class="form-control form-control-sm projectSelect" id="projectid">
-								{% for operation in operation_list %}<option value="{{ operation }}" >{{ operation }}</option>{% endfor %}
+                            <select class="form-control form-control-sm projectSelect" id="projectid" onchange="myFunction()">
+								{% for project in project_list %}<option value="{{ project }}" >{{ project }}</option>{% endfor %}
 							</select>
+
                             <input type="date" class="startDate" id="date1" name="date1">
                             <input type="date" class="endDate" id="date2" name="date2">
+
 						</div>
 						<div class="col">
 							<button  type="button" class=" add_project btn btn-secondary fa fa-plus" ></button>
 						</div>
+
 					</div>
 				</span>
         </div>
         <div class="col-8 row">
-            <span class="col-6">
-                <input type="date" id="date1" name="date1">
-            </span>
-            <span class="col-6">
-                <input type="date" id="date2" name="date2">
-            </span>
+            {# <span class="col-6">
+            {#                <input type="date" id="date1" name="date1">
+            {#            </span>
+            {#            <span class="col-6">
+            {#                <input type="date" id="date2" name="date2">
+            {#            </span> #}
             <span class="col-6">
                 <label for="pearsonWeighted">
-                        <input type="checkbox" id="pearsonWeighted" name="pearsonWeighted"> Pearson Weighted
+                        <input type="checkbox" id="pearsonWeighted" name="pearsonWeighted" checked> Pearson Weighted
                     </label>
 					<label for="pearsonBinary">
                         <input type="checkbox" id="pearsonBinary" name="pearsonBinary"> Pearson Binary
@@ -50,12 +53,14 @@
         </div>
 
         <div class="form-row my-2 float-right button">
-            <button type="submit" class="btn btn-primary">RUN</button>
+            <button type="submit" id="run" class="btn btn-primary">RUN</button>
         </div>
 
         <div class="wrapper">
-            <h2>Radar Chart</h2>
-            <canvas id="myChart" height="100" width="100"></canvas>
+            <h2>Pearson</h2>
+            <canvas id="Pearson" height="50" width="50"></canvas>
+            <h2>Cosine</h2>
+            <canvas id="Cosine"  height="50"  width="50"></canvas>
             <script src="{{url_for('static', filename='js/chart.js')}}"></script>
 
 
@@ -67,7 +72,14 @@
 
 	{% block scripts %}
     {{ super() }}
+        <script src="{{url_for('static', filename='js/session.js')}}"></script>
+        <script src="{{url_for('static', filename='js/navigation.js')}}" onload="setNavbarActive('visualization')"></script>
+        <script>
+            addSessionIdToFormAction("visualizationFrom")
+        </script>
+
         <script src="{{url_for('static', filename='js/visualization.js')}}"></script>
+
         <script>
             $(document).ready(function(){
                 var max = 20;
@@ -77,7 +89,7 @@
                 $(add).click(function(e) { e.preventDefault();
                    if(x < max) {
                        x++;
-                       $(container).append('<div class="form-row my-2 "><div class="col-10"><select class="form-control form-control-sm projectSelect" id="projectid">{% for operation in operation_list %}<option value="{{ operation }}" >{{ operation }}</option>{% endfor %}</select> <input type="date" class="startDate" id="date1" name="date1"><input type="date" class="endDate" id="date2" name="date2"></div> <div class="col"> <button  type="button" class="delete btn btn-outline-danger fa fa-times" ></button></div></div>');
+                       $(container).append('<div class="form-row my-2 "><div class="col-10"><select class="form-control form-control-sm projectSelect" id="projectid" onchange="myFunction()">{% for project in project_list %}<option value="{{ project }}" >{{ project }}</option>{% endfor %}</select> <div class="result"></div><input type="date" class="startDate" id="date1" name="date1"><input type="date" class="endDate" id="date2" name="date2"></div> <div class="col">  <button  type="button" class="delete btn btn-outline-danger fa fa-times" ></button></div></div>');
                     }});
 
                 $(container).on("click",".delete",function(e){
@@ -87,5 +99,13 @@
                 })
             });
         </script>
+        <script>
+        function myFunction() {
+        var x = document.getElementById("projectid").value;
+        document.getElementById("date1").value = "2021-01-01";
+        document.getElementById("date2").value = "2022-01-01";
+        }
+        </script>
+
 
     {% endblock %}

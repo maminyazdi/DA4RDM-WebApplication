@@ -48,7 +48,6 @@ def get_all_data_sources():
     data_sources = db.session.query(DataSource).all()
     return data_sources
 
-
 @api_bp.route('/new_data_source', methods=['POST'])
 def new_data_source():
     session_id = request.args.get("session_id")
@@ -351,172 +350,143 @@ def conformance_checking(session_id, action1, action2, data):
     return
 
 
+# TO get all unique projects and their start and end time from selected datasource
 @api_bp.route('/api/get_unique_projects')
 def get_unique_projects():
-    import math
-    data = pd.read_csv(r"C:\Users\ph-admin\PycharmProjects\da4rdm-conformance\da4rdm\api\test_data.csv", index_col=0, sep=";")
-    """ TODO start ------
     current_session = user_session.get_session_information(temp_id)
-    result_dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
-    df = pd.unique(result_dataframe.ProjectId)
-    print('rdf',df)
     start = []
     end = []
-    for i in range(len(df) - 1):
+    try:
+        result_dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
+        df = pd.unique(result_dataframe.ProjectId)
+        for i in range(len(df) - 1):
+            project_filtered = list(result_dataframe[result_dataframe.ProjectId == df[i+1]].Timestamp)
+            project_filtered.sort()
+            start.append(project_filtered[0].split(" ")[0])
+            end.append(project_filtered[-1].split(" ")[0])
+    except:
+        df = []
+        start = []
+        end = []
 
-        project_filtered = list(result_dataframe[result_dataframe.ProjectId == df[i+1]].Timestamp)
-        project_filtered.sort()
-        #print(project_filtered)
-        start.append(project_filtered[0])
-        end.append(project_filtered[-1])
-    print('s12',start)
-    print('e12',end)
-    -------- END """
-    unique_project_id = pd.unique(data.ProjectId)
+    return df,start,end
 
-    return unique_project_id
 
+# For visualization of the result
 @socketio.on('visualizationTest', namespace='/api/visualization')
-def vis(sessionId,project_list,start_date,end_date,options):
+def vis(session_id,project_list,start_date,end_date,options):
     import numpy as np
-    from datetime import datetime
-    from scipy.stats import pearsonr
-    from numpy.linalg import norm
-    """ TODO Start -----
-    print('session',sessionId)
-    current_session = user_session.get_session_information(sessionId)
-    result_dataframe = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
-    u_project = pd.unique(result_dataframe.ProjectId)
-    print('u_project', u_project)
-    ---END """
-    print('Inside vis', project_list)
-    print('date',type(start_date),start_date)
-    start = datetime.strptime(start_date,'%Y-%m-%d')
-    end = datetime.strptime(end_date,'%Y-%m-%d')
-    print('start',start,end)
+    #emit('progressLog', {'message': f"Running Visualization"})
+    current_session = user_session.get_session_information(session_id)
+    data = pd.read_csv(current_session["data_location"], index_col=0, sep=";")
     project_id_list = project_list.split(",")
-    print('project_id_list',project_id_list)
-    #datafile = open(r"C:\Users\ph-admin\PycharmProjects\da4rdm-conformance\da4rdm\api\test_data.csv")
-    #data = pd.DataFrame.from_dict(datafile)
-    data = pd.read_csv(r"C:\Users\ph-admin\PycharmProjects\da4rdm-conformance\da4rdm\api\test_data.csv", index_col=0,sep=";")
-    print('data', data)
-    sheet = pd.read_excel(r"C:\Users\ph-admin\PycharmProjects\da4rdm-conformance\da4rdm\api\RDLC_Vector_Metrices - Copy.xlsx",sheet_name='Sheet1')
+    start_date_list = start_date.split(",")
+    end_date_list = end_date.split(",")
 
-    dict1 = {}
-    list1 = []
-    # sorted_df = data.sort_values(by=['ProjectId'])
-    unique_project_id = pd.unique(data.ProjectId)
-    # print('vis_data',sorted_df[['Type','Operation','Timestamp','ProjectId']])
-    operation_list = list(sheet.Operations)
-    print('operation_list', type(operation_list), operation_list)
+    operation_list = ['View Project','Open Project','Add Project','Edit Project','Delete Project','Open Resource(RCV)','Add Resource',
+                      'Edit Resource','Delete Resource','View RCV','Upload File','Upload MD','Download File','View MD','View File','Delete File',
+                      'Update File','Update MD','Open User Management','View Users','Add Member','Change Role','Remove User','Open Search','View Search Results',
+                      'PID Enquiry','Project','Project Create','Project Edit','Resource(RCV)','Resource Create','Resource Edit',
+                      'Search','User Management','SP-Documents']
+
+    planning   = [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0]
+    production = [1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0]
+    analysis   = [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0]
+    archival   = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0]
+    access     = [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]
+    re_use     = [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+    rdlc_vectors = [planning, production, analysis, archival, access, re_use]
+
+    correlation_response_list = []
+
     for project_id in range(len(project_id_list)-1):
-        print('PR',project_id_list[project_id])
         example_dataset_full = []
         example_dataset_binary__full = []
-        p_op = []
-        p_op1 = []
-        cos_sim_list = []
-        cos_sim_list1 = []
-        df = time_df(data,project_id_list,project_id,start,end)
+        pearson_weighted = []
+        pearson_binary = []
+        cosine_weighted = []
+        cosine_binary = []
+
+        if start_date_list[project_id] != "" and end_date_list[project_id] != "":
+            df = time_df(data,project_id_list,project_id,start_date_list[project_id],end_date_list[project_id])
+        else:
+            df = data[data.ProjectId == project_id_list[project_id]]
         example_dataset = np.zeros(len(operation_list))
         example_dataset_binary = np.zeros(len(operation_list))
-        # print('example_dataset', example_dataset)
-        #pdf = data[data.ProjectId == project_id_list[project_id]][['Operation','Timestamp']]
-        #print('pdf',pdf)
-        project_filtered_df = list(df.Operation)
-        #project_filtered_df = list(data[data.ProjectId == project_id_list[project_id]].Operation)
-        print('project_filtered_df',project_filtered_df)
 
+        project_filtered_df = list(df.Operation)
 
         for j in range(len(project_filtered_df)):
-            #print('project_filtered_df[j]', project_filtered_df[j])
-            if (project_filtered_df[j] in operation_list):
-                #print('index', operation_list.index(project_filtered_df[j]))
+            if project_filtered_df[j] in operation_list:
                 index_of_op = operation_list.index(project_filtered_df[j])
                 example_dataset[index_of_op] = example_dataset[index_of_op] + 1
                 example_dataset_binary[index_of_op] = 1
-                # print('example_dataset_update', example_dataset)
+
         example_dataset_full.append(example_dataset)
         example_dataset_binary__full.append(example_dataset_binary)
-        print('example_dataset_full', example_dataset_full)
-        print('example_dataset_binary__full', example_dataset_binary__full)
-        print('options',options["PearsonWeighted"],options["PearsonBinary"],options["CosineWeighted"],options["CosineBinary"])
+
         if options["PearsonWeighted"]:
-            print('PW')
-            corr_list = pearson_corr(sheet, example_dataset)
-            p_op = normlize(corr_list)
+            corr_list_weighted = pearson_corr(rdlc_vectors, example_dataset)
+            pearson_weighted = normlize(corr_list_weighted)
         if options["PearsonBinary"]:
-            print('PB')
-            corr_list1 = pearson_corr(sheet, example_dataset_binary)
-            p_op1 = normlize(corr_list1)
+            corr_list_binary = pearson_corr(rdlc_vectors, example_dataset_binary)
+            pearson_binary = normlize(corr_list_binary)
         if options["CosineWeighted"]:
-            print('CW')
-            cos_sim_list = cosine_similarity(sheet, example_dataset)
+            cosine_weighted = cosine_similarity(rdlc_vectors, example_dataset)
         if options["CosineBinary"]:
-            print('PB')
-            cos_sim_list1 = cosine_similarity(sheet, example_dataset_binary)
+            cosine_binary = cosine_similarity(rdlc_vectors, example_dataset_binary)
 
-        print('normalized',p_op,p_op1,cos_sim_list,cos_sim_list1)
-        dict1 = {"pearson_weighted": p_op,
-                    "pearson_binary":p_op1,
-                    "cosine_similarity": cos_sim_list,
-                    "cosine_similarity_binary": cos_sim_list1,
-                                     }
-        print('dict1',dict1)
-        list1.append(dict1)
-        print('list1',list1)
-
-    emit("radarChart", {"Similarity_Response":list1})
-
+        correlation_response = {"Pearson Weighted": pearson_weighted,
+                                "Pearson Binary": pearson_binary,
+                                "Cosine Similarity": cosine_weighted,
+                                "Cosine Binary": cosine_binary,}
+        print('correlation_response',correlation_response)
+        correlation_response_list.append(correlation_response)
+    print('Correlation Response',correlation_response_list)
+    emit("radarChart", {"Similarity_Response":correlation_response_list})
     return
 
 
-def pearson_corr(sheet,dataset):
+# To calculate Pearson correlation between each phase of RDLC and defined vectors for each phase of project
+def pearson_corr(rdlc_vectors,dataset):
     from scipy.stats import pearsonr
+    corrl = []
+    for phase in range(len(rdlc_vectors)):
+        corr,_ = pearsonr(rdlc_vectors[phase], dataset)
+        corrl.append(corr)
+    return corrl
 
-    corr1, _ = pearsonr(list(sheet.Planning), dataset)
-    corr2, _ = pearsonr(list(sheet.Production), dataset)
-    corr3, _ = pearsonr(list(sheet.Analysis), dataset)
-    corr4, _ = pearsonr(list(sheet.Archival), dataset)
-    corr5, _ = pearsonr(list(sheet.Access), dataset)
-    corr6, _ = pearsonr(list(sheet['Re-Use']), dataset)
-    corr_list = [corr1, corr2, corr3, corr4, corr5, corr6]
-    return corr_list
 
-def cosine_similarity(sheet,example_dataset):
+# To calculate cosine similarity between each phase of RDLC and defined vectors for each phase of project
+def cosine_similarity(rdlc_vectors,example_dataset):
     from numpy.linalg import norm
     import numpy as np
-    cos_sim1 = np.dot(list(sheet.Planning), example_dataset) / (norm(list(sheet.Planning)) * norm(example_dataset))
-    cos_sim2 = np.dot(list(sheet.Production), example_dataset) / (norm(list(sheet.Production)) * norm(example_dataset))
-    cos_sim3 = np.dot(list(sheet.Analysis), example_dataset) / (norm(list(sheet.Analysis)) * norm(example_dataset))
-    cos_sim4 = np.dot(list(sheet.Archival), example_dataset) / (norm(list(sheet.Archival)) * norm(example_dataset))
-    cos_sim5 = np.dot(list(sheet.Access), example_dataset) / (norm(list(sheet.Access)) * norm(example_dataset))
-    cos_sim6 = np.dot(list(sheet['Re-Use']), example_dataset) / (norm(list(sheet['Re-Use'])) * norm(example_dataset))
-    cos_sim_list = [cos_sim1, cos_sim2, cos_sim3, cos_sim4, cos_sim5, cos_sim6]
-    return cos_sim_list
+    cosine_sim = []
+    for phase in range(len(rdlc_vectors)):
+        cos_sim = np.dot(rdlc_vectors[phase], example_dataset) / (norm(rdlc_vectors[phase]) * norm(example_dataset))
+        cosine_sim.append(cos_sim)
+    return cosine_sim
 
 
+# To scale the results for Pearson correlation in the range 0 to 1
 def normlize(list1):
     op = []
     for i in range(len(list1)):
-        #op.append((list1[i] - min(list1))/(max(list1) - min(list1)))
         op.append((list1[i] - (-1)) / 2)
-    print('norm',op)
-
     return op
 
+
+# To find the dataframe within the start and end time interval to proceed with visualization
 def time_df(data,project_id_list,project_id,start,end):
     from datetime import datetime
+    start_date = datetime.strptime(start, '%Y-%m-%d')
+    end_date = datetime.strptime(end, '%Y-%m-%d')
     dataframe = pd.DataFrame()
     pdf = data[data.ProjectId == project_id_list[project_id]]
     for i in range(len(pdf)):
         time = datetime.strptime(pdf.Timestamp.iloc[i],'%Y-%m-%d %H:%M:%S.%f')
-        print('time',time,start,end)
-        if (time >= start) and (time <= end):
-            print('iloc',pdf.iloc[i])
+        if (time >= start_date) and (time <= end_date):
             dataframe = dataframe.append(pdf.iloc[i])
-
-    #print('dataframe',dataframe[['ProjectId','Timestamp']])
     return dataframe
 
 

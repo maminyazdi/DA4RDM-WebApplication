@@ -5,9 +5,8 @@ let visualizationFrom= document.getElementById('visualizationFrom');
 visualizationFrom.addEventListener('submit', function(event) {
   event.preventDefault();
 
-  let projectId = document.getElementById("projectid");
-  let startDate = document.getElementById("date1");
-  let endDate = document.getElementById("date2");
+  let startDate = document.getElementsByClassName("startDate");
+  let endDate = document.getElementsByClassName("endDate");
 
   let pearsonWeighted = (document.querySelector('#pearsonWeighted')).checked;
   let pearsonBinary = (document.querySelector('#pearsonBinary')).checked;
@@ -15,26 +14,33 @@ visualizationFrom.addEventListener('submit', function(event) {
   let cosineBinary = (document.querySelector('#cosineBinary')).checked;
   let projects = document.getElementsByClassName("projectSelect");
   let projectList = '';
+  let startDateList = '';
+  let endDateList = '';
+
 
   for(var i=0;i<projects.length;i++){
 		projectList = projectList + projects[i].value + ',';
+        startDateList = startDateList + startDate[i].value + ',';
+        endDateList = endDateList + endDate[i].value + ',';
 	}
 
-  socket.emit('visualizationTest',sessionId,projectList,startDate.value,endDate.value,
+  socket.emit('visualizationTest',sessionId,projectList,startDateList,endDateList,
       {'PearsonWeighted': pearsonWeighted,'PearsonBinary':pearsonBinary,'CosineWeighted':cosineWeighted,
       'CosineBinary':cosineBinary})
 });
 
 socket.on('radarChart',function(response) {
-   //myRadarChart.destroy();
+
   plotChart(response)
 })
 
 function plotChart(output){
-//window.alert(typeof output);
-//window.alert(Object.getOwnPropertyNames(output));
-//window.alert(Object.values(output));
 
+document.getElementById("run").addEventListener("click", function() {
+
+myRadarChart.destroy();
+radarChart2.destroy();
+});
 var data1 = {
       labels: [
         'Planning',
@@ -47,7 +53,7 @@ var data1 = {
       datasets: [
 	  ]
     };
-	var radarChart = $('#myChart');
+	var radarChart = $('#Pearson');
 	var myRadarChart = new Chart(radarChart, {
 	  type: "radar",
 	  data: data1,
@@ -59,17 +65,40 @@ var data1 = {
 		}
 	  }
 	});
+    var data2 = {
+      labels: [
+        'Planning',
+        'Procedure',
+        'Analysis',
+        'Archival',
+        'Access',
+        'Re-Use'
+      ],
+      datasets: [
+	  ]
+    };
+    var cosineRadarChart = $('#Cosine');
+	var radarChart2 = new Chart(cosineRadarChart, {
+	  type: "radar",
+	  data: data2,
+	  options: {
+	  elements: {
+		  line: {
+			borderWidth: 3
+		  }
+		}
+	  }
+	});
 if (output["Similarity_Response"].length !== 0){
 for (let i = 0; i < output["Similarity_Response"].length; i++){
 	var responseChart = output["Similarity_Response"][i];
-    window.alert(Object.values(responseChart));
-    //r = 50 + 30 * i
-    //g = 80 + 20 * i
-    //b = 75 + 15 * i
-
+    //window.alert(typeof(Object.values(responseChart)));
     for (var [key,value] of Object.entries(responseChart)) {
-        myRadarChart.data.datasets.push({
-            label: key + 'Project' + i,
+
+        if (value.length > 0){
+            if(key.includes("Pearson")){
+            myRadarChart.data.datasets.push({
+            label: key + ' Project' + (i+1),
             data: value,
             fill: true,
             backgroundColor: 'rgba(50, 70, 50, 0.2)',
@@ -78,12 +107,28 @@ for (let i = 0; i < output["Similarity_Response"].length; i++){
             pointBorderColor: '#fff',
             pointHoverBackgroundColor: '#fff',
             pointHoverBorderColor: 'rgb(255, 99, 132)'
-        });
+            });
+            }
+            if(key.includes("Cosine")){
+             radarChart2.data.datasets.push({
+            label: key + ' Project' + (i+1),
+            data: value,
+            fill: true,
+            backgroundColor: 'rgba(50, 70, 50, 0.2)',
+            borderColor: 'rgb(255, 99, 132)',
+            pointBackgroundColor: 'rgb(255, 99, 132)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgb(255, 99, 132)'
+            });
+            }
+
+        }
+
     }
 
 		myRadarChart.update();
-
-
+        radarChart2.update();
 }
 }
 }
