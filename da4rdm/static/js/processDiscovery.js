@@ -72,13 +72,14 @@ function runProcessDiscovery(hostUrl, projectUrl){
     showSpinner();
     hook.innerHTML = "";
     let options = getDiscoveryOptions();
+    setOptions(options); // Added for Save Config
     socket.emit('requestProcessDiscovery', session_id, options);
 
     return;
 }
 
 function updateEverything(allDiscoveryInformation) {
-
+    //setAllValues(allDiscoveryInformation);
     showSpinner();
     updateColumnNames(allDiscoveryInformation["all_column_names"], allDiscoveryInformation["pm_xes_attributes"]);
     updatePMFilters(allDiscoveryInformation["pm_filter_options"], allDiscoveryInformation["pm_filters"]);
@@ -117,6 +118,8 @@ function remove_all_options_from_select(elementId) {
 
 function sendXesAttributeColumns() {
     let selectedXesAttributeColumns = getXesAttributeColumns();
+    setAllValues(selectedXesAttributeColumns); // Added for SaveConfig
+    console.log("selectedXesAttributeColumns",selectedXesAttributeColumns);
     socket.emit("requestDiscoveryPreparation", session_id, selectedXesAttributeColumns);
     return;
 }
@@ -291,6 +294,8 @@ function getXesAttributeColumns() {
                          document.getElementById("resource_column"),
                          document.getElementById("cost_column")];
 
+    console.log("getXES",select_inputs);
+
     let selectedColumns = {};
 
     for (let current_select_input of select_inputs) {
@@ -392,6 +397,39 @@ function parseJsonArray(jsonString) {
     }
 
     return parsed;
+}
+
+// Added for SaveConfig
+function setAllValues(selectedXesAttributeColumns){
+    //sessionStorage.setItem('timestamp_column',allDiscoveryInformation["pm_xes_attributes"]['timestamp_column']);
+    sessionStorage.setItem('timestamp_column',selectedXesAttributeColumns['timestamp_column']);
+    sessionStorage.setItem('caseId_column',selectedXesAttributeColumns['caseId_column']);
+    sessionStorage.setItem('activity_column',selectedXesAttributeColumns['activity_column']);
+    sessionStorage.setItem('resource_column',selectedXesAttributeColumns['resource_column']);
+    sessionStorage.setItem('cost_column',selectedXesAttributeColumns['cost_column']);
+    console.log("sess_setAllValues",sessionStorage);
+    //provenance["timestamp_column"] = selectedXesAttributeColumns['timestamp_column'];
+    //provenance["caseId_column"] = selectedXesAttributeColumns['caseId_column'];
+    //provenance["activity_column"] = selectedXesAttributeColumns['activity_column'];
+    //provenance["resource_column"] = selectedXesAttributeColumns['resource_column'];
+    //provenance["cost_column"] = selectedXesAttributeColumns['cost_column'];
+    //console.log("prov_setAllValues",provenance);
+}
+
+// Added for SaveConfig
+function setOptions(options){
+    sessionStorage.setItem('discovery_algorithm',options['discovery_algorithm']);
+    sessionStorage.setItem('model_represenations',options['model_represenations']);
+    sessionStorage.setItem('model_variant',options['model_variant']);
+
+    console.log("sess_setOptions",sessionStorage);
+    //provenance["discovery_algorithm"] = options['discovery_algorithm'];
+    //provenance["model_represenations"] = options['model_represenations'];
+    //provenance["model_variant"] = options['model_variant'];
+
+    console.log("prov_setOptions",provenance);
+
+
 }
 
 // TODO rewrite without jquery if possible

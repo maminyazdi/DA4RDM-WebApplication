@@ -1,4 +1,5 @@
 from da4rdm import db
+from datetime import datetime
 
 class InflexibleDataSourceConnection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -96,3 +97,12 @@ class SessionInformation(db.Model):
     PMXesAttributes        = db.Column(db.String(2000))
     PMFilters              = db.Column(db.String(2000))
     PMOptions              = db.Column(db.String(2000))
+
+class SaveConfiguration(db.Model):
+    __tablename__          = 'save_configuration'
+    Id                     = db.Column(db.Integer, primary_key=True)
+    ConfigName                   = db.Column(db.String(255))
+    ConfigData                 = db.Column(db.String(255))
+    CreatedDate                   = db.Column(db.DateTime, default=datetime.now)
+
+#db.create_all()

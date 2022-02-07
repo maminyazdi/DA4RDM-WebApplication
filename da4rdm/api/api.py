@@ -20,7 +20,7 @@ from werkzeug.exceptions import abort
 from werkzeug.utils import secure_filename
 
 from da4rdm import db, Config
-from da4rdm.models import (InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource,SessionInformation)
+from da4rdm.models import (InflexibleDataSourceConnection, DataBaseDialect, DialectParameters, DataSource,SessionInformation,SaveConfiguration)
 from da4rdm.api.data_source import data_source_handler
 from da4rdm.api.process_mining import (process_discovery, event_log_generator, filter_handler,conformance_handler)
 from da4rdm.api.preprocessing import user_project_handler
@@ -42,6 +42,12 @@ def create_new_session():
     #vis()
     return session_id
 
+
+@api_bp.route('/api/get_saved_files')
+def get_saved_files():
+    saved_files = db.session.query(SaveConfiguration).all()
+    print('api_saved_files',saved_files)
+    return saved_files
 
 @api_bp.route('/api/get_all_data_sources')
 def get_all_data_sources():
@@ -126,6 +132,7 @@ def run_project_persistent_connection(session_id, data):
 
 @socketio.on('requestDiscoveryPreparation', namespace='/api/run_process_discovery')
 def prepare_discovery(session_id, xes_attribute_columns=None, filters=None, options=None):
+    print('xes',xes_attribute_columns)
     current_session = user_session.get_session_information(session_id)
     old_filters = current_session["pm_filters"]
     dataframe_key_metrics = {}
@@ -488,6 +495,45 @@ def time_df(data,project_id_list,project_id,start,end):
         if (time >= start_date) and (time <= end_date):
             dataframe = dataframe.append(pdf.iloc[i])
     return dataframe
+
+
+# Added for SaveConfig, Called from index.html
+@socketio.on('passingInfo', namespace='/api/save_info')
+def save_info(filename,json):
+    from da4rdm.models import SaveConfiguration
+    from da4rdm import db
+
+    def add_record(filename,json):
+        save_config = SaveConfiguration()
+        save_config.ConfigName = filename
+        save_config.ConfigData = json
+        save_config.CreatedDate = datetime.datetime.now()
+
+        db.session.add(save_config)
+        db.session.commit()
+        return
+
+    add_record(filename,json)
+
+    return
+
+
+# Added for SaveConfig, Called from index.html
+@socketio.on('getAllSavedFiles', namespace='/api/get_saved_files')
+def get_saved_files():
+    saved_files = db.session.query(SaveConfiguration.ConfigName).all()
+    emit('allSavedFiles',saved_files)
+
+    return
+
+
+# Added for SaveConfig, Called from session.js
+@socketio.on('sendFileName', namespace='/api/get_json')
+def get_json(filename):
+    record = db.session.query(SaveConfiguration).filter_by(ConfigName=filename).first()
+    emit('responseData',record.ConfigData)
+    return
+
 
 
 

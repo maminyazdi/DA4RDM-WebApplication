@@ -1,6 +1,6 @@
 let sessionId = getCurrentSession();
 let socket = io.connect('http://' + document.domain + ':' + location.port + '/api/visualization');
-
+console.log(sessionStorage);
 let visualizationFrom= document.getElementById('visualizationFrom');
 visualizationFrom.addEventListener('submit', function(event) {
   event.preventDefault();
@@ -17,12 +17,26 @@ visualizationFrom.addEventListener('submit', function(event) {
   let startDateList = '';
   let endDateList = '';
 
+  const data = new FormData(this);
+
+
+
+    window.alert(data);
 
   for(var i=0;i<projects.length;i++){
 		projectList = projectList + projects[i].value + ',';
         startDateList = startDateList + startDate[i].value + ',';
         endDateList = endDateList + endDate[i].value + ',';
 	}
+
+    sessionStorage.setItem('projectSelect',projectList);
+	sessionStorage.setItem('startDate',startDateList);
+	sessionStorage.setItem('endDate',endDateList);
+    sessionStorage.setItem('pearsonWeighted',pearsonWeighted);
+    sessionStorage.setItem('pearsonBinary',pearsonBinary);
+    sessionStorage.setItem('cosineWeighted',cosineWeighted);
+    sessionStorage.setItem('cosineBinary',cosineBinary);
+	console.log("Sess_viz",sessionStorage);
 
   socket.emit('visualizationTest',sessionId,projectList,startDateList,endDateList,
       {'PearsonWeighted': pearsonWeighted,'PearsonBinary':pearsonBinary,'CosineWeighted':cosineWeighted,

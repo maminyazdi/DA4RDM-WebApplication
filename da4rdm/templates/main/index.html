@@ -37,6 +37,32 @@
                 <span id="user_session_data_source_display" class="mr-sm-2" style="font-weight: bold;" > None </span>
                 <span class="mr-sm-2"> Pre-processing Pipeline: </span>
                 <span id="user_session_pipeline_display" class="mr-sm-2" style="font-weight: bold;"> None </span>
+
+                {# Added for SaveConfig [START] #}
+                <button onclick="document.getElementById('id01').style.display='block'">Save File</button>
+
+                <div id="id01" class="modal">
+                    <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+                    <form class="modal-content" action="/action_page.php">
+                        <div class="container">
+                            <h1>Save File</h1>
+                            <p>File Name if required!</p>
+
+                            <div class="clearfix">
+                                <label for="filename">FileName</label>
+                                <input type="text" name="filename" id="filename"  class="text ui-widget-content ui-corner-all">
+                                <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+                                <button type="button" onclick=saveFile() class="savebtn">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div>
+                    <select name="selectedSavesFile" required class="custom-select" id="savedFileSelector" aria-label="Select a data source" onclick=uploadFile()>
+                    </select>
+                    <button type="button"  onclick="insertData()" class="uploadbtn">Upload</button>
+                </div>
+                {# Added for SaveConfig [END] #}
             </div>
         </div>
    </div>
@@ -59,6 +85,50 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.1/chart.min.js"></script>
 <script src="{{url_for('static', filename='js/session.js')}}"></script>
 <script src="{{url_for('static', filename='js/fileHandler.js')}}"></script>
+
+{# Added for SaveConfig #}
+<script>
+// Get the modal
+var modal = document.getElementById('id01');
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
+{# Added for SaveConfig #}
+<script>
+function saveFile(){
+
+    var filename = document.getElementById('filename');
+      console.log(filename.value);
+      console.log(sessionStorage);
+      console.log("pre_save",preprocessing);
+      var json = JSON.stringify(sessionStorage);
+     let socket = io.connect('http://' + document.domain + ':' + location.port + '/api/save_info');
+      socket.emit('passingInfo',filename.value,json);
+}
+</script>
+{# Added for SaveConfig #}
+<script>
+function uploadFile(){
+        let socket = io.connect('http://' + document.domain + ':' + location.port + '/api/get_saved_files');
+        socket.emit('getAllSavedFiles');
+        socket.on('allSavedFiles',function(response){
+            console.log(response)
+            var select = document.getElementById('savedFileSelector');
+            for(var i=0;i<response.length;i++)
+                {
+                    newOption = document.createElement('option');
+                    newOption.value=response[i];
+                    newOption.text=response[i];
+                    select.appendChild(newOption);
+                }
+        })
+}
+</script>
+
 {% endblock %}
 
 {% block scripts_lvl_2 %}

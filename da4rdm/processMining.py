@@ -1,7 +1,7 @@
 import os
 from os.path import isfile, join
 from flask import (
-    Blueprint, render_template
+    Blueprint, render_template,request
 )
 
 bp = Blueprint('blueprints/main', __name__)

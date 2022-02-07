@@ -22,9 +22,9 @@ def run(session_information, options):
     output_path_relative = re.sub(r"da4rdm/", "", output_path)
     return ['gviz', output_path_relative]
 
+
 def get_dataframe_key_metrics(dataframe, event_log, xes_attribute_columns):
     """Calculates the key dataframe values used to inform about the data set for process discovery."""
-
     number_of_events     = len(dataframe.index)
     number_of_cases      = len(dataframe['case:concept:name'].unique())
     number_of_activities = len(dataframe['concept:name'].unique())

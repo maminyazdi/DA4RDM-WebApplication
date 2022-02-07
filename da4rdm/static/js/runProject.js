@@ -6,6 +6,7 @@ function runProject(projectName, pipelineParameters) {
     let session_id = getCurrentSession();
     localStorage.setItem('selected_pipeline', projectName);
     document.getElementById('user_session_pipeline_display').innerHTML = projectName;
+    setvalues(projectName,pipelineParameters); //Added for SaveConfig
     socket.emit('requestProjectRun', session_id, {'projectName': projectName, 'pipelineParameters': pipelineParameters});
     socket.on('progressLog', function(data) {
         let hook = document.getElementById('data_target');
@@ -150,4 +151,16 @@ function tabulate(data, columns) {
         .text(function (d) { return d.value; });
 
   return table;
+}
+
+// Added for SaveConfig
+function setvalues(projectName,pipelineParameters){
+    sessionStorage.setItem('project_name',projectName);
+    sessionStorage.setItem('pipelineParameters',pipelineParameters);
+    preprocessing["project_name"] = projectName;
+    preprocessing["pipelineParameters"] = pipelineParameters;
+
+    console.log("runP_preprocessing",preprocessing);
+    console.log("sess_runP",sessionStorage);
+
 }

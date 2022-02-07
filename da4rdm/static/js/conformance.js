@@ -21,6 +21,12 @@ operationSeqSetFrom.addEventListener('submit', function(event) {
 	for(var i=0;i<actions2.length;i++){
 		actionList2 = actionList2 + actions2[i].value + ',';
 	}
+	sessionStorage.setItem('min',minutes.value);
+	sessionStorage.setItem('sec',seconds.value);
+	sessionStorage.setItem('actionSelect1',actionList1);
+	sessionStorage.setItem('actionSelect2',actionList2);
+	sessionStorage.setItem('#accept',eventuallyFollowedFlg_value);
+	console.log("sess_conf",sessionStorage);
 
 	socket.emit('requestReadOperationSeqSet', sessionId,actionList1,actionList2,{'min': minutes.value,'sec':seconds.value,'eventuallyFollowedFlg':eventuallyFollowedFlg_value})
 });

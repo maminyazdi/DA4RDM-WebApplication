@@ -14,6 +14,8 @@ socketio = SocketIO(app, ping_timeout=app.config["PING_TIMEOUT"], ping_interval=
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+from da4rdm import models
+
 from . import main
 app.register_blueprint(main.bp)
 app.add_url_rule('/', endpoint='index')
@@ -37,4 +39,4 @@ app.register_blueprint(api.api_bp, url_prefix='/api')
 
 socketio.run(app) # if using socketio I cannot make use of the app factory, so app will stay in the global name space. I need to make sure that the unit testing will be working correctly anyway
 
-from da4rdm import models
+

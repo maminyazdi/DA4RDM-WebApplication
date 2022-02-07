@@ -34,7 +34,7 @@
       <excludeFolder url="file://$MODULE_DIR$/da4rdm/temporary_results/eecd6c65-eec4-425f-8299-0860865deaf2" />
       <excludeFolder url="file://$MODULE_DIR$/da4rdm/temporary_results/ffe52ad8-84e4-4ac0-bc0f-45a753cd2c4a" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 3.7 (da4rdm)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">

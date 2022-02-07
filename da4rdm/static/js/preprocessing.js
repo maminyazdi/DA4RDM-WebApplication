@@ -6,6 +6,9 @@ setup();
 socket.on('preprocessingStatus', function (response) {
     if (response['task'] = 'read' && response['result'] == 'success') {
         let dataSourceName = response['data_source_name'];
+        sessionStorage.setItem('data_source_name',dataSourceName);
+        //preprocessing["data_source_name"] = dataSourceName;
+        console.log("sess_data_source_name",sessionStorage);
         onDatasourceSelected(dataSourceName);
     }
 })
@@ -47,4 +50,7 @@ dataSourceForm.addEventListener('submit', function(event) {
     event.preventDefault();
     let dataSourceSelector = document.getElementById("dataSourceSelector");
     socket.emit('requestReadDataFromSource', sessionId, {'data_source_id': dataSourceSelector.value})
+    sessionStorage.setItem('dataSourceSelector',dataSourceSelector.value) ;
+    //preprocessing["dataSourceSelector"] = dataSourceSelector.value;
+    console.log("sess_dataSourceSelector",sessionStorage);
 });
