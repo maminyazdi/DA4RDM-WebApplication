@@ -17,11 +17,11 @@ visualizationFrom.addEventListener('submit', function(event) {
   let startDateList = '';
   let endDateList = '';
 
-  const data = new FormData(this);
+  // const data = new FormData(this);
 
 
 
-    window.alert(data);
+    // window.alert(data);
 
   for(var i=0;i<projects.length;i++){
 		projectList = projectList + projects[i].value + ',';

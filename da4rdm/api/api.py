@@ -39,7 +39,6 @@ def create_new_session():
          session_id)  # TODO maybe use simple http request instead of socket or find a way to wait for the response
     global temp_id
     temp_id = session_id
-    #vis()
     return session_id
 
 
