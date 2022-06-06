@@ -1,7 +1,7 @@
 {% extends 'main/index.html' %}
 
 {% block header %}
-    <h2>Visualization</h2>
+    <h2>RDLC Visualization</h2>
 
 {% endblock %}
 
@@ -57,10 +57,16 @@
         </div>
 
         <div class="wrapper">
-            <h2>Pearson</h2>
-            <canvas id="Pearson" height="50" width="50"></canvas>
-            <h2>Cosine</h2>
-            <canvas id="Cosine"  height="50"  width="50"></canvas>
+            <span class="row">
+                <span class="col-6">
+                    <h2>Pearson</h2>
+                    <canvas id="Pearson" height="50" width="50"></canvas>
+                </span>
+                <span class="col-6">
+                    <h2>Cosine</h2>
+                    <canvas id="Cosine"  height="50"  width="50"></canvas>
+                </span>
+            </span>
             <script src="{{url_for('static', filename='js/chart.js')}}"></script>
 
 

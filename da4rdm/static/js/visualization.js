@@ -76,7 +76,16 @@ var data1 = {
 		  line: {
 			borderWidth: 3
 		  }
-		}
+		},
+        scales: {
+            r: {
+                angleLines: {
+                    display: false
+                },
+                suggestedMin: 0,
+                suggestedMax: 100
+            }
+        }
 	  }
 	});
     var data2 = {
@@ -100,7 +109,16 @@ var data1 = {
 		  line: {
 			borderWidth: 3
 		  }
-		}
+		},
+        scales: {
+            r: {
+                angleLines: {
+                    display: false
+                },
+                suggestedMin: 0,
+                suggestedMax: 100
+            }
+        }
 	  }
 	});
 if (output["Similarity_Response"].length !== 0){

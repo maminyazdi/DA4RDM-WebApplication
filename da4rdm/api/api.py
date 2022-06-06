@@ -433,22 +433,23 @@ def vis(session_id,project_list,start_date,end_date,options):
 
         if options["PearsonWeighted"]:
             corr_list_weighted = pearson_corr(rdlc_vectors, example_dataset)
-            pearson_weighted = normlize(corr_list_weighted)
+            pearson_weighted = scale_vis_results(normlize(corr_list_weighted))
         if options["PearsonBinary"]:
             corr_list_binary = pearson_corr(rdlc_vectors, example_dataset_binary)
-            pearson_binary = normlize(corr_list_binary)
+            pearson_binary = scale_vis_results(normlize(corr_list_binary))
         if options["CosineWeighted"]:
-            cosine_weighted = cosine_similarity(rdlc_vectors, example_dataset)
+            cosine_weighted = scale_vis_results(cosine_similarity(rdlc_vectors, example_dataset))
+
         if options["CosineBinary"]:
-            cosine_binary = cosine_similarity(rdlc_vectors, example_dataset_binary)
+            cosine_binary = scale_vis_results(cosine_similarity(rdlc_vectors, example_dataset_binary))
 
         correlation_response = {"Pearson Weighted": pearson_weighted,
                                 "Pearson Binary": pearson_binary,
                                 "Cosine Similarity": cosine_weighted,
                                 "Cosine Binary": cosine_binary,}
-        print('correlation_response',correlation_response)
+        print('correlation_response1',correlation_response)
         correlation_response_list.append(correlation_response)
-    print('Correlation Response',correlation_response_list)
+    print('Correlation Response2',correlation_response_list)
     emit("radarChart", {"Similarity_Response":correlation_response_list})
     return
 
@@ -473,6 +474,12 @@ def cosine_similarity(rdlc_vectors,example_dataset):
         cosine_sim.append(cos_sim)
     return cosine_sim
 
+# To rescale the results for Person and Coscine in the range of 0 to 100.
+def scale_vis_results(data_list):
+    vis_result = []
+    for i in range(len(data_list)):
+        vis_result.append(data_list[i]*100)
+    return vis_result
 
 # To scale the results for Pearson correlation in the range 0 to 1
 def normlize(list1):
