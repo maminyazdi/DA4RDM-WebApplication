@@ -1,4 +1,25 @@
-# DA4RDM-Conformance
+# DA4RDM Web Application
+
+## Overview
+DA4RDM is a robust Web Application designed to facilitate seamless interaction and engagement with the DA4RDM system. With an intuitive user interface and powerful backend functionalities, it provides an efficient platform for users to explore and utilize the features of DA4RDM effortlessly.
+
+## Key Features
+- **User-Friendly Interface:** Designed with users in mind, providing an intuitive and seamless user experience.
+- **Robust Backend:** Powerful backend functionalities that ensure efficient and reliable performance.
+- **Docker Integration:** Easily accessible and deployable using Docker technology for containerized applications.
+
+## Getting Started
+### Prerequisites
+- Ensure that Docker is installed on your system. If not, download and install it from the [official Docker website](https://www.docker.com/).
+
+### Pulling from Docker Hub
+DA4RDM Web Application can be effortlessly pulled from Docker Hub and deployed on any system with Docker support. Use the following command to pull the Docker image:
+
+```bash
+docker pull da4rdm/da4rdm
+```
+
+----
 
 ## Dependencies:
 If you want to use anaconda/miniconda, you can (and should) import the following environment.yml from the repository top level. To do this, from your anaconda prompt (in administrator mode) you can enter (with environment.yml pointing to the right file):
@@ -127,6 +148,6 @@ The final result of the pipeline can be shown on the application front end. This
     - Select Case ID as "User Id"
     - Select Activity as "Operation"
     - Submit
-- Within Options section, click on the Play button (blue color) to run the algorithm and produce a process model.
+- Within Options section, click on the Play button (blue color) to run the algorithm and produce a process model._
 
 
